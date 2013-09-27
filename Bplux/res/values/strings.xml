@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Bplux</string>
+    <string name="settingsTitle">setting device</string>
+    <string name="menu_settings">Settings</string>
+    <string name="action_settings">Settings</string>
+    <string name="graphtitle">HR graph</string>
+
+    <string-array name="itemsList">
+        <item>show settings  ></item>
+        <item>show HRG     ></item>
+    </string-array>
+        <string name="sigName">signal name</string>
+        <string name="frecRecepcion">freq. of reception</string>
+        <string name="channels">canale(s)</string>
+        <string name="nbits">bits per signal</string>
+        <string name="bitsN8">8 bits</string>
+        <string name="nbits12">12 bits</string>
+        <string name="bttnSubmit">submit</string>
+        <string name="HRGraphTitle">Heart Rate Graph</string>
+        <string name="imageDesc">header</string>
+    
+    <!-- Settings spinner -->
+    
+    <string name="prompt">choose a channel</string>
+    
+    <string-array name="channelList">
+        <item>channel 1</item>
+        <item>channel 2</item>
+        <item>channel 3</item>
+        <item>channel 4</item>
+        <item>channel 5</item>
+        <item>channel 6</item>
+        <item>channel 7</item>
+       	<item>channel 8</item> 
+    </string-array>
+    
+    <!-- Radio buttons -->
+    
+    
+
+</resources>
