@@ -11,13 +11,7 @@
         <item>show settings  ></item>
         <item>show HRG     ></item>
     </string-array>
-        <string name="sigName">signal name</string>
-        <string name="frecRecepcion">freq. of reception</string>
-        <string name="channels">canale(s)</string>
-        <string name="nbits">bits per signal</string>
-        <string name="bitsN8">8 bits</string>
-        <string name="nbits12">12 bits</string>
-        <string name="bttnSubmit">submit</string>
+        
         <string name="HRGraphTitle">Heart Rate Graph</string>
         <string name="imageDesc">header</string>
     
@@ -35,8 +29,8 @@
         <item>channel 7</item>
        	<item>channel 8</item> 
     </string-array>
+    <string name="footer">credits: Abraham Otero, Carlos Marten, CEU</string>
     
-    <!-- Radio buttons -->
     
     
 

@@ -25,23 +25,25 @@
         <!-- Logo Ends -->
     </LinearLayout>
     
+    
+    <!-- Footer Start -->
+    
     <LinearLayout
             android:id="@+id/footer"
             android:layout_width="fill_parent"
             android:layout_height="90dip"
             android:layout_alignParentBottom="true"
             android:orientation="horizontal" >
-        
+        </LinearLayout>
         <TextView
             android:id="@+id/link_to_login"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:gravity="center"
-            android:text="Developed by Carlos Marten"
+            android:text="@string/footer"
             android:textColor="#025f7c"
-            android:textSize="20sp" />
-        
-        </LinearLayout>
+            android:textSize="@dimen/footerTxtSize" />
 
     <ListView
         android:id="@+id/listView"

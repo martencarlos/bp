@@ -11,11 +11,13 @@ public class BPDevice {
 
 
     Device device = null;
+    String name = null;
     Device.Frame[] frames = null;
     String description = null;
     float freq = 0;
     int channel = 0;
     int nBits = 0; //number of bits can be 8 or 12 [0-255] | [0-4095]
+    boolean digOutput = false;
     
 
     public BPDevice() {
@@ -106,6 +108,24 @@ public class BPDevice {
 	public void setnBits(int nBits) {
 		this.nBits = nBits;
 	}
+
+	public boolean isDigOutput() {
+		return digOutput;
+	}
+
+	public void setDigOutput(boolean digOutput) {
+		this.digOutput = digOutput;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	
     
     
 }

@@ -2,25 +2,39 @@ package ceu.marten.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
+import android.widget.ToggleButton;
+import ceu.marten.bplux.BPDevice;
 import ceu.marten.bplux.R;
 
-public class SettingsActivity extends Activity implements OnItemSelectedListener {
-
+public class SettingsActivity extends Activity implements
+		OnItemSelectedListener {
+	
+	BPDevice device;
+	int channel = 0;
+	int freq = 0;
+	int nbits = 8;
+	boolean digOutput = false;
+	boolean test = false;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings_layout);
 
+		/*initialize view components*/
 		SeekBar frequency = (SeekBar) findViewById(R.id.freq_seekbar);
 
 		frequency.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -29,6 +43,7 @@ public class SettingsActivity extends Activity implements OnItemSelectedListener
 					boolean fromUser) {
 				((TextView) findViewById(R.id.freq_view)).setText(String
 						.valueOf(progress + " Hz"));
+				freq=progress;
 			}
 
 			public void onStartTrackingTouch(SeekBar seekBar) {
@@ -36,13 +51,15 @@ public class SettingsActivity extends Activity implements OnItemSelectedListener
 			}
 
 			public void onStopTrackingTouch(SeekBar seekBar) {
-
+				
 			}
 		});
-		
+
 		Spinner spinner = (Spinner) findViewById(R.id.dev_channel);
 		spinner.setOnItemSelectedListener(this);
-
+		
+		/*initialize variables*/
+		device = new BPDevice();
 	}
 
 	@Override
@@ -51,34 +68,52 @@ public class SettingsActivity extends Activity implements OnItemSelectedListener
 		getMenuInflater().inflate(R.menu.settings_menu, menu);
 		return true;
 	}
-	
+
 	public void onRadioButtonClicked(View view) {
-	    boolean checked = ((RadioButton) view).isChecked();
-	   
-	    switch(view.getId()) {
-	        case R.id.radioBttn8:
-	            if (checked)
-	                // change bits on Device to 8
-	            break;
-	        case R.id.radioBttn12:
-	            if (checked)
-	            	// change bits on Device to 12
-	            break;
-	    }
-	}
-	
-	public void submitSettings(View view){
-		Toast.makeText(getApplicationContext(), "settings saved", Toast.LENGTH_SHORT).show();
-	}
-	
-	public void onItemSelected(AdapterView<?> parent, View view, 
-            int pos, long id) {
-        // An item was selected. You can retrieve the selected item using
-        // parent.getItemAtPosition(pos)
-    }
+		boolean checked = ((RadioButton) view).isChecked();
 
-    public void onNothingSelected(AdapterView<?> parent) {
-        // Another interface callback
-    }
+		switch (view.getId()) {
+		case R.id.radioBttn8:
+			if (checked)
+				nbits = 8;
+				break;
+		case R.id.radioBttn12:
+			if (checked)
+				nbits = 12;
+				break;
+		}
+	}
 
+	public void submitSettings(View view) {
+		
+		device.setName(((EditText)findViewById(R.id.dev_name)).getText().toString());
+		device.setChannel(channel);
+		device.setFreq(freq);
+		device.setnBits(nbits);
+		device.setDigOutput(digOutput);
+		test = ((ToggleButton)findViewById(R.id.tbTest)).isChecked();
+		
+		
+		Toast t;
+		t = Toast.makeText(getApplicationContext(), "settings saved",Toast.LENGTH_SHORT);
+		t.setGravity(Gravity.BOTTOM|Gravity.CENTER, 0, 0);
+		t.show();
+	}
+
+	public void onItemSelected(AdapterView<?> parent, View view, int pos,
+			long id) {
+		channel = pos+1;
+	}
+
+	public void onNothingSelected(AdapterView<?> parent) {
+		// Another interface callback
+	}
+
+	public void onCheckboxClicked(View view) {
+
+        if (((CheckBox) view).isChecked())
+        	digOutput = true;
+        else
+        	digOutput = false;
+    }
 }
