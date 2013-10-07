@@ -1,16 +1,20 @@
 package ceu.marten.bplux;
 
+import java.io.Serializable;
+
 import plux.android.bioplux.BPException;
 import plux.android.bioplux.Device;
+import android.os.Parcelable;
 import android.util.Log;
 
 /**
  * Created by martencarlos on 25/07/13.
  */
-public class BPDevice {
+public class BPDevice implements Serializable{
 
 
-    Device device = null;
+	private static final long serialVersionUID = 1L;
+	Device device = null;
     String name = null;
     Device.Frame[] frames = null;
     String description = null;
@@ -18,10 +22,11 @@ public class BPDevice {
     int channel = 0;
     int nBits = 0; //number of bits can be 8 or 12 [0-255] | [0-4095]
     boolean digOutput = false;
+    boolean isSimDevice = false;
     
 
     public BPDevice() {
-
+    	/*
         frames = new Device.Frame[1];
 
         //initialize frames array
@@ -36,6 +41,7 @@ public class BPDevice {
             e.printStackTrace();
             Log.d("BPexception", e.getMessage());
         }
+        */
 
     }
     
@@ -109,6 +115,22 @@ public class BPDevice {
 		this.nBits = nBits;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public boolean isSimDevice() {
+		return isSimDevice;
+	}
+
+	public void setisSimDevice(boolean simDevice) {
+		this.isSimDevice = simDevice;
+	}
+
 	public boolean isDigOutput() {
 		return digOutput;
 	}
@@ -117,12 +139,8 @@ public class BPDevice {
 		this.digOutput = digOutput;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public void setSimDevice(boolean isSimDevice) {
+		this.isSimDevice = isSimDevice;
 	}
 	
 	

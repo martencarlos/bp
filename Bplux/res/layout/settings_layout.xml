@@ -15,6 +15,7 @@
             android:id="@+id/header"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:background="@layout/header_gradient"
             android:paddingBottom="5dip"
             android:paddingTop="5dip" >
@@ -24,7 +25,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="100dip"
                 android:text="@string/settingsTitle"
                 android:textSize="30sp" />
             <!-- Logo Ends -->
@@ -134,7 +134,7 @@
                 android:padding="10dip" >
 
                 <TextView
-                    android:layout_width="fill_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:paddingTop="5dip"
