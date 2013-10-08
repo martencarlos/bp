@@ -4,8 +4,6 @@ import java.io.Serializable;
 
 import plux.android.bioplux.BPException;
 import plux.android.bioplux.Device;
-import android.os.Parcelable;
-import android.util.Log;
 
 /**
  * Created by martencarlos on 25/07/13.
@@ -23,6 +21,7 @@ public class BPDevice implements Serializable{
     int nBits = 0; //number of bits can be 8 or 12 [0-255] | [0-4095]
     boolean digOutput = false;
     boolean isSimDevice = false;
+    boolean isConnected = false;
     
 
     public BPDevice() {
@@ -142,8 +141,12 @@ public class BPDevice implements Serializable{
 	public void setSimDevice(boolean isSimDevice) {
 		this.isSimDevice = isSimDevice;
 	}
-	
-	
-    
-    
+
+	public boolean isConnected() {
+		return isConnected;
+	}
+
+	public void setConnected(boolean isConnected) {
+		this.isConnected = isConnected;
+	}
 }
