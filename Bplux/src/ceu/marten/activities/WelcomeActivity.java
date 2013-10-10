@@ -39,8 +39,6 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 	private ArrayList<BPDevice> devices = null;
 	private ListView devListView;
 	private Context welcomeActivityContext = this;
-	private boolean devicesLoaded = false;
-	DevicesListAdapter adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +46,10 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.welcome_layout);
 		Log.d("my tag", "paso por onCreate");
-		if (!devicesLoaded) {
-			loadDevicesFromInternalStorage();
-			setupDeviceDetailsDialog();
-			setupDevicesListView();
-			devicesLoaded = true;
-		}
+
+		loadDevicesFromInternalStorage();
+		setupDeviceDetailsDialog();
+		setupDevicesListView();
 
 	}
 
@@ -64,11 +60,14 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 		return true;
 	}
 
-	/*
-	 * @Override protected void onStop() { saveDevicesInAndroidMemory();
-	 * super.onStop(); }
-	 */
+	@Override
+	protected void onStop() {
+		saveDevicesInAndroidMemory();
+		super.onStop();
+	}
+
 	private void saveDevicesInAndroidMemory() {
+
 		String FILENAME = "devices";
 		ObjectOutputStream oos = null;
 		FileOutputStream fos = null;
@@ -76,7 +75,7 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 		try {
 			// File file = getBaseContext().getFileStreamPath("devices");
 			// if(file.exists())
-			fos = openFileOutput(FILENAME, Context.MODE_APPEND);
+			fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
 			// else
 			// fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
 		} catch (FileNotFoundException e) {
@@ -145,24 +144,16 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 		}
 	}
 
-	/*
-	 * @Override public void onDismiss(AbsListView listView, int[]
-	 * reverseSortedPositions) { for (int position : reverseSortedPositions) {
-	 * devices.remove(position); } Toast.makeText(this, "Removed positions: " +
-	 * Arrays.toString(reverseSortedPositions), Toast.LENGTH_SHORT).show(); }
-	 */
-
 	@Override
 	public void deleteItem(int position) {
-		
-		if(devices.size() != 1){
+
+		if (position != 0) {
 			devices.remove(position);
 			instantiateAdapter();
+		} else {
+			// ERROR borrado dispositivo en primera posicion de lista
 		}
-		else{
-			//borrar adapter
-		}
-			
+
 	}
 
 	private void setupDeviceDetailsDialog() {
@@ -190,9 +181,9 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 						.setText("channel "
 								+ Integer.toString(dev.getChannel()));
 				((TextView) dialog.findViewById(R.id.frequency)).setText(Float
-						.toString(dev.getFreq())+" Hz");
+						.toString(dev.getFreq()) + " Hz");
 				((TextView) dialog.findViewById(R.id.bitsSignal))
-						.setText(Integer.toString(dev.getnBits())+" bits");
+						.setText(Integer.toString(dev.getnBits()) + " bits");
 				if (dev.isDigOutput())
 					((TextView) dialog.findViewById(R.id.digOutput))
 							.setText("yes");
@@ -269,19 +260,19 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 		instantiateAdapter();
 
 	}
-	
-	public void disconnectOtherDeviceConnected(){
-			for (BPDevice dev:devices){
-				if(dev.isConnected())
-					dev.setConnected(false);
-			}
+
+	public void disconnectOtherDeviceConnected() {
+		for (BPDevice dev : devices) {
+			if (dev.isConnected())
+				dev.setConnected(false);
+		}
 	}
 
 	private void instantiateAdapter() {
-		
-		adapter = new DevicesListAdapter(this, devices);
+
+		DevicesListAdapter adapter = new DevicesListAdapter(this, devices);
 		ContextualUndoAdapter contextualAdapter = new ContextualUndoAdapter(
-				adapter, R.layout.undo_row, R.id.undo_row_undobutton,3000);
+				adapter, R.layout.undo_row, R.id.undo_row_undobutton, 3000);
 
 		contextualAdapter.setAbsListView(devListView);
 		devListView.setAdapter(contextualAdapter);
@@ -298,8 +289,6 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 		Intent intent = new Intent(this, SettingsActivity.class);
 		startActivityForResult(intent, 1);
 	}
-	
-	
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -307,7 +296,7 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 			if (resultCode == RESULT_OK) {
 				devices.add((BPDevice) data
 						.getSerializableExtra("deviceSettings"));
-				
+
 				instantiateAdapter();
 			}
 			if (resultCode == RESULT_CANCELED) {

@@ -2,16 +2,15 @@ package ceu.marten.activities;
 
 import java.util.ArrayList;
 
-import com.haarman.listviewanimations.ArrayAdapter;
-
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import ceu.marten.bplux.BPDevice;
 import ceu.marten.bplux.R;
+
+import com.haarman.listviewanimations.ArrayAdapter;
 
 public class DevicesListAdapter extends ArrayAdapter<BPDevice> {
 
