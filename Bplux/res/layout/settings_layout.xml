@@ -9,32 +9,21 @@
         android:layout_height="wrap_content"
         android:background="#fff" >
 
-        <!-- Header  Starts -->
-
         <LinearLayout
             android:id="@+id/header"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
             android:background="@layout/header_gradient"
+            android:gravity="center_horizontal"
             android:paddingBottom="5dip"
             android:paddingTop="5dip" >
-
-            <!-- Logo Start -->
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/settingsTitle"
                 android:textSize="30sp" />
-            <!-- Logo Ends -->
         </LinearLayout>
-
-        <!-- Header Ends -->
-    
-
-
-        <!-- Device Registration Form -->
 
         <LinearLayout
             android:id="@+id/regForm"
@@ -42,8 +31,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/header"
             android:orientation="vertical" >
-
-            <!-- Device Name field -->
 
             <LinearLayout
                 android:id="@+id/devName"
@@ -66,7 +53,6 @@
                     android:inputType="text"
                     android:singleLine="true" />
             </LinearLayout>
-            <!-- channel Label -->
 
             <LinearLayout
                 android:id="@+id/devChannel"
@@ -90,7 +76,6 @@
                     android:entries="@array/channelList"
                     android:prompt="@string/prompt" />
             </LinearLayout>
-            <!-- Frequency label -->
 
             <LinearLayout
                 android:id="@+id/frecReception"
@@ -122,8 +107,6 @@
                     android:text="@string/stFrecView"
                     android:textColor="#025f7c" />
             </LinearLayout>
-
-            <!-- signal bits label -->
 
             <LinearLayout
                 android:id="@+id/sigBits"
@@ -164,8 +147,6 @@
                         android:text="@string/stNbits12" />
                 </RadioGroup>
             </LinearLayout>
-            
-            <!-- digital output signal -->
 
             <LinearLayout
                 android:id="@+id/digOutputSig"
@@ -189,10 +170,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:onClick="onCheckboxClicked" />
-
-              </LinearLayout>
-              
-            <!-- Physical or Simulated device -->
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/devType"
@@ -214,25 +192,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dip"
-                    android:textOn="YES"
-                    android:textOff="NO" />
-
-              </LinearLayout>
-
-            <!-- Submit Button -->
+                    android:textOff="NO"
+                    android:textOn="YES" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btnRegister"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/stButton"
-                android:onClick="submitSettings" />
-            <!-- Link to Login Screen -->
+                android:onClick="submitSettings"
+                android:text="@string/stButton" />
         </LinearLayout>
-
-        <!-- Registration Form Ends -->
-        
-        <!-- Footer -->
 
         <TextView
             android:id="@+id/link_to_login"
@@ -243,7 +213,6 @@
             android:text="@string/footer"
             android:textColor="#025f7c"
             android:textSize="@dimen/footerTxtSize" />
-
     </RelativeLayout>
 
 </ScrollView>

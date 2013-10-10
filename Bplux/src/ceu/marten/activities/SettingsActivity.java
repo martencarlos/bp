@@ -81,22 +81,18 @@ public class SettingsActivity extends Activity implements
 		device.setisSimDevice(((ToggleButton) findViewById(R.id.tbTest))
 				.isChecked());
 
-		
-		
 		Intent returnIntent = new Intent();
 		returnIntent.putExtra("deviceSettings", device);
 		setResult(RESULT_OK, returnIntent);
 		finish();
 
 		Toast t;
-		t = Toast.makeText(getApplicationContext(), "device successfully created",
-				Toast.LENGTH_SHORT);
+		t = Toast.makeText(getApplicationContext(),
+				"device successfully created", Toast.LENGTH_SHORT);
 		t.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
 		t.show();
 	}
 
-	
-	
 	public void onRadioButtonClicked(View view) {
 		boolean checked = ((RadioButton) view).isChecked();
 

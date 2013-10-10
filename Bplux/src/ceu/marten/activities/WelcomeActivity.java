@@ -11,7 +11,6 @@ import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,7 +19,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AbsListView;
@@ -36,7 +34,7 @@ import ceu.marten.bplux.R;
 import com.haarman.listviewanimations.itemmanipulation.OnDismissCallback;
 import com.haarman.listviewanimations.itemmanipulation.SwipeDismissAdapter;
 
-public class WelcomeActivity extends Activity implements OnDismissCallback{
+public class WelcomeActivity extends Activity implements OnDismissCallback {
 
 	private Dialog dialog;
 	private ArrayList<BPDevice> devices = null;
@@ -49,7 +47,6 @@ public class WelcomeActivity extends Activity implements OnDismissCallback{
 		// requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.welcome_layout);
-		Log.d("my tag", "paso por onCreate");
 
 		loadDevicesFromInternalStorage();
 		setupDeviceDetailsDialog();
@@ -70,37 +67,20 @@ public class WelcomeActivity extends Activity implements OnDismissCallback{
 		super.onStop();
 	}
 
-	private void saveDevicesInAndroidMemory() {
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-		String FILENAME = "devices";
-		ObjectOutputStream oos = null;
-		FileOutputStream fos = null;
+		if (requestCode == 1) {
+			if (resultCode == RESULT_OK) {
 
-		try {
-			// File file = getBaseContext().getFileStreamPath("devices");
-			// if(file.exists())
-			fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-			// else
-			// fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			oos = new ObjectOutputStream(fos);
-			for (BPDevice device : devices) {
-				oos.writeObject(device);
+				baseAdapter.add((BPDevice) data
+						.getSerializableExtra("deviceSettings"));
+				baseAdapter.notifyDataSetChanged();
+				devices.add((BPDevice) data
+						.getSerializableExtra("deviceSettings"));
 			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			oos.close();
-			fos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+			if (resultCode == RESULT_CANCELED) {
+				// Write your code if there's no result
+			}
 		}
 	}
 
@@ -133,10 +113,10 @@ public class WelcomeActivity extends Activity implements OnDismissCallback{
 				} catch (OptionalDataException e) {
 					e.printStackTrace();
 				} catch (ClassNotFoundException e) {
-					
+
 					e.printStackTrace();
 				} catch (IOException e) {
-					
+
 					e.printStackTrace();
 				}
 		}
@@ -197,19 +177,20 @@ public class WelcomeActivity extends Activity implements OnDismissCallback{
 
 				AlertDialog.Builder builder = new AlertDialog.Builder(
 						welcomeActivityContext);
-				builder.setTitle("Do you want to connect this device?");
 
 				if (dev.isConnected()) {
+					builder.setTitle("Do you want to disconnect this device?");
 					builder.setPositiveButton("disconnect",
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
 									devices.get(position).setConnected(false);
-									baseAdapter.remove(position);
-									baseAdapter.add(devices.get(position));
+									modifyAdapterDeviceConnectedStatus(devices
+											.get(position));
 								}
 							});
 				} else {
+					builder.setTitle("Do you want to connect this device?");
 					builder.setPositiveButton("connect",
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
@@ -217,8 +198,9 @@ public class WelcomeActivity extends Activity implements OnDismissCallback{
 									disconnectOtherDeviceConnected();
 									devices.get(position).setConnected(true);
 									baseAdapter.remove(position);
-									baseAdapter.add(devices.get(position));
-
+									baseAdapter.add(position,
+											devices.get(position));
+									baseAdapter.notifyDataSetChanged();
 								}
 							});
 				}
@@ -239,25 +221,74 @@ public class WelcomeActivity extends Activity implements OnDismissCallback{
 		devListView.setOnItemLongClickListener(longPressListener);
 		devListView.setOnItemClickListener(onListItemClickedListener);
 		baseAdapter = new DevicesListAdapter(this, devices);
-		
-		//setContextualUndoAdapterWithTimer();
+
 		setSwipeToDismissAdapter();
 	}
 
-	public void disconnectOtherDeviceConnected() {
-		for (BPDevice dev : devices) {
-			if (dev.isConnected())
-				dev.setConnected(false);
+	private void saveDevicesInAndroidMemory() {
+
+		String FILENAME = "devices";
+		ObjectOutputStream oos = null;
+		FileOutputStream fos = null;
+
+		try {
+			// File file = getBaseContext().getFileStreamPath("devices");
+			// if(file.exists())
+			fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+			// else
+			// fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			oos = new ObjectOutputStream(fos);
+			for (BPDevice device : devices) {
+				oos.writeObject(device);
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			oos.close();
+			fos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	private void setSwipeToDismissAdapter(){
-		 SwipeDismissAdapter swipeAdapter = new SwipeDismissAdapter(baseAdapter, this);
-		 swipeAdapter.setAbsListView(devListView);
-		 devListView.setAdapter(baseAdapter);
+	private void setSwipeToDismissAdapter() {
+		SwipeDismissAdapter swipeAdapter = new SwipeDismissAdapter(baseAdapter,
+				this);
+		swipeAdapter.setAbsListView(devListView);
+		devListView.setAdapter(baseAdapter);
 	}
-	
-	
+
+	@Override
+	public void onDismiss(AbsListView listView, int[] reverseSortedPositions) {
+		for (int position : reverseSortedPositions) {
+			baseAdapter.remove(position);
+			devices.remove(position);
+		}
+		Toast.makeText(this, "device removed ", Toast.LENGTH_SHORT).show();
+	}
+
+	private void disconnectOtherDeviceConnected() {
+		for (BPDevice dev : devices) {
+			if (dev.isConnected()) {
+				dev.setConnected(false);
+				modifyAdapterDeviceConnectedStatus(dev);
+			}
+		}
+	}
+
+	private void modifyAdapterDeviceConnectedStatus(BPDevice dev) {
+		baseAdapter.remove(devices.indexOf(dev));
+		baseAdapter.add(devices.indexOf(dev), dev);
+		baseAdapter.notifyDataSetChanged();
+	}
 
 	/* BUTTON EVENTS */
 	public void onClickedShow(View v) {
@@ -268,31 +299,6 @@ public class WelcomeActivity extends Activity implements OnDismissCallback{
 	public void onClickedNewDevice(View v) {
 		Intent intent = new Intent(this, SettingsActivity.class);
 		startActivityForResult(intent, 1);
-	}
-
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-		if (requestCode == 1) {
-			if (resultCode == RESULT_OK) {
-				
-				baseAdapter.add((BPDevice) data
-						.getSerializableExtra("deviceSettings"));
-				baseAdapter.notifyDataSetChanged();
-				devices.add((BPDevice) data
-						.getSerializableExtra("deviceSettings"));
-			}
-			if (resultCode == RESULT_CANCELED) {
-				// Write your code if there's no result
-			}
-		}
-	}
-	@Override
-	public void onDismiss(AbsListView listView, int[] reverseSortedPositions) {
-		for (int position : reverseSortedPositions) {
-			baseAdapter.remove(position);
-			devices.remove(position);
-		}
-		Toast.makeText(this, "device removed ", Toast.LENGTH_SHORT).show();
 	}
 
 }

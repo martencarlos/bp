@@ -1,130 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:background="#fff" >
+    android:layout_height="fill_parent"
+    android:fillViewport="true" >
 
-    <LinearLayout
-        android:id="@+id/lyHeader"
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@layout/header_gradient"
-        android:paddingBottom="5dip"
-        android:paddingTop="5dip" >
+        android:background="#fff" >
 
-        <ImageView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/lyHeader"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="120dip"
-            android:contentDescription="@string/imageDesc"
-            android:src="@drawable/pluxlogo" />
-    </LinearLayout>
+            android:background="@layout/header_gradient"
+            android:paddingBottom="5dip"
+            android:paddingTop="5dip" >
 
-    <LinearLayout
-        android:id="@+id/lyTitle"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/lyHeader"
-        android:orientation="vertical" >
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/imageDesc"
+                android:src="@drawable/pluxlogo" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lyTitle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/lyHeader"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/txtTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:text="@string/wl_title"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:id="@+id/txtDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="15dp"
+                android:text="@string/wl_description"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lySensor"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/lyTitle"
+            android:layout_marginTop="50dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/txtSensor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="@string/wl_pickSensor"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <Spinner
+                android:id="@+id/spSensor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:entries="@array/sensors" />
+
+            <Button
+                android:id="@+id/bttnShow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onClickedShow"
+                android:text="@string/wl_startSessionBttn" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lyDevHeader"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/lySensor"
+            android:layout_marginTop="40dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/txtDevices"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/wl_devicesTitle"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <Button
+                android:id="@+id/bttnCreateDevice"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="33dp"
+                android:layout_marginLeft="10dp"
+                android:onClick="onClickedNewDevice"
+                android:text="@string/wl_newDeviceBttn" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/lvDevices"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/lyDevHeader"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:gravity="center_horizontal"
+            android:headerDividersEnabled="true" >
+        </ListView>
 
         <TextView
-            android:id="@+id/txtTitle"
-            android:layout_width="wrap_content"
+            android:id="@+id/footer"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:text="Welcome to Bioplux"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:text="@string/footer"
+            android:textColor="#025f7c"
+            android:textSize="@dimen/footerTxtSize" />
+    </RelativeLayout>
 
-        <TextView
-            android:id="@+id/txtDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="15dp"
-            android:text="Plux is an innovative system for sports, medicine and research that through biosignal sensors you can obtain information from the muscles, which will get better results in physical work."
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/lySensor"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/lyTitle"
-        android:layout_marginTop="50dp"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/txtSensor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:text="pick a sensor"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <Spinner
-            android:id="@+id/spSensor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:entries="@array/sensors" />
-
-        <Button
-            android:id="@+id/bttnShow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="start session"
-            android:onClick="onClickedShow" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/lyDevHeader"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/lySensor"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="40dp"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/txtDevices"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Devices"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <Button
-            android:id="@+id/bttnCreateDevice"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="33dp"
-            android:layout_marginLeft="10dp"
-            android:text="new"
-            android:onClick="onClickedNewDevice" />
-        
-    </LinearLayout>
-    <ListView
-        android:id="@+id/lvDevices"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/lyDevHeader"
-        android:layout_marginBottom="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:gravity="center_horizontal"
-        android:headerDividersEnabled="true" >
-
-    </ListView>
-
-    <TextView
-        android:id="@+id/footer"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center"
-        android:text="@string/footer"
-        android:textColor="#025f7c"
-        android:textSize="@dimen/footerTxtSize" />
-
-</RelativeLayout>
+</ScrollView>

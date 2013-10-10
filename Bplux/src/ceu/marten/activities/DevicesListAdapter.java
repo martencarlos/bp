@@ -23,16 +23,17 @@ public class DevicesListAdapter extends ArrayAdapter<BPDevice> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		
+
 		ViewGroup rowView = (ViewGroup) convertView;
 		if (rowView == null) {
-			rowView = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.device_list_item, parent, false);
+			rowView = (ViewGroup) LayoutInflater.from(context).inflate(
+					R.layout.device_list_item, parent, false);
 		}
-		
+
 		TextView name = (TextView) rowView.findViewById(R.id.dli_name);
 		TextView status = (TextView) rowView.findViewById(R.id.dli_status);
 		BPDevice dev = getItem(position);
-		
+
 		name.setText(dev.getName());
 		if (dev.isConnected()) {
 			status.setText("connected");

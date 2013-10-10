@@ -72,17 +72,15 @@ public class GraphActivity extends Activity {
 	}
 
 	public void startStopGraph(View view) {
-		
-		
+
 		if (bttnOn) {
 			graphHandler.removeCallbacks(runnable);
 			bttn.setText("start");
-			bttnOn=false;
-		}
-		else{
+			bttnOn = false;
+		} else {
 			runnable.run();
 			bttn.setText("stop");
-			bttnOn= true;
+			bttnOn = true;
 		}
 
 	}

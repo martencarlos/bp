@@ -118,6 +118,12 @@ public final class R {
         public static final int stSimDev=0x7f050009;
         public static final int taptoundo=0x7f050014;
         public static final int title_activity_device_details=0x7f050013;
+        public static final int wl_description=0x7f050017;
+        public static final int wl_devicesTitle=0x7f05001a;
+        public static final int wl_newDeviceBttn=0x7f05001b;
+        public static final int wl_pickSensor=0x7f050018;
+        public static final int wl_startSessionBttn=0x7f050019;
+        public static final int wl_title=0x7f050016;
     }
     public static final class style {
         /** 
