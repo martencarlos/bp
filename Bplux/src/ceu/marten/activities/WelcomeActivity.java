@@ -49,9 +49,11 @@ public class WelcomeActivity extends Activity implements OnDismissCallback {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.welcome_layout);
 		
+		
 		loadDevicesFromInternalStorage();
 		setupDeviceDetailsDialog();
 		setupDevicesListView();
+		disconnectOtherDeviceConnected();
 
 	}
 
