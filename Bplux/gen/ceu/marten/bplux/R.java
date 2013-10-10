@@ -37,11 +37,11 @@ public final class R {
     }
     public static final class id {
         public static final int BttnStartStop=0x7f0a000a;
-        public static final int action_settings=0x7f0a002b;
+        public static final int action_settings=0x7f0a0029;
         public static final int bitsSignal=0x7f0a0003;
         public static final int btnRegister=0x7f0a001a;
-        public static final int bttnCreateDevice=0x7f0a0028;
-        public static final int bttnShow=0x7f0a0025;
+        public static final int bttnCreateDevice=0x7f0a0026;
+        public static final int bttnShow=0x7f0a0023;
         public static final int channel=0x7f0a0001;
         public static final int chbxDigOutputSignal=0x7f0a0018;
         public static final int devChannel=0x7f0a000e;
@@ -53,7 +53,7 @@ public final class R {
         public static final int digOutputSig=0x7f0a0017;
         public static final int dli_name=0x7f0a0006;
         public static final int dli_status=0x7f0a0007;
-        public static final int footer=0x7f0a002a;
+        public static final int footer=0x7f0a0028;
         public static final int frecReception=0x7f0a0010;
         public static final int freq_seekbar=0x7f0a0011;
         public static final int freq_view=0x7f0a0012;
@@ -61,36 +61,32 @@ public final class R {
         public static final int graph=0x7f0a0009;
         public static final int header=0x7f0a0008;
         public static final int link_to_login=0x7f0a001b;
-        public static final int lvDevices=0x7f0a0029;
-        public static final int lyDevHeader=0x7f0a0026;
-        public static final int lyHeader=0x7f0a001e;
-        public static final int lySensor=0x7f0a0022;
-        public static final int lyTitle=0x7f0a001f;
-        public static final int menu_settings=0x7f0a002c;
+        public static final int lvDevices=0x7f0a0027;
+        public static final int lyDevHeader=0x7f0a0024;
+        public static final int lyHeader=0x7f0a001c;
+        public static final int lySensor=0x7f0a0020;
+        public static final int lyTitle=0x7f0a001d;
+        public static final int menu_settings=0x7f0a002a;
         public static final int name=0x7f0a0000;
         public static final int radioBttn12=0x7f0a0016;
         public static final int radioBttn8=0x7f0a0015;
         public static final int radioGroup1=0x7f0a0014;
         public static final int regForm=0x7f0a000b;
         public static final int sigBits=0x7f0a0013;
-        public static final int spSensor=0x7f0a0024;
+        public static final int spSensor=0x7f0a0022;
         public static final int tbTest=0x7f0a0019;
-        public static final int txtDescription=0x7f0a0021;
-        public static final int txtDevices=0x7f0a0027;
-        public static final int txtSensor=0x7f0a0023;
-        public static final int txtTitle=0x7f0a0020;
-        public static final int undo_row_texttv=0x7f0a001c;
-        public static final int undo_row_undobutton=0x7f0a001d;
+        public static final int txtDescription=0x7f0a001f;
+        public static final int txtDevices=0x7f0a0025;
+        public static final int txtSensor=0x7f0a0021;
+        public static final int txtTitle=0x7f0a001e;
     }
     public static final class layout {
         public static final int activity_device_details=0x7f030000;
         public static final int device_list_item=0x7f030001;
         public static final int graph_layout=0x7f030002;
         public static final int header_gradient=0x7f030003;
-        public static final int list_row=0x7f030004;
-        public static final int settings_layout=0x7f030005;
-        public static final int undo_row=0x7f030006;
-        public static final int welcome_layout=0x7f030007;
+        public static final int settings_layout=0x7f030004;
+        public static final int welcome_layout=0x7f030005;
     }
     public static final class menu {
         public static final int graph_menu=0x7f090000;

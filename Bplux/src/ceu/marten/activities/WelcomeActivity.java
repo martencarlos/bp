@@ -11,6 +11,7 @@ import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -22,23 +23,26 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import ceu.marten.bplux.BPDevice;
 import ceu.marten.bplux.R;
 
-import com.haarman.listviewanimations.itemmanipulation.contextualundo.ContextualUndoAdapter;
-import com.haarman.listviewanimations.itemmanipulation.contextualundo.ContextualUndoAdapter.DeleteItemCallback;
+import com.haarman.listviewanimations.itemmanipulation.OnDismissCallback;
+import com.haarman.listviewanimations.itemmanipulation.SwipeDismissAdapter;
 
-public class WelcomeActivity extends Activity implements DeleteItemCallback {
+public class WelcomeActivity extends Activity implements OnDismissCallback{
 
 	private Dialog dialog;
 	private ArrayList<BPDevice> devices = null;
 	private ListView devListView;
 	private Context welcomeActivityContext = this;
+	DevicesListAdapter baseAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +83,6 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 			// else
 			// fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -90,7 +93,6 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -98,7 +100,6 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 			oos.close();
 			fos.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -119,10 +120,8 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 			try {
 				ois = new ObjectInputStream(fis);
 			} catch (StreamCorruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -132,28 +131,15 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 				} catch (EOFException e) {
 					break;
 				} catch (OptionalDataException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
 		}
-	}
-
-	@Override
-	public void deleteItem(int position) {
-
-		if (position != 0) {
-			devices.remove(position);
-			instantiateAdapter();
-		} else {
-			// ERROR borrado dispositivo en primera posicion de lista
-		}
-
 	}
 
 	private void setupDeviceDetailsDialog() {
@@ -219,7 +205,8 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 								public void onClick(DialogInterface dialog,
 										int id) {
 									devices.get(position).setConnected(false);
-									instantiateAdapter();
+									baseAdapter.remove(position);
+									baseAdapter.add(devices.get(position));
 								}
 							});
 				} else {
@@ -229,7 +216,8 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 										int id) {
 									disconnectOtherDeviceConnected();
 									devices.get(position).setConnected(true);
-									instantiateAdapter();
+									baseAdapter.remove(position);
+									baseAdapter.add(devices.get(position));
 
 								}
 							});
@@ -250,15 +238,10 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 		devListView = (ListView) findViewById(R.id.lvDevices);
 		devListView.setOnItemLongClickListener(longPressListener);
 		devListView.setOnItemClickListener(onListItemClickedListener);
-
-		/*
-		 * SWIPE ADAPTER SwipeDismissAdapter swipeAdapter = new
-		 * SwipeDismissAdapter(adapter, this);
-		 * swipeAdapter.setAbsListView(devListView);
-		 * devListView.setAdapter(adapter);
-		 */
-		instantiateAdapter();
-
+		baseAdapter = new DevicesListAdapter(this, devices);
+		
+		//setContextualUndoAdapterWithTimer();
+		setSwipeToDismissAdapter();
 	}
 
 	public void disconnectOtherDeviceConnected() {
@@ -268,16 +251,13 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 		}
 	}
 
-	private void instantiateAdapter() {
-
-		DevicesListAdapter adapter = new DevicesListAdapter(this, devices);
-		ContextualUndoAdapter contextualAdapter = new ContextualUndoAdapter(
-				adapter, R.layout.undo_row, R.id.undo_row_undobutton, 3000);
-
-		contextualAdapter.setAbsListView(devListView);
-		devListView.setAdapter(contextualAdapter);
-		contextualAdapter.setDeleteItemCallback(this);
+	private void setSwipeToDismissAdapter(){
+		 SwipeDismissAdapter swipeAdapter = new SwipeDismissAdapter(baseAdapter, this);
+		 swipeAdapter.setAbsListView(devListView);
+		 devListView.setAdapter(baseAdapter);
 	}
+	
+	
 
 	/* BUTTON EVENTS */
 	public void onClickedShow(View v) {
@@ -294,15 +274,25 @@ public class WelcomeActivity extends Activity implements DeleteItemCallback {
 
 		if (requestCode == 1) {
 			if (resultCode == RESULT_OK) {
+				
+				baseAdapter.add((BPDevice) data
+						.getSerializableExtra("deviceSettings"));
+				baseAdapter.notifyDataSetChanged();
 				devices.add((BPDevice) data
 						.getSerializableExtra("deviceSettings"));
-
-				instantiateAdapter();
 			}
 			if (resultCode == RESULT_CANCELED) {
 				// Write your code if there's no result
 			}
 		}
+	}
+	@Override
+	public void onDismiss(AbsListView listView, int[] reverseSortedPositions) {
+		for (int position : reverseSortedPositions) {
+			baseAdapter.remove(position);
+			devices.remove(position);
+		}
+		Toast.makeText(this, "device removed ", Toast.LENGTH_SHORT).show();
 	}
 
 }
