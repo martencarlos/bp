@@ -40,14 +40,15 @@ public class WelcomeActivity extends Activity implements OnDismissCallback {
 	private ArrayList<BPDevice> devices = null;
 	private ListView devListView;
 	private Context welcomeActivityContext = this;
-	DevicesListAdapter baseAdapter;
+	private DevicesListAdapter baseAdapter;
+	private BPDevice CurrentConnectedDevice = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.welcome_layout);
-
+		
 		loadDevicesFromInternalStorage();
 		setupDeviceDetailsDialog();
 		setupDevicesListView();
@@ -184,9 +185,8 @@ public class WelcomeActivity extends Activity implements OnDismissCallback {
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
-									devices.get(position).setConnected(false);
-									modifyAdapterDeviceConnectedStatus(devices
-											.get(position));
+									
+									disconnectDevice(devices.get(position));
 								}
 							});
 				} else {
@@ -195,12 +195,7 @@ public class WelcomeActivity extends Activity implements OnDismissCallback {
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
-									disconnectOtherDeviceConnected();
-									devices.get(position).setConnected(true);
-									baseAdapter.remove(position);
-									baseAdapter.add(position,
-											devices.get(position));
-									baseAdapter.notifyDataSetChanged();
+									connectDevice(devices.get(position));
 								}
 							});
 				}
@@ -232,11 +227,7 @@ public class WelcomeActivity extends Activity implements OnDismissCallback {
 		FileOutputStream fos = null;
 
 		try {
-			// File file = getBaseContext().getFileStreamPath("devices");
-			// if(file.exists())
 			fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-			// else
-			// fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -284,6 +275,19 @@ public class WelcomeActivity extends Activity implements OnDismissCallback {
 		}
 	}
 
+	private void connectDevice(BPDevice dev){
+		disconnectOtherDeviceConnected();
+		dev.setConnected(true);
+		modifyAdapterDeviceConnectedStatus(dev);
+		CurrentConnectedDevice = dev;
+	}
+	
+	private void disconnectDevice(BPDevice dev){
+		dev.setConnected(false);	
+		CurrentConnectedDevice = null;
+		modifyAdapterDeviceConnectedStatus(dev);
+	}
+	
 	private void modifyAdapterDeviceConnectedStatus(BPDevice dev) {
 		baseAdapter.remove(devices.indexOf(dev));
 		baseAdapter.add(devices.indexOf(dev), dev);
@@ -291,9 +295,16 @@ public class WelcomeActivity extends Activity implements OnDismissCallback {
 	}
 
 	/* BUTTON EVENTS */
-	public void onClickedShow(View v) {
-		Intent intent = new Intent(WelcomeActivity.this, GraphActivity.class);
-		startActivity(intent);
+	public void onClickedStartSession(View v) {
+		if(CurrentConnectedDevice == null)
+			Toast.makeText(this, "please connect a device", Toast.LENGTH_SHORT).show();
+		else{
+			Intent intent = new Intent(WelcomeActivity.this, GraphActivity.class);
+			intent.putExtra("connectedDevice", CurrentConnectedDevice);
+			startActivity(intent);
+			
+		}
+		
 	}
 
 	public void onClickedNewDevice(View v) {
