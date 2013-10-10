@@ -37,6 +37,7 @@
     </string-array>
 
     <string name="title_activity_device_details">DeviceDetailsActivity</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="taptoundo">Tap to undo</string>
+    <string name="itemdeleted">Item deleted</string>
 
 </resources>

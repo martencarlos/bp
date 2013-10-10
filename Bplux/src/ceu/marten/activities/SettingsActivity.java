@@ -1,13 +1,6 @@
 package ceu.marten.activities;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -88,40 +81,12 @@ public class SettingsActivity extends Activity implements
 		device.setisSimDevice(((ToggleButton) findViewById(R.id.tbTest))
 				.isChecked());
 
-		String FILENAME = "devices";
-		
-		ObjectOutputStream oos = null;
-		FileOutputStream fos = null;
 		
 		
-		try {
-			File file = getBaseContext().getFileStreamPath("devices");
-			if(file.exists())
-				fos = openFileOutput(FILENAME, Context.MODE_APPEND);
-			else
-				fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		try {
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(device);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		try {
-			oos.close();
-			fos.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Intent intent = new Intent(this, WelcomeActivity.class);
-		startActivity(intent);
+		Intent returnIntent = new Intent();
+		returnIntent.putExtra("deviceSettings", device);
+		setResult(RESULT_OK, returnIntent);
+		finish();
 
 		Toast t;
 		t = Toast.makeText(getApplicationContext(), "device successfully created",
@@ -130,6 +95,8 @@ public class SettingsActivity extends Activity implements
 		t.show();
 	}
 
+	
+	
 	public void onRadioButtonClicked(View view) {
 		boolean checked = ((RadioButton) view).isChecked();
 
