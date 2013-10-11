@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -45,7 +46,7 @@ public class WelcomeActivity extends Activity implements OnDismissCallback {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// requestWindowFeature(Window.FEATURE_NO_TITLE);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.welcome_layout);
 		
@@ -213,12 +214,12 @@ public class WelcomeActivity extends Activity implements OnDismissCallback {
 
 			}
 		};
-
 		devListView = (ListView) findViewById(R.id.lvDevices);
 		devListView.setOnItemLongClickListener(longPressListener);
 		devListView.setOnItemClickListener(onListItemClickedListener);
+		
+		/** SETTING UP THE ADAPTERS */
 		baseAdapter = new DevicesListAdapter(this, devices);
-
 		setSwipeToDismissAdapter();
 	}
 

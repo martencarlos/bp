@@ -19,6 +19,7 @@ public class BPDevice implements Serializable {
 	int channel = 0;
 	int nBits = 0; // number of bits can be 8 or 12 [0-255] | [0-4095]
 	boolean digOutput = false;
+	
 	boolean isSimDevice = false;
 	boolean isConnected = false;
 
