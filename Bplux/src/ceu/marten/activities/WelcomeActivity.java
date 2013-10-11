@@ -77,7 +77,7 @@ public class WelcomeActivity extends Activity implements OnDismissCallback {
 
 				baseAdapter.add((BPDevice) data
 						.getSerializableExtra("deviceSettings"));
-				baseAdapter.notifyDataSetChanged();
+				
 				devices.add((BPDevice) data
 						.getSerializableExtra("deviceSettings"));
 			}
