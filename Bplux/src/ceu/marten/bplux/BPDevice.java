@@ -11,17 +11,18 @@ import plux.android.bioplux.Device;
 public class BPDevice implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	Device device = null;
-	String name = null;
-	Device.Frame[] frames = null;
-	String description = null;
-	float freq = 0;
-	int channel = 0;
-	int nBits = 0; // number of bits can be 8 or 12 [0-255] | [0-4095]
-	boolean digOutput = false;
+	private Device connection = null;
+	private String name = null;
+	private Device.Frame[] frames = null;
+	private String description = null;
+	private float freq = 0;
+	private int channel = 0;
+	private int nBits = 0; // number of bits can be 8 or 12 [0-255] | [0-4095]
+	private boolean digOutput = false;
 	
-	boolean isSimDevice = false;
-	boolean isConnected = false;
+	private Session[] sessions;
+	private boolean isSimDevice = false;
+	private boolean isConnected = false;
 
 	public BPDevice() {
 		/*
@@ -41,7 +42,7 @@ public class BPDevice implements Serializable {
 	@SuppressWarnings("unused")
 	private double getFrame(int n) {
 		try {
-			device.GetFrames(1, frames);
+			connection.GetFrames(1, frames);
 		} catch (BPException e) {
 			e.printStackTrace();
 		}
@@ -51,7 +52,7 @@ public class BPDevice implements Serializable {
 
 	public void beginAcq() {
 		try {
-			device.BeginAcq();
+			connection.BeginAcq();
 		} catch (BPException e) {
 			e.printStackTrace();
 		}
@@ -67,12 +68,12 @@ public class BPDevice implements Serializable {
 		this.frames = frames;
 	}
 
-	public Device getDevice() {
-		return device;
+	public Device getConnection() {
+		return connection;
 	}
 
-	public void setDevice(Device device) {
-		this.device = device;
+	public void setConnection(Device connection) {
+		this.connection = connection;
 	}
 
 	public String getDescription() {
@@ -141,5 +142,13 @@ public class BPDevice implements Serializable {
 
 	public void setConnected(boolean isConnected) {
 		this.isConnected = isConnected;
+	}
+
+	public Session[] getSessions() {
+		return sessions;
+	}
+
+	public void setSessions(Session[] sessions) {
+		this.sessions = sessions;
 	}
 }

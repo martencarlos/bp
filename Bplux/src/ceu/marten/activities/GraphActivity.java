@@ -24,7 +24,6 @@ public class GraphActivity extends Activity {
 	private HRSimulator hrsim;
 	private boolean bttnOn;
 	private Button bttn;
-	private BPDevice device;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,15 +31,15 @@ public class GraphActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.graph_layout);
 		
-		device = new BPDevice();
-		device = ((BPDevice) getIntent()
-				.getSerializableExtra("connectedDevice"));
-		((TextView) findViewById(R.id.connected_device_name)).setText(device.getName());
+		setupGraph();
+		setupButtons();
+		setupDetails();
 		
 		
-		bttn = (Button) findViewById(R.id.BttnStartStop);
-		bttn.setText("Start");
-		bttnOn = false;
+	}
+	
+	
+	private void setupGraph(){
 		graphHandler = new Handler();
 		runnable = null;
 		HRGraph = new HRGraph(this);
@@ -55,12 +54,19 @@ public class GraphActivity extends Activity {
 		layout.addView(HRGraph.getGraphView());
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-
+	private void setupButtons(){
+		bttn = (Button) findViewById(R.id.BttnStartStop);
+		bttn.setText("Start");
+		bttnOn = false;
 	}
-
+	
+	private void setupDetails(){
+		BPDevice device = ((BPDevice) getIntent()
+				.getSerializableExtra("connectedDevice"));
+		((TextView) findViewById(R.id.gl_currentConnectedDevice)).setText("current connected device: "+device
+				.getName());
+	}
+	
 	private void executeGraphThread() {
 		HRGraph.setxValue(HRGraph.getxValue() + 1.0d);
 		HRGraph.getSerie().appendData(
@@ -82,7 +88,7 @@ public class GraphActivity extends Activity {
 		return true;
 	}
 
-	public void startStopGraph(View view) {
+	public void onClickedStartStopGraph(View view) {
 
 		if (bttnOn) {
 			graphHandler.removeCallbacks(runnable);

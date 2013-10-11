@@ -64,6 +64,12 @@ public class WelcomeActivity extends Activity implements OnDismissCallback {
 		getMenuInflater().inflate(R.menu.welcome_menu, menu);
 		return true;
 	}
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		CurrentConnectedDevice = null;
+		disconnectOtherDeviceConnected();
+	}
 
 	@Override
 	protected void onStop() {
