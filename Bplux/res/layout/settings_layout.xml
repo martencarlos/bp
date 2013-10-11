@@ -196,16 +196,34 @@
                     android:textOn="YES" />
             </LinearLayout>
 
-            <Button
-                android:id="@+id/btnRegister"
+            <LinearLayout
+                android:id="@+id/sl_buttons"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:onClick="submitSettings"
-                android:text="@string/stButton" />
+                android:layout_weight="0.60"
+                android:orientation="horizontal"
+                android:padding="10dip" >
+
+                <Button
+                    android:id="@+id/sl_bttnCancel"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="onClickedCancel"
+                    android:text="@string/st_bttnTxt_cancel" />
+
+                <Button
+                    android:id="@+id/btnRegister"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="onClickedSubmit"
+                    android:text="@string/stButton" />
+            </LinearLayout>
         </LinearLayout>
 
         <TextView
-            android:id="@+id/link_to_login"
+            android:id="@+id/footer"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"

@@ -72,7 +72,7 @@ public class SettingsActivity extends Activity implements
 		return true;
 	}
 
-	public void submitSettings(View view) {
+	public void onClickedSubmit(View view) {
 
 		device.setName(((EditText) findViewById(R.id.dev_name)).getText()
 				.toString());
@@ -93,6 +93,10 @@ public class SettingsActivity extends Activity implements
 				"device successfully created", Toast.LENGTH_SHORT);
 		t.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
 		t.show();
+	}
+
+	public void onClickedCancel(View view) {
+		finish();
 	}
 
 	public void onRadioButtonClicked(View view) {

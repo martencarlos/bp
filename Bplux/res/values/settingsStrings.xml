@@ -10,5 +10,6 @@
     <string name="stDigSigOut">usar señal de salida digital</string>
     <string name="stButton">Submit</string>
     <string name="stSimDev">use simulated device</string>
+    <string name="st_bttnTxt_cancel">Cancel</string>
     
 </resources>
