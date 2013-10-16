@@ -2,6 +2,8 @@ package ceu.marten.bplux;
 
 import java.io.Serializable;
 
+import android.util.Log;
+
 import plux.android.bioplux.BPException;
 import plux.android.bioplux.Device;
 
@@ -11,43 +13,49 @@ import plux.android.bioplux.Device;
 public class BPDevice implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private Device connection = null;
 	private String name = null;
-	private Device.Frame[] frames = null;
 	private String description = null;
 	private float freq = 0;
 	private int channel = 0;
+	private Device connection = null;
+	private Device.Frame[] frames = null;
 	private int nBits = 0; // number of bits can be 8 or 12 [0-255] | [0-4095]
 	private boolean digOutput = false;
 	
+
 	private Session[] sessions;
 	private boolean isSimDevice = false;
 	private boolean isConnected = false;
 
 	public BPDevice() {
-		/*
-		 * frames = new Device.Frame[1];
-		 * 
-		 * //initialize frames array for (int i = 0; i < frames.length; i++) {
-		 * frames[i] = new Device.Frame(); }
-		 * 
-		 * //bioPlux initialization try { device =
-		 * Device.Create("test");//Device mac addr 00:07:80:4C:2A:FB } catch
-		 * (BPException e) { e.printStackTrace(); Log.d("BPexception",
-		 * e.getMessage()); }
-		 */
-
 	}
 
-	@SuppressWarnings("unused")
-	private double getFrame(int n) {
+	public BPDevice(String address){
+		
+		  frames = new Device.Frame[1];
+		  
+		  //initialize frames array 
+		  for (int i = 0; i < frames.length; i++) {
+			  frames[i] = new Device.Frame(); }
+		  
+		  //bioPlux initialization 
+		  try { 
+			  Log.d("devices", "entra: ");
+			  connection = Device.Create("test");//Device mac addr 00:07:80:4C:2A:FB
+		     Log.d("devices", "connection: "+connection.toString());
+		  } catch(BPException e) { 
+			  e.printStackTrace(); 
+			  Log.d("BPexception", e.getMessage()); }
+	}
+
+	public double getFrame(int channel) {
 		try {
 			connection.GetFrames(1, frames);
 		} catch (BPException e) {
 			e.printStackTrace();
 		}
 
-		return (double) frames[0].an_in[n];
+		return (double) frames[0].an_in[channel];
 	}
 
 	public void beginAcq() {

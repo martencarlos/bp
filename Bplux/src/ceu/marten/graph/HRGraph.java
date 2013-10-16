@@ -1,4 +1,4 @@
-package ceu.marten.bplux;
+package ceu.marten.graph;
 
 import android.graphics.Color;
 

@@ -21,7 +21,7 @@ import android.widget.ToggleButton;
 import ceu.marten.bplux.BPDevice;
 import ceu.marten.bplux.R;
 
-public class SettingsActivity extends Activity implements
+public class ConfigureDeviceActivity extends Activity implements
 		OnItemSelectedListener {
 
 	BPDevice device;

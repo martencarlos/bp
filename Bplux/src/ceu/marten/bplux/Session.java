@@ -4,11 +4,9 @@ import android.text.format.Time;
 
 public class Session {
 	private String name;
-	private float[] data;
 	private String fechayhora;
 	private Time duracion;
-
-	
+	private float[] data;
 	
 	public Session(String name, float[] data, String fechayhora, Time duracion) {
 		super();

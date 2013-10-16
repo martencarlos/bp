@@ -29,6 +29,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import ceu.marten.adapters.DevicesListAdapter;
 import ceu.marten.bplux.BPDevice;
 import ceu.marten.bplux.R;
 
@@ -317,7 +318,7 @@ public class WelcomeActivity extends Activity implements OnDismissCallback {
 	}
 
 	public void onClickedNewDevice(View v) {
-		Intent intent = new Intent(this, SettingsActivity.class);
+		Intent intent = new Intent(this, ConfigureDeviceActivity.class);
 		startActivityForResult(intent, 1);
 	}
 

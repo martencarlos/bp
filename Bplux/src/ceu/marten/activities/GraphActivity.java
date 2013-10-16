@@ -10,9 +10,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import ceu.marten.bplux.BPDevice;
-import ceu.marten.bplux.HRGraph;
-import ceu.marten.bplux.HRSimulator;
 import ceu.marten.bplux.R;
+import ceu.marten.graph.HRGraph;
 
 import com.jjoe64.graphview.GraphView.GraphViewData;
 
@@ -21,7 +20,7 @@ public class GraphActivity extends Activity {
 	private Handler graphHandler;
 	private Runnable runnable;
 	private HRGraph HRGraph;
-	private HRSimulator hrsim;
+	private BPDevice device;
 	private boolean bttnOn;
 	private Button bttn;
 
@@ -31,25 +30,25 @@ public class GraphActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.graph_layout);
 		
-		setupGraph();
+		setupPhysicalGraph();
 		setupButtons();
 		setupDetails();
-		
-		
 	}
 	
 	
-	private void setupGraph(){
+	private void setupPhysicalGraph(){
 		graphHandler = new Handler();
 		runnable = null;
 		HRGraph = new HRGraph(this);
-		hrsim = new HRSimulator();
+		device = new BPDevice("test");
+		
 		runnable = new Runnable() {
 			public void run() {
 				executeGraphThread();
 			}
 		};
-
+		device.beginAcq();
+		
 		LinearLayout layout = (LinearLayout) findViewById(R.id.graph);
 		layout.addView(HRGraph.getGraphView());
 	}
@@ -70,7 +69,7 @@ public class GraphActivity extends Activity {
 	private void executeGraphThread() {
 		HRGraph.setxValue(HRGraph.getxValue() + 1.0d);
 		HRGraph.getSerie().appendData(
-				new GraphViewData(HRGraph.getxValue(), hrsim.getAdultsBPM()),
+				new GraphViewData(HRGraph.getxValue(), device.getFrame(1)),
 				true, 70);// scroll to end, true
 		graphHandler.postDelayed(runnable, 100);
 	}

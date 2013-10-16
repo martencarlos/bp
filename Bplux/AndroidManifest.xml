@@ -8,6 +8,9 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="18" />
 
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />2
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -23,7 +26,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ceu.marten.activities.SettingsActivity"
+            android:name="ceu.marten.activities.ConfigureDeviceActivity"
             android:label="@string/settingsTitle"
             android:parentActivityName="ceu.marten.activities.WelcomeActivity" >
         </activity>
@@ -32,7 +35,6 @@
             android:label="@string/graphtitle"
             android:parentActivityName="ceu.marten.activities.WelcomeActivity" >
         </activity>
-       
     </application>
 
 </manifest>
