@@ -53,73 +53,25 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/lySensor"
+            android:id="@+id/linearLayout1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
             android:layout_below="@id/lyTitle"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/txtSensor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:text="@string/wl_pickSensor"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <Spinner
-                android:id="@+id/spSensor"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:entries="@array/sensors" />
+            android:orientation="vertical" >
 
             <Button
-                android:id="@+id/bttnShow"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onClickedStartSession"
-                android:text="@string/wl_startSessionBttn" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/lyDevHeader"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/lySensor"
-            android:layout_marginTop="40dp"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/txtDevices"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/wl_devicesTitle"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:onClick="onClickedConfigs"
+                android:text="Start Recording" />
 
             <Button
-                android:id="@+id/bttnCreateDevice"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="33dp"
-                android:layout_marginLeft="10dp"
-                android:onClick="onClickedNewDevice"
-                android:text="@string/wl_newDeviceBttn" />
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onClickedSessions"
+                android:text="Browse Recordings" />
         </LinearLayout>
-
-        <ListView
-            android:id="@+id/lvDevices"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/lyDevHeader"
-            android:layout_marginBottom="15dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:gravity="center_horizontal"
-            android:headerDividersEnabled="true" >
-        </ListView>
 
         <TextView
             android:id="@+id/footer"

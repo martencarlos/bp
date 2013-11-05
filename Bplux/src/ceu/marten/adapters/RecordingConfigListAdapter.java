@@ -7,16 +7,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import ceu.marten.bplux.BPDevice;
 import ceu.marten.bplux.R;
+import ceu.marten.data.Configuration;
 
 import com.haarman.listviewanimations.ArrayAdapter;
 
-public class DevicesListAdapter extends ArrayAdapter<BPDevice> {
+public class RecordingConfigListAdapter extends ArrayAdapter<Configuration> {
 
 	private final Context context;
 
-	public DevicesListAdapter(Context context, ArrayList<BPDevice> loadedDevices) {
+	public RecordingConfigListAdapter(Context context, ArrayList<Configuration> loadedDevices) {
 		super(loadedDevices);
 		this.context = context;
 	}
@@ -31,14 +31,11 @@ public class DevicesListAdapter extends ArrayAdapter<BPDevice> {
 		}
 
 		TextView name = (TextView) rowView.findViewById(R.id.dli_name);
-		TextView status = (TextView) rowView.findViewById(R.id.dli_status);
-		BPDevice dev = getItem(position);
-
+		
+		Configuration dev = getItem(position);
+		
 		name.setText(dev.getName());
-		if (dev.isConnected()) {
-			status.setText("connected");
-		} else
-			status.setText("");
+		
 		return rowView;
 	}
 

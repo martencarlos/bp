@@ -33,11 +33,24 @@
     <string name="footer">credits: Abraham Otero, Carlos Marten, CEU</string>
 
     <string-array name="sensors">
-        <item>Heart Rate</item>
+        <item>electrocardiograma</item>
+        <item >electromiograma</item>
+        <item >conductividad dermal</item>
+        <item >respiracion</item>
+        <item >temperatura</item>
+        <item >fuerza de pisada</item>
+        <item >acelerometro de tres ejes</item>
+        <item >presion arterial</item>
     </string-array>
 
     <string name="title_activity_device_details">DeviceDetailsActivity</string>
     <string name="taptoundo">Tap to undo</string>
     <string name="itemdeleted">Item deleted</string>
+    <string name="title_activity_test">TestActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_sessions">SessionsActivity</string>
+    <string name="title_activity_new_session">NewSessionActivity</string>
 
 </resources>

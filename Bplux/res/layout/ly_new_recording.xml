@@ -20,12 +20,12 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/HRGraphTitle"
+                android:text="New Recording"
                 android:textSize="30sp" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/graph"
+            android:id="@+id/ns_data"
             android:layout_width="fill_parent"
             android:layout_height="220dip"
             android:layout_marginTop="50dip"
@@ -34,11 +34,10 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/details"
+            android:id="@+id/ns_buttons"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@id/graph"
+            android:layout_below="@id/ns_data"
             android:orientation="vertical"
             android:paddingBottom="5dip"
             android:paddingTop="5dip" >
@@ -52,29 +51,29 @@
                 android:paddingTop="5dip" >
 
                 <Button
-                    android:id="@+id/bttnAnalyse"
+                    android:id="@+id/ns_bttn_connect"
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:onClick="startStopGraph"
-                    android:text="Analyse" />
+                    android:onClick="onClickedConnect"
+                    android:text="connect" />
 
                 <Button
-                    android:id="@+id/BttnStartStop"
+                    android:id="@+id/ns_bttn_StartPause"
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:onClick="onClickedStartStopGraph" />
+                    android:onClick="onClickedStartPause" />
 
                 <Button
-                    android:id="@+id/bttnSave"
+                    android:id="@+id/ns_bttn_save"
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:onClick="startStopGraph"
+                    android:onClick="onClickedSave"
                     android:text="save" />
             </LinearLayout>
 
@@ -82,36 +81,67 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="2dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
                 android:paddingTop="2dp"
                 android:scaleType="fitXY"
                 android:src="?android:attr/listDivider" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@id/ns_buttons"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="10dip" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="recording details"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <Chronometer
+                    android:id="@+id/duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="Chronometer" />
+            </RelativeLayout>
 
             <LinearLayout
-                android:id="@+id/session_details"
                 android:layout_width="match_parent"
-                android:layout_height="fill_parent"
-                android:orientation="vertical" >
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="10dip" >
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="fill_parent"
-                    android:orientation="horizontal" >
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="recording name: "
+                    android:textColor="#372c24" />
 
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
-                        android:text="session details"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                <TextView
+                    android:id="@+id/nr_recordingName"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="name of the recording"
+                    android:textColor="#372c24" />
+            </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/connected_device_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
-                </LinearLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal" >
             </LinearLayout>
         </LinearLayout>
 

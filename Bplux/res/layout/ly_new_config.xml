@@ -21,7 +21,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/settingsTitle"
+                android:text="new configuration"
                 android:textSize="30sp" />
         </LinearLayout>
 
@@ -33,7 +33,6 @@
             android:orientation="vertical" >
 
             <LinearLayout
-                android:id="@+id/devName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -55,30 +54,28 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/devChannel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:padding="10dip" >
 
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/stChannel"
+                    android:text="MAC address"
                     android:textColor="#372c24" />
 
-                <Spinner
-                    android:id="@+id/dev_channel"
-                    android:layout_width="fill_parent"
+                <EditText
+                    android:id="@+id/config_mac"
+                    android:layout_width="186dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:entries="@array/channelList"
-                    android:prompt="@string/prompt" />
+                    android:layout_marginTop="5dip"
+                    android:inputType="text"
+                    android:singleLine="true" />
             </LinearLayout>
+          
 
             <LinearLayout
-                android:id="@+id/frecReception"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -109,7 +106,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/sigBits"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.60"
@@ -125,7 +121,6 @@
                     android:textColor="#372c24" />
 
                 <RadioGroup
-                    android:id="@+id/radioGroup1"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -147,33 +142,8 @@
                         android:text="@string/stNbits12" />
                 </RadioGroup>
             </LinearLayout>
-
+            
             <LinearLayout
-                android:id="@+id/digOutputSig"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.60"
-                android:orientation="horizontal"
-                android:padding="10dip" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingTop="5dip"
-                    android:text="@string/stDigSigOut"
-                    android:textColor="#372c24" />
-
-                <CheckBox
-                    android:id="@+id/chbxDigOutputSignal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:onClick="onCheckboxClicked" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/devType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.60"
@@ -184,18 +154,31 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingTop="5dip"
-                    android:text="@string/stSimDev"
+                    android:text="Selecciona canales activos"
                     android:textColor="#372c24" />
-
-                <ToggleButton
-                    android:id="@+id/tbTest"
+                <Button
+                    android:id="@+id/sl_bttnChannelPickDialog"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dip"
-                    android:textOff="NO"
-                    android:textOn="YES" />
-            </LinearLayout>
+                    android:onClick="onClickedChannelPickDialog"
+                    android:text="seleccionar" />
+                </LinearLayout>
+                
+			<LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.60"
+                android:orientation="horizontal"
+                android:padding="10dip" >
 
+                <TextView
+                    android:id="@+id/txt_canales_activos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5dip"
+                    android:textColor="#372c24" />
+                </LinearLayout>
+                
             <LinearLayout
                 android:id="@+id/sl_buttons"
                 android:layout_width="fill_parent"
