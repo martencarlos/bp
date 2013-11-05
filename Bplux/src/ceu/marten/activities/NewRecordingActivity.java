@@ -2,7 +2,6 @@ package ceu.marten.activities;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,7 +9,6 @@ import java.util.Date;
 import plux.android.bioplux.BPException;
 import plux.android.bioplux.Device;
 import plux.android.bioplux.Device.Frame;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,7 +18,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +35,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private Handler graphHandler;
 	private Runnable run_frames;
-	private Runnable run_pause;
 	private Device.Frame[] tmp_frames = null;
 	private ArrayList<Device.Frame> save_frames = null;
 	private HRGraph HRGraph;
@@ -46,6 +42,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private boolean bttnOn;
 	private Button bttn;
 	private int channel = 5; // mejor canal para las pruebas
+	private Chronometer duration = null;
 	
 
 
@@ -56,22 +53,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		setContentView(R.layout.ly_new_recording);
 
 		setupStartPauseButton();
-		run_pause = new Runnable() {
-			public void run() {
-				executePauseGraphThread();
-			}
-
-			private void executePauseGraphThread() {
-				for(int i =0; i<30; i++){
-					HRGraph.setxValue(HRGraph.getxValue() + 1.0d);
-					HRGraph.getSerie().appendData(
-						new GraphViewData(HRGraph.getxValue(), 2020),
-						true, 200);// scroll to end, true
-				}
-				graphHandler.postDelayed(run_frames, 1000);
-				
-			}
-		};
+		duration = ((Chronometer) findViewById(R.id.nr_chronometer));
+		
 		save_frames = new ArrayList<Device.Frame>();
 		
 		TextView tv =(TextView)findViewById(R.id.nr_recordingName);
@@ -96,7 +79,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				new GraphViewData(HRGraph.getxValue(), f.an_in[channel]),
 				true, 200);// scroll to end, true
 		}
-		graphHandler.postDelayed(run_pause, 1000);
+		graphHandler.postDelayed(run_frames, 100);
 	}
 
 	@Override
@@ -111,11 +94,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			graphHandler.removeCallbacks(run_frames);
 			bttn.setText("start");
 			bttnOn = false;
+			duration.stop();
+			showElapsedTime();
 		} else {
 			run_frames.run();
 			bttn.setText("stop");
 			bttnOn = true;
-			
+			duration.start();
 			
 		}
 
@@ -202,5 +187,10 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 	
 	}
+	 private void showElapsedTime() {
+         long elapsedMillis = SystemClock.elapsedRealtime() - duration.getBase();           
+         Toast.makeText(NewRecordingActivity.this, "Elapsed milliseconds: " + elapsedMillis,
+                 Toast.LENGTH_SHORT).show();
+     }
 
 }

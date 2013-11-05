@@ -108,7 +108,7 @@
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <Chronometer
-                    android:id="@+id/duration"
+                    android:id="@+id/nr_chronometer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
