@@ -2,33 +2,37 @@ package ceu.marten.activities;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
+import ceu.marten.adapters.ActiveChannelsListAdapter;
 import ceu.marten.bplux.R;
 import ceu.marten.data.Configuration;
 
 public class NewConfigActivity extends Activity {
 
-	String[] channelsSelected;
 	int freq;
 	int nbits;
 	Configuration config;
+	ListView lv;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,66 +47,67 @@ public class NewConfigActivity extends Activity {
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
 				((TextView) findViewById(R.id.freq_view)).setText(String
-						.valueOf(progress + " Hz"));
+						.valueOf(progress + 36) + " Hz");
 				freq = progress;
 			}
-			public void onStartTrackingTouch(SeekBar seekBar) {}
-			public void onStopTrackingTouch(SeekBar seekBar) {}
-		});
 
+			public void onStartTrackingTouch(SeekBar seekBar) {
+			}
+
+			public void onStopTrackingTouch(SeekBar seekBar) {
+			}
+		});
 
 		/* initialize variables */
 		config = new Configuration();
+
+	}
+
+	private void setupActiveChannelsDialog() {
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setIcon(R.drawable.ic_launcher);
+		builder.setTitle("Select active channels");
+		final ArrayList<String> channels = new ArrayList<String>();
+		channels.add("channel 1");channels.add("channel 2");channels.add("channel 3");channels.add("channel 4");
+		channels.add("channel 5");channels.add("channel 6");channels.add("channel 7");channels.add("channel 8");
+		final ActiveChannelsListAdapter acla = new ActiveChannelsListAdapter(this, channels);
+		builder.setView(getLayoutInflater().inflate(R.layout.dialog_channels_listview, null));
+		builder.setPositiveButton("accept", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						
+		                TextView ca = (TextView) findViewById(R.id.txt_canales_activos);
+		                ca.setText("selected channels: ");
+		                String[] checked = acla.getChecked();
+		                String si= "";
+		                for (int i = 0; i < checked.length; i++) {
+		                    if (checked[i]!=null)
+		                        si=si+(i+1)+","+checked[i]+";";
+		                }
+		                ca.append(si);
+					}
+				});
+		builder.setNegativeButton("cancel",
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
 		
-		channelsSelected = new String[8];
-		for(int i=0; i<channelsSelected.length;i++)
-			channelsSelected[i]=null;
-			
+		AlertDialog ad = builder.create();
+		ad.show();
+		
+		lv =(ListView) ad.findViewById(R.id.lv_channelsSelection);
+		lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+		lv.setItemsCanFocus(false);
+		
+		lv.setAdapter(acla);
+		
 	}
 
-	
-	@Override
-	public Dialog onCreateDialog(int s) {
-	    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	    builder.setTitle("select active channels")
-	           .setMultiChoiceItems(R.array.channelList, null,
-	                      new DialogInterface.OnMultiChoiceClickListener() {
-	               @Override
-	               public void onClick(DialogInterface dialog, int pos,
-	                       boolean isChecked) {
-	                   if (isChecked) {
-	                	   channelsSelected[pos]="activo";
-	                   } else if (channelsSelected[pos] =="activo") {
-	                	   channelsSelected[pos]= null;
-	                   }
-	               }
-	           })
-	           .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-	               @Override
-	               public void onClick(DialogInterface dialog, int id) {
-	                   TextView ca = (TextView)findViewById(R.id.txt_canales_activos);
-	                   ca.setText(" ");
-	                   for(int i=0; i<channelsSelected.length; i++){
-	                	   if(channelsSelected[i] == "activo") 
-	                		   	ca.append("channel "+(i+1)+", ");
-	                   }  
-	                   ca.append("activated");
-	                   
-	                   config.setActiveChannels(channelsSelected);
-	                   
-	               }
-	           })
-	           .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-	               @Override
-	               public void onClick(DialogInterface dialog, int id) {
-	            	   for(int i=0; i<channelsSelected.length;i++)
-	            		   channelsSelected[i] = null;
-	               }
-	           });
-
-	    return builder.create();
-	}
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -118,7 +123,6 @@ public class NewConfigActivity extends Activity {
 				.toString());
 		config.setFreq(freq);
 		config.setnBits(nbits);
-		config.setActiveChannels(channelsSelected);
 		config.setCreateDate(dateFormat.format(date));
 		Intent returnIntent = new Intent();
 		returnIntent.putExtra("config", config);
@@ -132,7 +136,6 @@ public class NewConfigActivity extends Activity {
 		t.show();
 	}
 
-	
 	public void onClickedCancel(View view) {
 		finish();
 	}
@@ -151,10 +154,9 @@ public class NewConfigActivity extends Activity {
 			break;
 		}
 	}
-	
-	@SuppressWarnings("deprecation")
-	public void onClickedChannelPickDialog(View view){
-		showDialog(123);
+
+	public void onClickedChannelPickDialog(View view) {
+		setupActiveChannelsDialog();
 	}
-	
+
 }

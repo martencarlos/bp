@@ -3,7 +3,7 @@
     <string name="stDeviceName">Device Name</string>
     <string name="stChannel">channel: </string>
     <string name="stFrecRec">frequency Reception</string>
-    <string name="stFrecView">36 Hz</string>
+    <string name="stFrecView">500 Hz</string>
     <string name="stBitsxSenial">bits por señal</string>
     <string name="stNbits8">8 bits</string>
     <string name="stNbits12">12 bits</string>

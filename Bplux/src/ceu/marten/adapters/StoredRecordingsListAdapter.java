@@ -27,7 +27,7 @@ public class StoredRecordingsListAdapter extends ArrayAdapter<Recording> {
 		ViewGroup rowView = (ViewGroup) convertView;
 		if (rowView == null) {
 			rowView = (ViewGroup) LayoutInflater.from(context).inflate(
-					R.layout.device_list_item, parent, false);
+					R.layout.li_config, parent, false);
 		}
 
 		TextView name = (TextView) rowView.findViewById(R.id.dli_name);
