@@ -84,7 +84,7 @@
 
                 <TextView
                     android:layout_width="66dp"
-                    android:layout_height="42dip"
+                    android:layout_height="45dip"
                     android:text="@string/stFrecRec"
                     android:textColor="#372c24" />
 
@@ -102,11 +102,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingTop="10dip"
-                    android:text="@string/stFrecView"
+                    android:text="500"
                     android:textColor="#025f7c"
                     android:textSize="15sp"
-                    android:paddingRight="10dip"
+                    android:paddingRight="5dip"
+                    android:inputType="number"
+                    android:lines="1"
+                    android:imeOptions="actionDone"
                     android:background="@null" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dip"
+                    android:textSize="15sp"
+                    android:text="Hz"
+                    android:paddingRight="10dip"
+                    android:textColor="#025f7c" />
 
             </LinearLayout>
 
