@@ -7,6 +7,7 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -72,7 +74,7 @@ public class NewConfigActivity extends Activity {
 					SeekBar frequency = (SeekBar) findViewById(R.id.freq_seekbar);
 					int new_frec = Integer.parseInt(v.getText().toString());
 					if(new_frec > 36 ){
-						frequency.setProgress((new_frec+36));
+						frequency.setProgress((new_frec-36));
 						freq = new_frec;
 					}
 					else{
@@ -80,7 +82,12 @@ public class NewConfigActivity extends Activity {
 						freqView.setText("36");
 						freq = 36;
 					}
-						
+					freqView.clearFocus();
+					InputMethodManager inputManager = (InputMethodManager)
+                            getSystemService(Context.INPUT_METHOD_SERVICE); 
+
+					inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                               InputMethodManager.HIDE_NOT_ALWAYS);
 					handled = true;
 				}
 				return handled;
