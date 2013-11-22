@@ -35,12 +35,12 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:orientation="vertical"
-                android:paddingTop="10dip"
                 android:paddingLeft="10dip"
                 android:paddingRight="10dip"
-                android:focusable="true"
-                android:focusableInTouchMode="true" >
+                android:paddingTop="10dip" >
 
                 <TextView
                     android:layout_width="fill_parent"
@@ -60,8 +60,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="10dip"
-                android:paddingLeft="10dip" >
+                android:paddingLeft="10dip"
+                android:paddingTop="10dip" >
 
                 <TextView
                     android:layout_width="fill_parent"
@@ -76,12 +76,12 @@
                     android:inputType="text"
                     android:singleLine="true" />
             </LinearLayout>
-          
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingLeft="10dip">
+                android:paddingLeft="10dip" >
 
                 <TextView
                     android:layout_width="66dp"
@@ -102,47 +102,47 @@
                     android:id="@+id/freq_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingTop="10dip"
-                    android:text="500"
-                    android:textColor="#025f7c"
-                    android:textSize="15sp"
-                    android:paddingRight="5dip"
+                    android:background="@null"
+                    android:imeOptions="actionDone"
                     android:inputType="number"
                     android:lines="1"
                     android:nextFocusForward="@+id/radioBttn8"
-                    android:imeOptions="actionDone"
-                    android:background="@null" />
+                    android:paddingRight="5dip"
+                    android:paddingTop="10dip"
+                    android:text="500"
+                    android:textColor="#025f7c"
+                    android:textSize="15sp" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingTop="10dip"
-                    android:textSize="15sp"
-                    android:text="Hz"
                     android:paddingRight="10dip"
-                    android:textColor="#025f7c" />
-
+                    android:paddingTop="10dip"
+                    android:text="Hz"
+                    android:textColor="#025f7c"
+                    android:textSize="15sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dip"
                 android:orientation="horizontal"
-                android:paddingLeft="10dip"
-                android:layout_marginTop="10dip" >
+                android:paddingLeft="10dip" >
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:paddingTop="5dip"
-                    android:text="@string/stBitsxSenial"
+                    android:text="bits per signal"
                     android:textColor="#372c24" />
 
                 <RadioGroup
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="10dip"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal"
+                    android:paddingLeft="10dip" >
 
                     <RadioButton
                         android:id="@+id/radioBttn8"
@@ -160,43 +160,82 @@
                         android:text="@string/stNbits12" />
                 </RadioGroup>
             </LinearLayout>
-            
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dip"
                 android:orientation="horizontal"
-                android:paddingLeft="10dip"
-                android:layout_marginTop="10dip" >
+                android:paddingLeft="10dip" >
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingTop="5dip"
-                    android:text="Selecciona canales activos"
+                    android:text="Select active channels"
                     android:textColor="#372c24" />
+
                 <Button
                     android:id="@+id/sl_bttnChannelPickDialog"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="25dip"
                     android:onClick="onClickedChannelPickDialog"
-                    android:text="seleccionar" />
-                </LinearLayout>
-                
-			<LinearLayout
+                    android:text="select" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.60"
-                android:orientation="horizontal">
+                android:orientation="horizontal" 
+                android:layout_marginLeft="10dp">
 
                 <TextView
                     android:id="@+id/txt_canales_activos"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingTop="5dip"
+                    android:textColor="@color/blue" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dip"
+                android:orientation="horizontal"
+                android:paddingLeft="10dip" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5dip"
+                    android:text="Select channels to display "
                     android:textColor="#372c24" />
-                </LinearLayout>
-                
+
+                <Button
+                    android:id="@+id/sl_bttnChannelPickDialog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dip"
+                    android:onClick="onClickedChannelDisplayPickDialog"
+                    android:text="select" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.60"
+                android:orientation="horizontal"
+                android:layout_marginLeft="10dp" >
+
+                <TextView
+                    android:id="@+id/nc_txt_channels_to_show"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5dip"
+                    android:textColor="@color/blue" />
+            </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/sl_buttons"
                 android:layout_width="fill_parent"
@@ -222,16 +261,6 @@
                     android:text="@string/stButton" />
             </LinearLayout>
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/footer"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:gravity="center"
-            android:text="@string/footer"
-            android:textColor="#025f7c"
-            android:textSize="@dimen/footerTxtSize" />
     </RelativeLayout>
 
 </ScrollView>

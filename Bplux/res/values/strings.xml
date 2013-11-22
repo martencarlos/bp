@@ -53,4 +53,6 @@
     <string name="title_activity_sessions">SessionsActivity</string>
     <string name="title_activity_new_session">NewSessionActivity</string>
 
+
+    <string name="service_id">this service unique id</string> 
 </resources>
