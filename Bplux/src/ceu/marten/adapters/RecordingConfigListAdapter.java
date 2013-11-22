@@ -3,6 +3,7 @@ package ceu.marten.adapters;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +35,9 @@ public class RecordingConfigListAdapter extends ArrayAdapter<Configuration> {
 		
 		Configuration dev = getItem(position);
 		
+		
 		name.setText(dev.getName());
+		
 		
 		return rowView;
 	}

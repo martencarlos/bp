@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -36,6 +37,7 @@ public class RecordingConfigsActivity extends
 	private RecordingConfigListAdapter baseAdapter;
 	private ArrayList<Configuration> configs = null;
 	private Context RCAcontext = this;
+	private int configSelectedPos = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -73,14 +75,6 @@ public class RecordingConfigsActivity extends
 				// Write your code if there's no result
 			}
 		}
-		if (requestCode == 2) {
-			if (resultCode == RESULT_OK) {
-
-			}
-			if (resultCode == RESULT_CANCELED) {
-				// Write your code if there's no result
-			}
-		}
 	}
 
 	private void setupRecordingNameDialog() {
@@ -103,9 +97,10 @@ public class RecordingConfigsActivity extends
 										NewRecordingActivity.class);
 								intent.putExtra("recordingName",
 										newRecordingName);
-								startActivityForResult(intent, 2);
-
-							}
+								intent.putExtra("configSelected", configs.get(configSelectedPos));
+								Log.d("test", "config: "+configs.get(configSelectedPos).toString());
+								startActivity(intent);
+							}		
 						})
 				.setNegativeButton("cancel",
 						new DialogInterface.OnClickListener() {
@@ -117,6 +112,8 @@ public class RecordingConfigsActivity extends
 
 	}
 
+	
+
 	private void setupDevicesListView() {
 
 		/** SETTING UP THE LISTENERS */
@@ -125,6 +122,7 @@ public class RecordingConfigsActivity extends
 			@Override
 			public void onItemClick(AdapterView<?> AdapterView, View v,
 					int position, long id) {
+				configSelectedPos = position;
 				RecName.show();
 
 			}

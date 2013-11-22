@@ -1,18 +1,17 @@
 package ceu.marten.activities;
 
-import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-
-import plux.android.bioplux.BPException;
-import plux.android.bioplux.Device;
-import plux.android.bioplux.Device.Frame;
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -23,28 +22,74 @@ import android.widget.TextView;
 import android.widget.Toast;
 import ceu.marten.bplux.R;
 import ceu.marten.data.Configuration;
-import ceu.marten.data.Recording;
-import ceu.marten.dataBase.DatabaseHelper;
 import ceu.marten.graph.HRGraph;
+import ceu.marten.services.LocalService;
 
-import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
-import com.j256.ormlite.dao.Dao;
 import com.jjoe64.graphview.GraphView.GraphViewData;
 
-public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
+public class NewRecordingActivity extends Activity {
 
-	private Handler graphHandler;
-	private Runnable run_frames;
-	private Device.Frame[] tmp_frames = null;
-	private ArrayList<Device.Frame> save_frames = null;
-	private HRGraph HRGraph;
-	private Device connection;
-	private boolean bttnOn;
-	private Button bttn;
-	private int channel = 5; // mejor canal para las pruebas
-	private Chronometer duration = null;
+	private LinearLayout ui_graph;
+	private TextView ui_recName, ui_configName, ui_bits, ui_freq, ui_aChannels;
+	private Button ui_startStop, ui_receiveData;
+	private Chronometer duration;
+
+	private Configuration currentConfig;
+
+	Messenger mService = null;
+	static int dato = 0;
+	static HRGraph graph;
+	boolean isServiceBounded = false;
+	boolean isReceivingData = false;
+	final Messenger mActivity = new Messenger(new IncomingHandler());
+
+	static class IncomingHandler extends Handler {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case LocalService.MSG_VALUE:
+				dato = msg.arg1;
+				appendDataToGraph();
+				break;
+			/*
+			 * case LocalService.MSG_SET_STRING_VALUE: String str1 =
+			 * msg.getData().getString("str1");
+			 * Log.d("bplux_service","Int Message: " + str1); break;
+			 */
+			default:
+				super.handleMessage(msg);
+			}
+		}
+	}
+
+	private ServiceConnection mConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			mService = new Messenger(service);
+			Log.d("test", "service atached");
+			try {
+				Message msg = Message.obtain(null,
+						LocalService.MSG_REGISTER_CLIENT);
+				msg.replyTo = mActivity;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				Log.d("bplux_service",
+						"error: service could not be initialized");
+			}
+		}
 	
+		public void onServiceDisconnected(ComponentName className) {
+			// This is called when the connection with the service has been
+			// unexpectedly disconnected - process crashed.
+			mService = null;
+			Log.d("bplux_service", "service disconnected!");
+		}
+	};
 
+	static void appendDataToGraph() {
+		graph.setxValue(graph.getxValue() + 1.0d);
+		graph.getSerie().appendData(new GraphViewData(graph.getxValue(), dato),
+				true, 200);// scroll to end, true
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,145 +97,177 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_new_recording);
 
-		setupStartPauseButton();
-		duration = ((Chronometer) findViewById(R.id.nr_chronometer));
+		initUI();
+		currentConfig = (Configuration) getIntent().getSerializableExtra(
+				"configSelected");
 		
-		save_frames = new ArrayList<Device.Frame>();
+		ui_recName.setText(getIntent().getStringExtra("recordingName")
+				.toString());
+		ui_configName.setText(currentConfig.getName());
+		ui_freq.setText(String.valueOf(currentConfig.getFreq())+" Hz");
+		ui_bits.setText(String.valueOf(currentConfig.getnBits())+" bits");
 		
-		TextView tv =(TextView)findViewById(R.id.nr_recordingName);
-		tv.setText(getIntent().getStringExtra("recordingName").toString());
-
-	}
-
-	private void setupStartPauseButton() {
-		bttn = (Button) findViewById(R.id.ns_bttn_StartPause);
-		bttn.setText("Start");
-		bttnOn = false;
-	}
-
-	private void executeGraphThread() {
-		
-		getFrames(10);
-		
-		for(Frame f :tmp_frames){
-			save_frames.add(f);
-			HRGraph.setxValue(HRGraph.getxValue() + 1.0d);
-			HRGraph.getSerie().appendData(
-				new GraphViewData(HRGraph.getxValue(), f.an_in[channel]),
-				true, 200);// scroll to end, true
+		String strAC="";
+		String[] ac = currentConfig.getActiveChannels();
+		for(int i=0;i<ac.length;i++){
+			if(ac[i].compareToIgnoreCase("null")!=0)
+				strAC+="\t"+"channel "+(i+1)+" with sensor "+ac[i]+"\n";
 		}
-		graphHandler.postDelayed(run_frames, 100);
+			
+		ui_aChannels.setText(strAC);
+		// restoreMeIfNeeded(savedInstanceState);
+		//bindIfServiceRunning();
+		graph = new HRGraph(this);
+		ui_graph.addView(graph.getGraphView());
+
+	}
+
+	private void initUI() {
+		ui_graph = (LinearLayout) findViewById(R.id.nr_graph_data);
+		ui_startStop = (Button) findViewById(R.id.nr_bttn_StartPause);
+		ui_receiveData=(Button) findViewById(R.id.nr_bttn_receive_data);
+		ui_recName = (TextView) findViewById(R.id.nr_txt_recordingName);
+		ui_configName = (TextView) findViewById(R.id.nr_txt_configName);
+		ui_bits = (TextView) findViewById(R.id.nr_txt_config_nbits);
+		ui_freq = (TextView) findViewById(R.id.nr_txt_config_freq);
+		ui_aChannels = (TextView) findViewById(R.id.nr_txt_channels_active);
+	}
+
+	private void restoreMeIfNeeded(Bundle state) {
+		if (state != null) {
+			ui_recName.setText(state.getString("recording_name"));
+			// textIntValue.setText(state.getString("textIntValue"));
+			// textStrValue.setText(state.getString("textStrValue"));
+		}
+	}
+
+	private void bindIfServiceRunning() {
+		if (LocalService.isRunning()) {
+			bindToService();
+		}
+	}
+
+	private void start_receiving_data() {
+		Log.d("test", "staaaart"+isServiceBounded+mService);
+		if (isServiceBounded) {
+			if (mService != null) {
+				try {
+					Message msg = Message.obtain(null,
+							LocalService.MSG_START_SENDING_DATA, 0, 0);
+					msg.replyTo = mActivity;
+					mService.send(msg);
+					
+				} catch (RemoteException e) {
+				}
+			}
+		}
+	}
+
+	private void stop_receiving_data() {
+		if (isServiceBounded) {
+			if (mService != null) {
+				try {
+					Message msg = Message.obtain(null,
+							LocalService.MSG_STOP_SENDING_DATA, 0, 0);
+					msg.replyTo = mActivity;
+					mService.send(msg);
+				} catch (RemoteException e) {
+				}
+			}
+		}
+	}
+
+
+	public void onClickedStartStop(View view) {
+		if (!isServiceBounded) {
+			startService(new Intent(NewRecordingActivity.this, LocalService.class));
+			bindToService();
+			displayToast("service started");
+			ui_startStop.setText("stop service");
+		}else{
+			unbindOfService();
+			displayToast("service stopped");
+			ui_startStop.setText("start service");
+		}
+			
+	}
+	public void onClickedReceiveData(View view) {
+		if (mService !=null && !isReceivingData) {
+			start_receiving_data();
+			displayToast("receiving data");
+			ui_receiveData.setText("stop receiving data");
+			isReceivingData=true;
+		}else if(isReceivingData){
+			stop_receiving_data();
+			ui_receiveData.setText("start receiving data");
+			isReceivingData=false;
+			displayToast("not receiving data");
+		}else
+			displayToast("start service first");
+			
+		
+	}
+	
+
+	
+
+	private void displayToast(String messageToDisplay) {
+		Toast t = Toast.makeText(getApplicationContext(), messageToDisplay,
+				Toast.LENGTH_SHORT);
+		t.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
+		t.show();
+
+	}
+
+	void bindToService() {
+		bindService(new Intent(this, LocalService.class), mConnection,
+				Context.BIND_AUTO_CREATE);
+		isServiceBounded = true;
+	}
+
+	void unbindOfService() {
+		if (isServiceBounded) {
+			// If we have received the service, and hence registered with it,
+			// then now is the time to unregister.
+			if (mService != null) {
+				try {
+					Message msg = Message.obtain(null,
+							LocalService.MSG_UNREGISTER_CLIENT);
+					msg.replyTo = mActivity;
+					mService.send(msg);
+				} catch (RemoteException e) {
+					// There is nothing special we need to do if the service has
+					// crashed.
+				}
+			}
+			// Detach our existing connection.
+			unbindService(mConnection);
+			isServiceBounded = false;
+			Log.d("bplux_service", "unbinding!");
+		}
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		graphHandler.removeCallbacks(run_frames);
-	}
-
-	public void onClickedStartPause(View view) {
-
-		if (bttnOn) {
-			graphHandler.removeCallbacks(run_frames);
-			bttn.setText("start");
-			bttnOn = false;
-			duration.stop();
-			showElapsedTime();
-		} else {
-			run_frames.run();
-			bttn.setText("stop");
-			bttnOn = true;
-			duration.start();
-			
-		}
 
 	}
 
-	private void connectTestDevice() {
-		tmp_frames = new Device.Frame[10];
-
-		// initialize frames array
-		for (int i = 0; i < tmp_frames.length; i++) {
-			tmp_frames[i] = new Device.Frame();
-		}
-
-		// bioPlux initialization
+	/*
+	 * @Override protected void onSaveInstanceState(Bundle outState) {
+	 * super.onSaveInstanceState(outState); outState.putString("recording_name",
+	 * ui_recName.getText().toString()); //outState.putString("textIntValue",
+	 * textIntValue.getText().toString()); //outState.putString("textStrValue",
+	 * textStrValue.getText().toString()); }
+	 */
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
 		try {
-			connection = Device.Create("test");// Device mac addr
-												// 00:07:80:4C:2A:FB
-			connection.BeginAcq();
-		} catch (BPException e) {
-			e.printStackTrace();
+			unbindOfService();
+		} catch (Throwable t) {
+			Log.d("bplux_service", "Failed to unbind from the service", t);
 		}
-
-		graphHandler = new Handler();
-		run_frames = null;
-		HRGraph = new HRGraph(this);
-
-		run_frames = new Runnable() {
-			public void run() {
-				executeGraphThread();
-			}
-		};
-
-		LinearLayout data_ly = (LinearLayout) findViewById(R.id.ns_data);
-		data_ly.addView(HRGraph.getGraphView());
 	}
-
-	private void getFrames(int nFrames) {
-		try {
-			connection.GetFrames(nFrames, tmp_frames);
-		} catch (BPException e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	public void onClickedConnect(View view) {
-		connectTestDevice();
-	}
-	
-	public void onClickedSave(View view)  {
-		Recording newRecording = new Recording();
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-		Date date = new Date();
-		
-		newRecording.setDuration(20);
-		Configuration config = new Configuration();
-		newRecording.setConfig(config);
-		newRecording.setStartDate(dateFormat.format(date));
-		
-		TextView tv =(TextView)findViewById(R.id.nr_recordingName);
-		newRecording.setName(tv.getText().toString());
-		
-		saveRecording(newRecording);
-		
-		Intent returnIntent = new Intent();
-		returnIntent.putExtra("session", newRecording);
-		setResult(RESULT_OK, returnIntent);
-		finish();
-
-		Toast t;
-		t = Toast.makeText(getApplicationContext(),
-				"session successfully created", Toast.LENGTH_SHORT);
-		t.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
-		t.show();
-	}
-	
-	public void saveRecording(Recording recording) {
-		try {
-			Dao<Recording, Integer> dao = getHelper().getSessionDao();
-			dao.create(recording);
-	
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	
-	}
-	 private void showElapsedTime() {
-         long elapsedMillis = SystemClock.elapsedRealtime() - duration.getBase();           
-         Toast.makeText(NewRecordingActivity.this, "Elapsed milliseconds: " + elapsedMillis,
-                 Toast.LENGTH_SHORT).show();
-     }
 
 }

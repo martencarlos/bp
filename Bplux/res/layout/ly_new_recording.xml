@@ -9,7 +9,7 @@
         android:background="#fff" >
 
         <LinearLayout
-            android:id="@+id/header"
+            android:id="@+id/nr_header"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@layout/header_gradient"
@@ -25,57 +25,21 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/ns_data"
+            android:id="@+id/nr_graph_data"
             android:layout_width="fill_parent"
             android:layout_height="220dip"
-            android:layout_marginTop="50dip"
+            android:layout_below="@id/nr_header"
+            android:layout_marginBottom="5dip"
             android:orientation="vertical"
             android:paddingRight="20dip" >
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/ns_buttons"
-            android:layout_width="fill_parent"
+            android:id="@+id/nr_details"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/ns_data"
-            android:orientation="vertical"
-            android:paddingBottom="5dip"
-            android:paddingTop="5dip" >
-
-            <LinearLayout
-                android:id="@+id/buttons"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="5dip"
-                android:paddingTop="5dip" >
-
-                <Button
-                    android:id="@+id/ns_bttn_connect"
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onClickedConnect"
-                    android:text="connect" />
-
-                <Button
-                    android:id="@+id/ns_bttn_StartPause"
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onClickedStartPause" />
-
-                <Button
-                    android:id="@+id/ns_bttn_save"
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="onClickedSave"
-                    android:text="save" />
-            </LinearLayout>
+            android:layout_below="@id/nr_graph_data"
+            android:orientation="vertical" >
 
             <ImageView
                 android:layout_width="fill_parent"
@@ -86,19 +50,14 @@
                 android:paddingTop="2dp"
                 android:scaleType="fitXY"
                 android:src="?android:attr/listDivider" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:layout_below="@id/ns_buttons"
-            android:orientation="vertical" >
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="10dip" >
+                android:paddingLeft="10dip"
+                android:paddingTop="5dip"
+                android:paddingRight="10dip" >
 
                 <TextView
                     android:layout_width="fill_parent"
@@ -119,7 +78,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="10dip" >
+                android:paddingLeft="10dip"
+                android:paddingTop="5dip"
+                android:paddingRight="10dip" >
 
                 <TextView
                     android:layout_width="fill_parent"
@@ -129,30 +90,143 @@
                     android:textColor="#372c24" />
 
                 <TextView
-                    android:id="@+id/nr_recordingName"
+                    android:id="@+id/nr_txt_recordingName"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="name of the recording"
-                    android:textColor="#372c24" />
+                    android:textColor="@color/blue" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal" >
+                android:orientation="horizontal"
+                android:paddingLeft="10dip"
+                android:paddingTop="5dip"
+                android:paddingRight="10dip"  >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="configuration name: "
+                    android:textColor="#372c24" />
+
+                <TextView
+                    android:id="@+id/nr_txt_configName"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="config name"
+                    android:textColor="@color/blue"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="10dip"
+                android:paddingTop="5dip"
+                android:paddingRight="10dip" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="freq: "
+                    android:textColor="#372c24" />
+
+                <TextView
+                    android:id="@+id/nr_txt_config_freq"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="freq"
+                    android:textColor="@color/blue" />
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="nbits: "
+                    android:textColor="#372c24" />
+
+                <TextView
+                    android:id="@+id/nr_txt_config_nbits"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="nbits"
+                    android:textColor="@color/blue" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="10dip"
+                android:paddingTop="5dip"
+                android:paddingRight="10dip"  >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="active channels: "
+                    android:textColor="#372c24" />
+
+                <TextView
+                    android:id="@+id/nr_txt_channels_active"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="channels active"
+                    android:textColor="@color/blue"/>
             </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/gl_currentConnectedDevice"
+        <LinearLayout
+            android:id="@+id/nr_buttons"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:gravity="center"
-            android:textColor="#025f7c"
-            android:textSize="@dimen/footerTxtSize" />
-    </RelativeLayout>
+            android:orientation="vertical"
+            android:paddingBottom="5dip"
+            android:paddingTop="5dip" >
 
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="2dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="2dp"
+                android:scaleType="fitXY"
+                android:src="?android:attr/listDivider" />
+
+            <LinearLayout
+                android:id="@+id/buttons"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="5dip"
+                android:paddingTop="5dip" >
+
+            <Button
+                android:id="@+id/nr_bttn_StartPause"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClickedStartStop"
+                android:text="start and bind" />
+            <Button
+                android:id="@+id/nr_bttn_receive_data"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClickedReceiveData"
+                android:text="start receiving data" />
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
 </ScrollView>

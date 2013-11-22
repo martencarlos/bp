@@ -34,10 +34,11 @@ import ceu.marten.data.Configuration;
 
 public class NewConfigActivity extends Activity {
 
-	int freq;
-	int nbits;
+	int freq=500;
+	int nbits=8;
 	Configuration config;
 	String[] channelsActivated = null; // the ones that are not null
+	boolean[] channelsToDisplay= null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,7 @@ public class NewConfigActivity extends Activity {
 		setContentView(R.layout.ly_new_config);
 
 		/* initialize view components */
+		channelsToDisplay= new boolean[8];
 		SeekBar frequency = (SeekBar) findViewById(R.id.freq_seekbar);
 		frequency.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 
@@ -225,6 +227,10 @@ public class NewConfigActivity extends Activity {
 							String si = "";
 							for (int i = 0; i < channelsSelected.length; i++) {
 								if (channelsSelected[i]) {
+									Log.d("test", "channel number: "+ channels.get(i).toString().charAt(channels.get(i).toString().length()-1));
+									int in=Character.getNumericValue((channels.get(i).toString().charAt(channels.get(i).toString().length()-1)));
+									channelsToDisplay[in] = true;
+									
 									si = si + "\n\t"
 											+ channels.get(i).toString()
 											+ " with sensor "
@@ -279,6 +285,8 @@ public class NewConfigActivity extends Activity {
 		config.setFreq(freq);
 		config.setnBits(nbits);
 		config.setCreateDate(dateFormat.format(date));
+		config.setActiveChannels(channelsActivated);
+		config.setchannelsToDisplay(channelsToDisplay);
 		Intent returnIntent = new Intent();
 		returnIntent.putExtra("config", config);
 		setResult(RESULT_OK, returnIntent);

@@ -2,6 +2,8 @@ package ceu.marten.data;
 
 import java.io.Serializable;
 
+import android.util.Log;
+
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -26,25 +28,18 @@ public class Configuration implements Serializable {
 	@DatabaseField(canBeNull = true)
 	private float freq = 0;
 	@DatabaseField(canBeNull = true)
-	private int nBits = 0; //number of bits can be 8 or 12 [0-255] | [0-4095]
+	private int nBits = 8; //number of bits can be 8 or 12 [0-255] | [0-4095]
 	
 	@DatabaseField(dataType = DataType.BYTE_ARRAY)
 	private byte[] activeChannels = null;
+	@DatabaseField(dataType = DataType.BYTE_ARRAY)
+	private byte[] channelsToDisplay = null;
 
 	
 	public Configuration() {
 		//needed for the OrmLite to generate object when query invoked
 	}
 	
-	public Configuration(String initName, String initDescription, float initFreq, int initNbits, byte[] initActiveChannels){
-		this.name = initName;
-		this.description = initDescription;
-		this.freq = initFreq;
-		this.nBits = initNbits;
-		this.activeChannels = initActiveChannels;
-		
-		
-	}
 
 	public void setName(String name) {
 		this.name = name;
@@ -66,9 +61,58 @@ public class Configuration implements Serializable {
 		this.freq = freq;
 	}
 
+	
+	public float getFreq() {
+		return freq;
+	}
+
+
+	public int getnBits() {
+		return nBits;
+	}
+
+
 	public void setnBits(int nBits) {
 		this.nBits = nBits;
 	}
+
+	public void setchannelsToDisplay(boolean[] boo) {
+		int iterator=0;
+		String[] channelsToDisplay= new String[8];
+		for(boolean b:boo){
+			if(b)
+				channelsToDisplay[iterator]="true";
+			else
+				channelsToDisplay[iterator]="false";
+			iterator++;
+		}
+			
+		StringBuilder sb = new StringBuilder();
+        for (int i=0; i<channelsToDisplay.length; i++) {
+            sb.append(channelsToDisplay[i]);
+            if (i != channelsToDisplay.length-1) {
+                sb.append("*.*"); //concatenate by this splitter
+            }
+        }
+		this.channelsToDisplay = sb.toString().getBytes();
+	}
+
+
+	public boolean[] getchannelsToDisplay() {
+		 String entire = new String(this.channelsToDisplay);
+		 String[] channelsToDisplay=  entire.split("\\*\\.\\*");
+		 int iterator=0;
+			boolean[] result= new boolean[8];
+			for(String s:channelsToDisplay){
+				if(s.equalsIgnoreCase("true"))
+					result[iterator]=true;
+				else
+					result[iterator]=false;
+				iterator++;
+			}
+	     return result;
+	}
+
 
 	public void setActiveChannels(String[] activeChannels) {
 		StringBuilder sb = new StringBuilder();
@@ -85,16 +129,10 @@ public class Configuration implements Serializable {
 		 String entire = new String(this.activeChannels);
 	     return entire.split("\\*\\.\\*");
 	}
-
 	private String activeChannelsToString(){
 		String strActChnls="";
-		String[] myChannels = this.getActiveChannels();
-		for(int i=0;i<myChannels.length;i++){
-			if(myChannels[i].compareTo("activo") == 0)
-				strActChnls = strActChnls + "channel "+(i+1)+", ";
-		}
-		return strActChnls;
 		
+		return strActChnls;
 	}
 	
 	@Override
