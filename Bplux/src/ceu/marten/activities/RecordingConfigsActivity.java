@@ -98,7 +98,6 @@ public class RecordingConfigsActivity extends
 								intent.putExtra("recordingName",
 										newRecordingName);
 								intent.putExtra("configSelected", configs.get(configSelectedPos));
-								Log.d("test", "config: "+configs.get(configSelectedPos).toString());
 								startActivity(intent);
 							}		
 						})

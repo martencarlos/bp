@@ -30,7 +30,7 @@ import com.jjoe64.graphview.GraphView.GraphViewData;
 public class NewRecordingActivity extends Activity {
 
 	private LinearLayout ui_graph;
-	private TextView ui_recName, ui_configName, ui_bits, ui_freq, ui_aChannels;
+	private TextView ui_recName, ui_configName, ui_bits, ui_freq, ui_aChannels, ui_macAddr;
 	private Button ui_startStop, ui_receiveData;
 	private Chronometer duration;
 
@@ -65,7 +65,6 @@ public class NewRecordingActivity extends Activity {
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			mService = new Messenger(service);
-			Log.d("test", "service atached");
 			try {
 				Message msg = Message.obtain(null,
 						LocalService.MSG_REGISTER_CLIENT);
@@ -106,6 +105,7 @@ public class NewRecordingActivity extends Activity {
 		ui_configName.setText(currentConfig.getName());
 		ui_freq.setText(String.valueOf(currentConfig.getFreq())+" Hz");
 		ui_bits.setText(String.valueOf(currentConfig.getnBits())+" bits");
+		ui_macAddr.setText(currentConfig.getMac_address());
 		
 		String strAC="";
 		String[] ac = currentConfig.getActiveChannels();
@@ -131,6 +131,7 @@ public class NewRecordingActivity extends Activity {
 		ui_bits = (TextView) findViewById(R.id.nr_txt_config_nbits);
 		ui_freq = (TextView) findViewById(R.id.nr_txt_config_freq);
 		ui_aChannels = (TextView) findViewById(R.id.nr_txt_channels_active);
+		ui_macAddr = (TextView) findViewById(R.id.nr_txt_mac);
 	}
 
 	private void restoreMeIfNeeded(Bundle state) {
@@ -148,7 +149,6 @@ public class NewRecordingActivity extends Activity {
 	}
 
 	private void start_receiving_data() {
-		Log.d("test", "staaaart"+isServiceBounded+mService);
 		if (isServiceBounded) {
 			if (mService != null) {
 				try {
@@ -205,7 +205,6 @@ public class NewRecordingActivity extends Activity {
 		}else
 			displayToast("start service first");
 			
-		
 	}
 	
 
@@ -220,7 +219,11 @@ public class NewRecordingActivity extends Activity {
 	}
 
 	void bindToService() {
-		bindService(new Intent(this, LocalService.class), mConnection,
+		Intent intent = new Intent(this, LocalService.class);
+		intent.putExtra("recName",
+				ui_configName.getText().toString());
+		intent.putExtra("currentConfig", currentConfig);
+		bindService(intent, mConnection,
 				Context.BIND_AUTO_CREATE);
 		isServiceBounded = true;
 	}

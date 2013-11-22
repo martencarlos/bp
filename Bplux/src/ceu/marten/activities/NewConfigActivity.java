@@ -282,6 +282,8 @@ public class NewConfigActivity extends Activity {
 		Date date = new Date();
 		config.setName(((EditText) findViewById(R.id.dev_name)).getText()
 				.toString());
+		config.setMac_address(((EditText) findViewById(R.id.nc_mac_address)).getText()
+				.toString());
 		config.setFreq(freq);
 		config.setnBits(nbits);
 		config.setCreateDate(dateFormat.format(date));

@@ -31,7 +31,8 @@
             android:layout_below="@id/nr_header"
             android:layout_marginBottom="5dip"
             android:orientation="vertical"
-            android:paddingRight="20dip" >
+            android:paddingRight="10dip"
+            android:paddingLeft="10dip" >
         </LinearLayout>
 
         <LinearLayout
@@ -58,6 +59,15 @@
                 android:paddingLeft="10dip"
                 android:paddingTop="5dip"
                 android:paddingRight="10dip" >
+                
+                <TextView
+                    android:id="@+id/nr_txt_mac"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5dip"
+                    android:layout_alignParentLeft="true"
+                    android:text="MAC"
+                    android:textColor="@color/blue" />
 
                 <TextView
                     android:layout_width="fill_parent"

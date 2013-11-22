@@ -70,10 +70,11 @@
                     android:textColor="#372c24" />
 
                 <EditText
-                    android:id="@+id/config_mac"
+                    android:id="@+id/nc_mac_address"
                     android:layout_width="186dp"
                     android:layout_height="wrap_content"
                     android:inputType="text"
+                    android:text="test"
                     android:singleLine="true" />
             </LinearLayout>
 

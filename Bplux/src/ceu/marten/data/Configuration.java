@@ -22,11 +22,11 @@ public class Configuration implements Serializable {
 	@DatabaseField(canBeNull = true)
 	private String name = null;
 	@DatabaseField(canBeNull = true)
-	private String description = null;
+	private String mac_address = null;
 	@DatabaseField(canBeNull = true)
 	private String createDate = null;
 	@DatabaseField(canBeNull = true)
-	private float freq = 0;
+	private int freq = 0;
 	@DatabaseField(canBeNull = true)
 	private int nBits = 8; //number of bits can be 8 or 12 [0-255] | [0-4095]
 	
@@ -48,6 +48,16 @@ public class Configuration implements Serializable {
 	public String getName() {
 		return name;
 	}
+	
+	public String getMac_address() {
+		return mac_address;
+	}
+
+
+	public void setMac_address(String mac_address) {
+		this.mac_address = mac_address;
+	}
+
 
 	public String getCreateDate() {
 		return createDate;
@@ -57,12 +67,12 @@ public class Configuration implements Serializable {
 		this.createDate = createDate;
 	}
 
-	public void setFreq(float freq) {
+	public void setFreq(int freq) {
 		this.freq = freq;
 	}
 
 	
-	public float getFreq() {
+	public int getFreq() {
 		return freq;
 	}
 
@@ -138,7 +148,7 @@ public class Configuration implements Serializable {
 	@Override
 	public String toString() {
 		return "name "+ name + "; " + "freq "+freq+"; "+ "nBits "+nBits+"; "+
-				"\n Active channels "+activeChannelsToString()+"\n";
+				"\n Active channels ";//+activeChannelsToString()+"\n";
 	}
 }
 /*
