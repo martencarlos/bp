@@ -16,7 +16,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.Chronometer;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,10 +31,10 @@ public class NewRecordingActivity extends Activity {
 	private LinearLayout ui_graph;
 	private TextView ui_recName, ui_configName, ui_bits, ui_freq, ui_aChannels, ui_macAddr;
 	private Button ui_startStop;
-	private Chronometer duration;
 
 	private Configuration currentConfig;
-
+	String recordingName="";
+	Bundle extras;
 	Messenger mService = null;
 	static int dato = 0;
 	private boolean isServiceStarted=false;
@@ -78,8 +77,6 @@ public class NewRecordingActivity extends Activity {
 		}
 	
 		public void onServiceDisconnected(ComponentName className) {
-			// This is called when the connection with the service has been
-			// unexpectedly disconnected - process crashed.
 			mService = null;
 			Log.d("bplux_service", "service disconnected!");
 		}
@@ -97,7 +94,7 @@ public class NewRecordingActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_new_recording);
 		
-		Bundle extras = getIntent().getExtras();
+		extras = getIntent().getExtras();
 		
 		if(extras.getBoolean("notification")!=false){
 		    Log.d("test", "comes from a notification with value: "+extras.getBoolean("notification"));
@@ -107,8 +104,8 @@ public class NewRecordingActivity extends Activity {
 		initUI();
 		currentConfig = (Configuration) extras.getSerializable(
 				"configSelected");
-		ui_recName.setText(extras.getString("recordingName")
-				.toString());
+		recordingName = extras.getString("recordingName").toString();
+		ui_recName.setText(recordingName);
 		ui_configName.setText(currentConfig.getName());
 		ui_freq.setText(String.valueOf(currentConfig.getFreq())+" Hz");
 		ui_bits.setText(String.valueOf(currentConfig.getnBits())+" bits");
@@ -129,6 +126,22 @@ public class NewRecordingActivity extends Activity {
 		}
 	}
 
+	@Override
+	protected void onSaveInstanceState (Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		savedInstanceState.putAll(extras);
+	}
+	
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		currentConfig = (Configuration) savedInstanceState.getSerializable(
+				"configSelected");
+		Log.d("test", "config name after restarted "+currentConfig.getName());
+		recordingName = savedInstanceState.getString("recordingName").toString();
+		
+	}
+
 	private void initUI() {
 		ui_graph = (LinearLayout) findViewById(R.id.nr_graph_data);
 		ui_startStop = (Button) findViewById(R.id.nr_bttn_StartPause);
@@ -140,19 +153,6 @@ public class NewRecordingActivity extends Activity {
 		ui_macAddr = (TextView) findViewById(R.id.nr_txt_mac);
 	}
 
-	private void restoreMeIfNeeded(Bundle state) {
-		if (state != null) {
-			ui_recName.setText(state.getString("recording_name"));
-			// textIntValue.setText(state.getString("textIntValue"));
-			// textStrValue.setText(state.getString("textStrValue"));
-		}
-	}
-
-	private void bindIfServiceRunning() {
-		if (LocalService.isRunning()) {
-			bindToService();
-		}
-	}
 
 	private void start_receiving_data() {
 		if (isServiceBounded) {
