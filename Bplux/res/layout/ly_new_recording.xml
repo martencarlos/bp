@@ -3,9 +3,10 @@
     android:layout_height="fill_parent"
     android:fillViewport="true" >
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:background="#fff">
 
         <LinearLayout
@@ -28,7 +29,6 @@
             android:id="@+id/nr_graph_data"
             android:layout_width="fill_parent"
             android:layout_height="220dip"
-            android:layout_below="@id/nr_header"
             android:layout_marginBottom="5dip"
             android:orientation="vertical"
             android:paddingRight="10dip"
@@ -39,7 +39,6 @@
             android:id="@+id/nr_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/nr_graph_data"
             android:orientation="vertical" >
 
             <ImageView
@@ -195,8 +194,8 @@
         <LinearLayout
             android:id="@+id/nr_buttons"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_height="fill_parent"
+            android:gravity="bottom"
             android:orientation="vertical"
             android:paddingBottom="5dip"
             android:paddingTop="5dip" >
@@ -229,5 +228,5 @@
                 android:text="start recording" />
             </LinearLayout>
         </LinearLayout>
-    </RelativeLayout>
+    </LinearLayout>
 </ScrollView>
