@@ -34,11 +34,7 @@ import ceu.marten.data.Configuration;
 
 public class NewConfigActivity extends Activity {
 
-	int freq=500;
-	int nbits=8;
 	Configuration config;
-	String[] channelsActivated = null; // the ones that are not null
-	boolean[] channelsToDisplay= null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +42,12 @@ public class NewConfigActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_new_config);
 
+		/* initialize variables */
+		config = new Configuration();
+		config.setFreq(500);
+		config.setnBits(8);
 		/* initialize view components */
-		channelsToDisplay= new boolean[8];
+		
 		SeekBar frequency = (SeekBar) findViewById(R.id.freq_seekbar);
 		frequency.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 
@@ -56,7 +56,7 @@ public class NewConfigActivity extends Activity {
 				if (fromUser) {
 					((TextView) findViewById(R.id.freq_view)).setText(String
 							.valueOf(progress + 36));
-					freq = progress;
+					config.setFreq(progress);
 				}
 			}
 
@@ -75,19 +75,20 @@ public class NewConfigActivity extends Activity {
 				boolean handled = false;
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
 					SeekBar frequency = (SeekBar) findViewById(R.id.freq_seekbar);
+					
 					int new_frec = Integer.parseInt(v.getText().toString());
 					if (new_frec > 36 && new_frec <= 1000) {
 						frequency.setProgress((new_frec - 36));
-						freq = new_frec;
+						config.setFreq(new_frec);
 					} else if(new_frec > 1000){
 						frequency.setProgress(1000);
 						freqView.setText("1000");
-						freq = 1000;
+						config.setFreq(1000);
 						displayToast("max freq is 1000 Hz");
 					}else {
 						frequency.setProgress(0);
 						freqView.setText("36");
-						freq = 36;
+						config.setFreq(36);
 						displayToast("min freq is 36 Hz");
 					}
 					freqView.clearFocus();
@@ -103,8 +104,7 @@ public class NewConfigActivity extends Activity {
 			}
 		});
 
-		/* initialize variables */
-		config = new Configuration();
+		
 
 	}
 
@@ -137,7 +137,8 @@ public class NewConfigActivity extends Activity {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						TextView ca = (TextView) findViewById(R.id.txt_canales_activos);
-						channelsActivated = acla.getChecked();
+						String[] channelsActivated = acla.getChecked();
+						config.setActiveChannels(channelsActivated);
 						int counter=0;
 						for (int i = 0; i < channelsActivated.length; i++) {
 							if (channelsActivated[i] != null)
@@ -183,10 +184,10 @@ public class NewConfigActivity extends Activity {
 
 		final ArrayList<String> channels = new ArrayList<String>();
 		final ArrayList<String> sensors = new ArrayList<String>();
-		for (int i = 0; i < channelsActivated.length; i++) {
-			if (channelsActivated[i] != null) {
+		for (int i = 0; i < config.getActiveChannels().length; i++) {
+			if (config.getActiveChannels()[i].compareTo("null")!=0){
 				channels.add("channel " + (i + 1));
-				sensors.add(channelsActivated[i]);
+				sensors.add(config.getActiveChannels()[i]);
 			}
 		}
 
@@ -210,7 +211,7 @@ public class NewConfigActivity extends Activity {
 					public void onClick(DialogInterface dialog, int which) {
 						boolean[] channelsSelected = ctdla.getChecked();
 						TextView ca = (TextView) findViewById(R.id.nc_txt_channels_to_show);
-
+						boolean[] ctd= new boolean[8];
 						int counter = 0;
 						for (int i = 0; i < channelsSelected.length; i++) {
 							if (channelsSelected[i]) {
@@ -227,9 +228,8 @@ public class NewConfigActivity extends Activity {
 							String si = "";
 							for (int i = 0; i < channelsSelected.length; i++) {
 								if (channelsSelected[i]) {
-									Log.d("test", "channel number: "+ channels.get(i).toString().charAt(channels.get(i).toString().length()-1));
-									int in=Character.getNumericValue((channels.get(i).toString().charAt(channels.get(i).toString().length()-1)));
-									channelsToDisplay[in] = true;
+									int in=Character.getNumericValue((channels.get(i).toString().charAt(channels.get(i).toString().length()-1))-1);
+									ctd[in] = true;
 									
 									si = si + "\n\t"
 											+ channels.get(i).toString()
@@ -238,6 +238,7 @@ public class NewConfigActivity extends Activity {
 								}
 							}
 							ca.append(si);
+							config.setchannelsToDisplay(ctd);
 						}
 
 					}
@@ -263,10 +264,25 @@ public class NewConfigActivity extends Activity {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.settings_menu, menu);
-		return true;
+	protected void onSaveInstanceState (Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		config.setName(((EditText) findViewById(R.id.dev_name)).getText()
+				.toString());
+		config.setMac_address(((EditText) findViewById(R.id.nc_mac_address)).getText()
+				.toString());
+		savedInstanceState.putSerializable("configSaved", config);
+		savedInstanceState.putString("actChannels",((TextView) findViewById(R.id.txt_canales_activos)).getText().toString());
+		savedInstanceState.putString("channelsToShow",((TextView) findViewById(R.id.nc_txt_channels_to_show)).getText().toString());
+		
+	}
+	
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		config = (Configuration) savedInstanceState.getSerializable("configSaved");
+		
+		((TextView) findViewById(R.id.txt_canales_activos)).setText(savedInstanceState.getString("actChannels"));
+		((TextView) findViewById(R.id.nc_txt_channels_to_show)).setText(savedInstanceState.getString("channelsToShow"));
 	}
 
 	private void displayToast(String messageToDisplay) {
@@ -284,11 +300,8 @@ public class NewConfigActivity extends Activity {
 				.toString());
 		config.setMac_address(((EditText) findViewById(R.id.nc_mac_address)).getText()
 				.toString());
-		config.setFreq(freq);
-		config.setnBits(nbits);
 		config.setCreateDate(dateFormat.format(date));
-		config.setActiveChannels(channelsActivated);
-		config.setchannelsToDisplay(channelsToDisplay);
+
 		Intent returnIntent = new Intent();
 		returnIntent.putExtra("config", config);
 		setResult(RESULT_OK, returnIntent);
@@ -311,11 +324,11 @@ public class NewConfigActivity extends Activity {
 		switch (view.getId()) {
 		case R.id.radioBttn8:
 			if (checked)
-				nbits = 8;
+				config.setnBits(8);
 			break;
 		case R.id.radioBttn12:
 			if (checked)
-				nbits = 12;
+				config.setnBits(12);
 			break;
 		}
 	}
@@ -325,14 +338,15 @@ public class NewConfigActivity extends Activity {
 	}
 
 	public void onClickedChannelDisplayPickDialog(View view) {
-		
+		String[] channelsActivated = config.getActiveChannels();
 		if(channelsActivated != null){
 			int counter = 0;
 			for (int i = 0; i < channelsActivated.length; i++) {
-				if (channelsActivated[i]!=null) {
+				if (channelsActivated[i].compareTo("null")!=0) {
 					counter++;
 				}
 			}
+			
 			if (counter != 0)
 				setupChannelsToDisplay();
 			else

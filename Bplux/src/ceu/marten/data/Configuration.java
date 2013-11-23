@@ -136,8 +136,11 @@ public class Configuration implements Serializable {
 	}
 	
 	public String[] getActiveChannels() {
-		 String entire = new String(this.activeChannels);
+		if(this.activeChannels !=null){
+			String entire = new String(this.activeChannels);
 	     return entire.split("\\*\\.\\*");
+		}else
+			return null;
 	}
 	private String activeChannelsToString(){
 		String strActChnls="";

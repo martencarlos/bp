@@ -33,6 +33,7 @@
         <activity
             android:name="ceu.marten.activities.NewConfigActivity"
             android:label="@string/graphtitle"
+            
             android:parentActivityName="ceu.marten.activities.HomeActivity" >
         </activity>
         <activity
@@ -45,6 +46,7 @@
         </activity>
         <activity
             android:name="ceu.marten.activities.NewRecordingActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
             android:label="@string/title_activity_new_session" >
         </activity>
 		<service android:name="ceu.marten.services.RunningDataService"/>

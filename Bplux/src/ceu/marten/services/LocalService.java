@@ -29,8 +29,7 @@ import ceu.marten.data.Configuration;
 public class LocalService extends Service {
 	private NotificationManager nm;
 	private Timer timer = new Timer();
-	private int counter = 0;
-	private boolean sendingData = false;
+	private boolean sendingData = true;
 	private static boolean isRunning = false;
 	private Configuration config;
 	private String recording_name;
@@ -39,27 +38,13 @@ public class LocalService extends Service {
 	private Device connection;
 	private Device.Frame[] frames;
 
-	ArrayList<Messenger> mClients = new ArrayList<Messenger>(); // Keeps track
-																// of all
-																// current
-																// registered
-																// clients.
-	int mValue = 0; // Holds last value set by a client.
+	ArrayList<Messenger> mClients = new ArrayList<Messenger>(); 
 	public static final int MSG_REGISTER_CLIENT = 1;
 	public static final int MSG_UNREGISTER_CLIENT = 2;
 	public static final int MSG_START_SENDING_DATA = 3;
 	public static final int MSG_STOP_SENDING_DATA = 4;
 	public static final int MSG_VALUE = 5;
-	final Messenger mMessenger = new Messenger(new IncomingHandler()); // Target
-																		// we
-																		// publish
-																		// for
-																		// clients
-																		// to
-																		// send
-																		// messages
-																		// to
-																		// IncomingHandler.
+	final Messenger mMessenger = new Messenger(new IncomingHandler()); 
 
 	class IncomingHandler extends Handler { // Handler of incoming messages from
 											// clients.
@@ -74,10 +59,10 @@ public class LocalService extends Service {
 				stopSelf();
 				break;
 			case MSG_START_SENDING_DATA:
-				sendingData = true;
+				//sendingData = true;
 				break;
 			case MSG_STOP_SENDING_DATA:
-				sendingData = false;
+				//sendingData = false;
 				break;
 			default:
 				super.handleMessage(msg);
@@ -88,7 +73,7 @@ public class LocalService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		frames = new Device.Frame[10];
+		frames = new Device.Frame[20];
 		for (int i=0;i<frames.length;i++)
 			frames[i] = new Frame();
 		Log.d("bplux_service", "Service created");
@@ -106,7 +91,6 @@ public class LocalService extends Service {
 		isRunning = true;
 		showNotification();
 		return mMessenger.getBinder();
-	
 	}
 
 	private void getInfoFromActivity(Intent intent) {
@@ -114,30 +98,21 @@ public class LocalService extends Service {
 		config = (Configuration) intent.getSerializableExtra("currentConfig");
 		
 		boolean[] ctd_tmp = new boolean[8];
+		ctd_tmp = config.getchannelsToDisplay();
 		for(int i=0; i<ctd_tmp.length;i++)
-			if(ctd_tmp[i])
-				channelToDisplay= i;
-			
+			if(ctd_tmp[i]){
+				channelToDisplay= (i+1);
+				Log.d("test", "channel to display: "+channelToDisplay);
+			}
 		
-			
-		config.getchannelsToDisplay();
 	}
 
 	private void connectToBiopluxDevice() {
 		
-		Device.Frame[] tmp_frames = null;
-		ArrayList<Device.Frame> save_frames = null;
-
-		tmp_frames = new Device.Frame[10];
-
-		// initialize frames array
-		for (int i = 0; i < tmp_frames.length; i++) {
-			tmp_frames[i] = new Device.Frame();
-		}
 		// bioPlux initialization
 		try {
 			connection = Device.Create(config.getMac_address());// Device mac addr 00:07:80:4C:2A:FB
-			connection.BeginAcq(config.getFreq(),11111111,config.getnBits());
+			connection.BeginAcq(config.getFreq(),255,config.getnBits());
 		} catch (BPException e) {
 			e.printStackTrace();
 		}
@@ -146,10 +121,10 @@ public class LocalService extends Service {
 
 	private void processFrames() {
 		try {
-			getFrames(10);
+			getFrames(20);
 			for(Frame f : frames){
 				if (sendingData)
-					sendMessageToUI(f.an_in[channelToDisplay]);
+					sendMessageToUI(f.an_in[(channelToDisplay-1)]);
 			}
 		} catch (Throwable t) { 
 			Log.d("test", "TIMER ERROR");//, t);
@@ -177,15 +152,12 @@ public class LocalService extends Service {
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 		stackBuilder.addParentStack(RecordingConfigsActivity.class);
 		Intent newRecActIntent = new Intent(this, NewRecordingActivity.class);
+		newRecActIntent.putExtra("notification", true);
 		stackBuilder.addNextIntent(newRecActIntent);
 		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		mBuilder.setContentIntent(resultPendingIntent);
 
-		// ADDING AN ACTION
-		PendingIntent pIntent = PendingIntent.getActivity(this, 0,
-				newRecActIntent, 0);
-		mBuilder.addAction(R.drawable.ic_undo, "stop service", pIntent);
 		mBuilder.setAutoCancel(true);
 		mBuilder.setOngoing(true);
 		Notification notification = mBuilder.build();

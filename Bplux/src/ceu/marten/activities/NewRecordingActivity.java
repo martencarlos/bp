@@ -31,13 +31,14 @@ public class NewRecordingActivity extends Activity {
 
 	private LinearLayout ui_graph;
 	private TextView ui_recName, ui_configName, ui_bits, ui_freq, ui_aChannels, ui_macAddr;
-	private Button ui_startStop, ui_receiveData;
+	private Button ui_startStop;
 	private Chronometer duration;
 
 	private Configuration currentConfig;
 
 	Messenger mService = null;
 	static int dato = 0;
+	private boolean isServiceStarted=false;
 	static HRGraph graph;
 	boolean isServiceBounded = false;
 	boolean isReceivingData = false;
@@ -95,12 +96,18 @@ public class NewRecordingActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_new_recording);
-
-		initUI();
-		currentConfig = (Configuration) getIntent().getSerializableExtra(
-				"configSelected");
 		
-		ui_recName.setText(getIntent().getStringExtra("recordingName")
+		Bundle extras = getIntent().getExtras();
+		
+		if(extras.getBoolean("notification")!=false){
+		    Log.d("test", "comes from a notification with value: "+extras.getBoolean("notification"));
+		}else{
+			
+		
+		initUI();
+		currentConfig = (Configuration) extras.getSerializable(
+				"configSelected");
+		ui_recName.setText(extras.getString("recordingName")
 				.toString());
 		ui_configName.setText(currentConfig.getName());
 		ui_freq.setText(String.valueOf(currentConfig.getFreq())+" Hz");
@@ -119,13 +126,12 @@ public class NewRecordingActivity extends Activity {
 		//bindIfServiceRunning();
 		graph = new HRGraph(this);
 		ui_graph.addView(graph.getGraphView());
-
+		}
 	}
 
 	private void initUI() {
 		ui_graph = (LinearLayout) findViewById(R.id.nr_graph_data);
 		ui_startStop = (Button) findViewById(R.id.nr_bttn_StartPause);
-		ui_receiveData=(Button) findViewById(R.id.nr_bttn_receive_data);
 		ui_recName = (TextView) findViewById(R.id.nr_txt_recordingName);
 		ui_configName = (TextView) findViewById(R.id.nr_txt_configName);
 		ui_bits = (TextView) findViewById(R.id.nr_txt_config_nbits);
@@ -177,39 +183,24 @@ public class NewRecordingActivity extends Activity {
 		}
 	}
 
-
 	public void onClickedStartStop(View view) {
-		if (!isServiceBounded) {
+		if (!isServiceStarted) {
 			startService(new Intent(NewRecordingActivity.this, LocalService.class));
 			bindToService();
-			displayToast("service started");
-			ui_startStop.setText("stop service");
+			displayToast("recording started");
+			ui_startStop.setText("stop recording");
+			isReceivingData=true;
+			isServiceStarted= true;
 		}else{
 			unbindOfService();
-			displayToast("service stopped");
-			ui_startStop.setText("start service");
+			displayToast("recording stopped");
+			ui_startStop.setText("start recording");
+			isReceivingData=false;
+			isServiceStarted= false;
 		}
 			
 	}
-	public void onClickedReceiveData(View view) {
-		if (mService !=null && !isReceivingData) {
-			start_receiving_data();
-			displayToast("receiving data");
-			ui_receiveData.setText("stop receiving data");
-			isReceivingData=true;
-		}else if(isReceivingData){
-			stop_receiving_data();
-			ui_receiveData.setText("start receiving data");
-			isReceivingData=false;
-			displayToast("not receiving data");
-		}else
-			displayToast("start service first");
-			
-	}
 	
-
-	
-
 	private void displayToast(String messageToDisplay) {
 		Toast t = Toast.makeText(getApplicationContext(), messageToDisplay,
 				Toast.LENGTH_SHORT);

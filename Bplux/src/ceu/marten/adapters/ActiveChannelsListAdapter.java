@@ -22,7 +22,7 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 
 	private final Context context;
 	private ArrayList<String> strings;
-	private String[] sensorsChecked;
+	private String[] sensorsChecked = null;
 
 	public ActiveChannelsListAdapter(Context context, ArrayList<String> strings) {
 		super(context, 0, 0, strings);
