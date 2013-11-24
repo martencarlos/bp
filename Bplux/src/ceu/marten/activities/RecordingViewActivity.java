@@ -6,12 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import ceu.marten.bplux.R;
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 import android.widget.TextView;
+import ceu.marten.bplux.R;
 
 public class RecordingViewActivity extends Activity {
 

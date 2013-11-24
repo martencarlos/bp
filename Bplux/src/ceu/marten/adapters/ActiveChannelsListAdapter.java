@@ -99,8 +99,7 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 
 	@Override
 	public void onNothingSelected(AdapterView<?> spinner) {
-		int position = (Integer) spinner.getTag();
-
+		
 	}
 
 }

@@ -5,7 +5,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.ComponentName;
@@ -111,7 +110,7 @@ public class NewRecordingActivity extends  OrmLiteBaseActivity<DatabaseHelper>  
 				.getSerializable("configSelected");
 		recordingName = extras.getString("recordingName").toString();
 
-		if (extras.getBoolean("notification") != false) {
+		
 			if (isServiceRunning()){
 				bindToService();
 				ui_startStop = (Button) findViewById(R.id.nr_bttn_StartPause);
@@ -120,7 +119,7 @@ public class NewRecordingActivity extends  OrmLiteBaseActivity<DatabaseHelper>  
 				Log.d("test", "notificacionIniciaServicio");
 			}
 			
-		}
+		
 
 		initUI();
 

@@ -7,7 +7,6 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import ceu.marten.bplux.R;
-import ceu.marten.data.Recording;
 
 public class HomeActivity extends Activity {
 
