@@ -90,7 +90,7 @@ public class StoredRecordingsActivity extends
 			}
 			recordingsArrayList.remove(position);
 		}
-		Toast.makeText(this, "session removed ", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "recording removed ", Toast.LENGTH_SHORT).show();
 	}
 
 	public void loadRecordings() {

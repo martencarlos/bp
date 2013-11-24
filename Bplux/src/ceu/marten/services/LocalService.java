@@ -81,7 +81,6 @@ public class LocalService extends Service {
 		frames = new Device.Frame[20];
 		for (int i = 0; i < frames.length; i++)
 			frames[i] = new Frame();
-		Log.d("bplux_service", "Service created");
 	}
 
 	@Override
@@ -138,15 +137,6 @@ public class LocalService extends Service {
 			e.printStackTrace();
 		}
 		
-		/*
-		try {
-			writer.write(String.format(formatStr, String.valueOf(f.an_in[0]), 
-					String.valueOf(f.an_in[1]), String.valueOf(f.an_in[2]), String.valueOf(f.an_in[3]), String.valueOf(f.an_in[4]),
-					String.valueOf(f.an_in[5]), String.valueOf(f.an_in[6]), String.valueOf(f.an_in[7])));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		*/
 	}
 	private void readFile() {
 		InputStream in = null;
@@ -161,7 +151,6 @@ public class LocalService extends Service {
 					buf.append(str + "\n");
 				}
 				in.close();
-				Log.d("test", buf.toString());
 			}
 		} catch (FileNotFoundException e) {
 		
