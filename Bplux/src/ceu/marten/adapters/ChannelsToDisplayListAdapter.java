@@ -13,22 +13,23 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 import ceu.marten.bplux.R;
 
-public class ChannelsToDisplayListAdapter extends ArrayAdapter<String> implements
-		OnCheckedChangeListener {
+public class ChannelsToDisplayListAdapter extends ArrayAdapter<String>
+		implements OnCheckedChangeListener {
 
 	private final Context context;
 	private boolean[] channelsToDisplay;
 	private ArrayList<String> channels;
 	private ArrayList<String> sensors;
 
-	public ChannelsToDisplayListAdapter(Context context, ArrayList<String> channels,ArrayList<String> sensors) {
+	public ChannelsToDisplayListAdapter(Context context,
+			ArrayList<String> channels, ArrayList<String> sensors) {
 		super(context, 0, 0, channels);
 		this.context = context;
 		this.channels = channels;
 		this.sensors = sensors;
 		this.channelsToDisplay = new boolean[channels.size()];
-		for(int i=0;i<channelsToDisplay.length;i++)
-			channelsToDisplay[i]=false;
+		for (int i = 0; i < channelsToDisplay.length; i++)
+			channelsToDisplay[i] = false;
 	}
 
 	@Override
@@ -41,21 +42,22 @@ public class ChannelsToDisplayListAdapter extends ArrayAdapter<String> implement
 
 		}
 
-		//GET VIEWS
-		TextView channelNumber = (TextView) rowView.findViewById(R.id.li_ctd_channelNumber);
+		// GET VIEWS
+		TextView channelNumber = (TextView) rowView
+				.findViewById(R.id.li_ctd_channelNumber);
 		TextView sensor = (TextView) rowView.findViewById(R.id.li_ctd_sensor);
 		CheckBox cb = (CheckBox) rowView.findViewById(R.id.li_ctd_checkbox);
-		
-		//SETUP CHECK BOX
+
+		// SETUP CHECK BOX
 		cb.setTag(R.id.TAG_POSITION, position);
 		cb.setOnCheckedChangeListener(this);
 
-		//SETUP CHANNEL NUMBER
+		// SETUP CHANNEL NUMBER
 		channelNumber.setText(channels.get(position));
-		
-		//SETUP SENSOR
+
+		// SETUP SENSOR
 		sensor.setText(sensors.get(position));
-		
+
 		return rowView;
 	}
 

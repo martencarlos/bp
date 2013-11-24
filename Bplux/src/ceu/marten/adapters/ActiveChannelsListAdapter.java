@@ -47,11 +47,10 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 		cb.setTag(R.id.TAG_SENSORS, rowView.findViewById(R.id.li_ac_sensors));
 		cb.setOnCheckedChangeListener(this);
 
-		
 		Spinner spinner = (Spinner) rowView.findViewById(R.id.li_ac_sensors);
 		spinner.setTag(position);
 		spinner.setOnItemSelectedListener(this);
-		
+
 		// rowView.setOnClickListener(this);
 
 		TextView channelNumber = (TextView) rowView
@@ -87,9 +86,9 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 	@Override
 	public void onItemSelected(AdapterView<?> spinner, View currentText,
 			int pos, long id) {
-			
+
 		TextView t = (TextView) currentText;
-		if(t.getText().toString().compareTo("electrocardiograma")!=0){
+		if (t.getText().toString().compareTo("electrocardiograma") != 0) {
 			int position = (Integer) spinner.getTag();
 			sensorsChecked[position] = ((Spinner) spinner).getSelectedItem()
 					.toString();

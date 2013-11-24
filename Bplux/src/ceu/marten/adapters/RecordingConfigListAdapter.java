@@ -17,7 +17,8 @@ public class RecordingConfigListAdapter extends ArrayAdapter<Configuration> {
 
 	private final Context context;
 
-	public RecordingConfigListAdapter(Context context, ArrayList<Configuration> loadedDevices) {
+	public RecordingConfigListAdapter(Context context,
+			ArrayList<Configuration> loadedDevices) {
 		super(loadedDevices);
 		this.context = context;
 	}
@@ -32,13 +33,11 @@ public class RecordingConfigListAdapter extends ArrayAdapter<Configuration> {
 		}
 
 		TextView name = (TextView) rowView.findViewById(R.id.dli_name);
-		
+
 		Configuration dev = getItem(position);
-		
-		
+
 		name.setText(dev.getName());
-		
-		
+
 		return rowView;
 	}
 

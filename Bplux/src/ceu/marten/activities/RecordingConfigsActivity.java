@@ -97,9 +97,10 @@ public class RecordingConfigsActivity extends
 										NewRecordingActivity.class);
 								intent.putExtra("recordingName",
 										newRecordingName);
-								intent.putExtra("configSelected", configs.get(configSelectedPos));
+								intent.putExtra("configSelected",
+										configs.get(configSelectedPos));
 								startActivity(intent);
-							}		
+							}
 						})
 				.setNegativeButton("cancel",
 						new DialogInterface.OnClickListener() {
@@ -110,8 +111,6 @@ public class RecordingConfigsActivity extends
 		RecName = builder.create();
 
 	}
-
-	
 
 	private void setupDevicesListView() {
 

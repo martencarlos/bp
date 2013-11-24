@@ -47,7 +47,7 @@ public class NewConfigActivity extends Activity {
 		config.setFreq(500);
 		config.setnBits(8);
 		/* initialize view components */
-		
+
 		SeekBar frequency = (SeekBar) findViewById(R.id.freq_seekbar);
 		frequency.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 
@@ -75,17 +75,17 @@ public class NewConfigActivity extends Activity {
 				boolean handled = false;
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
 					SeekBar frequency = (SeekBar) findViewById(R.id.freq_seekbar);
-					
+
 					int new_frec = Integer.parseInt(v.getText().toString());
 					if (new_frec > 36 && new_frec <= 1000) {
 						frequency.setProgress((new_frec - 36));
 						config.setFreq(new_frec);
-					} else if(new_frec > 1000){
+					} else if (new_frec > 1000) {
 						frequency.setProgress(1000);
 						freqView.setText("1000");
 						config.setFreq(1000);
 						displayToast("max freq is 1000 Hz");
-					}else {
+					} else {
 						frequency.setProgress(0);
 						freqView.setText("36");
 						config.setFreq(36);
@@ -103,8 +103,6 @@ public class NewConfigActivity extends Activity {
 
 			}
 		});
-
-		
 
 	}
 
@@ -139,7 +137,7 @@ public class NewConfigActivity extends Activity {
 						TextView ca = (TextView) findViewById(R.id.txt_canales_activos);
 						String[] channelsActivated = acla.getChecked();
 						config.setActiveChannels(channelsActivated);
-						int counter=0;
+						int counter = 0;
 						for (int i = 0; i < channelsActivated.length; i++) {
 							if (channelsActivated[i] != null)
 								counter++;
@@ -185,7 +183,7 @@ public class NewConfigActivity extends Activity {
 		final ArrayList<String> channels = new ArrayList<String>();
 		final ArrayList<String> sensors = new ArrayList<String>();
 		for (int i = 0; i < config.getActiveChannels().length; i++) {
-			if (config.getActiveChannels()[i].compareTo("null")!=0){
+			if (config.getActiveChannels()[i].compareTo("null") != 0) {
 				channels.add("channel " + (i + 1));
 				sensors.add(config.getActiveChannels()[i]);
 			}
@@ -211,7 +209,7 @@ public class NewConfigActivity extends Activity {
 					public void onClick(DialogInterface dialog, int which) {
 						boolean[] channelsSelected = ctdla.getChecked();
 						TextView ca = (TextView) findViewById(R.id.nc_txt_channels_to_show);
-						boolean[] ctd= new boolean[8];
+						boolean[] ctd = new boolean[8];
 						int counter = 0;
 						for (int i = 0; i < channelsSelected.length; i++) {
 							if (channelsSelected[i]) {
@@ -228,9 +226,11 @@ public class NewConfigActivity extends Activity {
 							String si = "";
 							for (int i = 0; i < channelsSelected.length; i++) {
 								if (channelsSelected[i]) {
-									int in=Character.getNumericValue((channels.get(i).toString().charAt(channels.get(i).toString().length()-1))-1);
+									int in = Character.getNumericValue((channels
+											.get(i).toString().charAt(channels
+											.get(i).toString().length() - 1)) - 1);
 									ctd[in] = true;
-									
+
 									si = si + "\n\t"
 											+ channels.get(i).toString()
 											+ " with sensor "
@@ -264,25 +264,32 @@ public class NewConfigActivity extends Activity {
 	}
 
 	@Override
-	protected void onSaveInstanceState (Bundle savedInstanceState) {
+	protected void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
 		config.setName(((EditText) findViewById(R.id.dev_name)).getText()
 				.toString());
-		config.setMac_address(((EditText) findViewById(R.id.nc_mac_address)).getText()
-				.toString());
+		config.setMac_address(((EditText) findViewById(R.id.nc_mac_address))
+				.getText().toString());
 		savedInstanceState.putSerializable("configSaved", config);
-		savedInstanceState.putString("actChannels",((TextView) findViewById(R.id.txt_canales_activos)).getText().toString());
-		savedInstanceState.putString("channelsToShow",((TextView) findViewById(R.id.nc_txt_channels_to_show)).getText().toString());
-		
+		savedInstanceState.putString("actChannels",
+				((TextView) findViewById(R.id.txt_canales_activos)).getText()
+						.toString());
+		savedInstanceState.putString("channelsToShow",
+				((TextView) findViewById(R.id.nc_txt_channels_to_show))
+						.getText().toString());
+
 	}
-	
+
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		config = (Configuration) savedInstanceState.getSerializable("configSaved");
-		
-		((TextView) findViewById(R.id.txt_canales_activos)).setText(savedInstanceState.getString("actChannels"));
-		((TextView) findViewById(R.id.nc_txt_channels_to_show)).setText(savedInstanceState.getString("channelsToShow"));
+		config = (Configuration) savedInstanceState
+				.getSerializable("configSaved");
+
+		((TextView) findViewById(R.id.txt_canales_activos))
+				.setText(savedInstanceState.getString("actChannels"));
+		((TextView) findViewById(R.id.nc_txt_channels_to_show))
+				.setText(savedInstanceState.getString("channelsToShow"));
 	}
 
 	private void displayToast(String messageToDisplay) {
@@ -298,8 +305,8 @@ public class NewConfigActivity extends Activity {
 		Date date = new Date();
 		config.setName(((EditText) findViewById(R.id.dev_name)).getText()
 				.toString());
-		config.setMac_address(((EditText) findViewById(R.id.nc_mac_address)).getText()
-				.toString());
+		config.setMac_address(((EditText) findViewById(R.id.nc_mac_address))
+				.getText().toString());
 		config.setCreateDate(dateFormat.format(date));
 
 		Intent returnIntent = new Intent();
@@ -339,20 +346,19 @@ public class NewConfigActivity extends Activity {
 
 	public void onClickedChannelDisplayPickDialog(View view) {
 		String[] channelsActivated = config.getActiveChannels();
-		if(channelsActivated != null){
+		if (channelsActivated != null) {
 			int counter = 0;
 			for (int i = 0; i < channelsActivated.length; i++) {
-				if (channelsActivated[i].compareTo("null")!=0) {
+				if (channelsActivated[i].compareTo("null") != 0) {
 					counter++;
 				}
 			}
-			
+
 			if (counter != 0)
 				setupChannelsToDisplay();
 			else
 				displayToast("please select active channels first");
-		}
-		else
+		} else
 			displayToast("please select active channels first");
 	}
 }

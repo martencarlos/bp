@@ -6,9 +6,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "sessions")
-public class Recording implements Serializable{
+public class Recording implements Serializable {
 
-	
 	private static final long serialVersionUID = -5456569572649294107L;
 	@DatabaseField(generatedId = true)
 	private Integer id;
@@ -18,18 +17,18 @@ public class Recording implements Serializable{
 	private String startDate;
 	@DatabaseField(canBeNull = true)
 	private long duration = 0;
-	@DatabaseField(canBeNull=true, foreign = true)
+	@DatabaseField(canBeNull = true, foreign = true)
 	private Configuration config;
-	
+
 	@DatabaseField(canBeNull = true)
 	private String data_id;
-	
-	
-	public Recording(){
-		//needed by OrmLite
+
+	public Recording() {
+		// needed by OrmLite
 	}
-	
-	public Recording(String initName, String initStartDate, long initDuration, Configuration initConfig, String initDataId) {
+
+	public Recording(String initName, String initStartDate, long initDuration,
+			Configuration initConfig, String initDataId) {
 		super();
 		this.name = initName;
 		this.startDate = initStartDate;
@@ -65,7 +64,7 @@ public class Recording implements Serializable{
 	public void setConfig(Configuration config) {
 		this.config = config;
 	}
-	
+
 	public Configuration getConfig() {
 		return config;
 	}
@@ -80,7 +79,8 @@ public class Recording implements Serializable{
 
 	@Override
 	public String toString() {
-		return "name "+ name + "\n " + "startDate "+startDate+"\n "+ "duration "+duration+"\n\t "+config.toString();
+		return "name " + name + "\n " + "startDate " + startDate + "\n "
+				+ "duration " + duration + "\n\t " + config.toString();
 	}
-	
+
 }

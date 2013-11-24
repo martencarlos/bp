@@ -16,7 +16,7 @@ public class HomeActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_home);
-		
+
 	}
 
 	@Override
@@ -25,6 +25,7 @@ public class HomeActivity extends Activity {
 		getMenuInflater().inflate(R.menu.welcome_menu, menu);
 		return true;
 	}
+
 	@Override
 	protected void onRestart() {
 		super.onRestart();
@@ -35,7 +36,6 @@ public class HomeActivity extends Activity {
 		super.onStop();
 	}
 
-	
 	/* BUTTON EVENTS */
 	public void onClickedConfigs(View view) {
 		Intent intent = new Intent(this, RecordingConfigsActivity.class);

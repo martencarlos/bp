@@ -13,6 +13,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -34,17 +35,17 @@ public class LocalService extends Service {
 	private Configuration config;
 	private String recording_name;
 	private int channelToDisplay = 0;
-	
+
 	private Device connection;
 	private Device.Frame[] frames;
 
-	ArrayList<Messenger> mClients = new ArrayList<Messenger>(); 
+	ArrayList<Messenger> mClients = new ArrayList<Messenger>();
 	public static final int MSG_REGISTER_CLIENT = 1;
 	public static final int MSG_UNREGISTER_CLIENT = 2;
 	public static final int MSG_START_SENDING_DATA = 3;
-	public static final int MSG_STOP_SENDING_DATA = 4;
+	public static final int MSG_STOP_SERVICE = 4;
 	public static final int MSG_VALUE = 5;
-	final Messenger mMessenger = new Messenger(new IncomingHandler()); 
+	final Messenger mMessenger = new Messenger(new IncomingHandler());
 
 	class IncomingHandler extends Handler { // Handler of incoming messages from
 											// clients.
@@ -56,13 +57,11 @@ public class LocalService extends Service {
 				break;
 			case MSG_UNREGISTER_CLIENT:
 				mClients.remove(msg.replyTo);
-				stopSelf();
 				break;
 			case MSG_START_SENDING_DATA:
-				//sendingData = true;
+				// sendingData = true;
 				break;
-			case MSG_STOP_SENDING_DATA:
-				//sendingData = false;
+			case MSG_STOP_SERVICE:
 				break;
 			default:
 				super.handleMessage(msg);
@@ -74,7 +73,7 @@ public class LocalService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		frames = new Device.Frame[20];
-		for (int i=0;i<frames.length;i++)
+		for (int i = 0; i < frames.length; i++)
 			frames[i] = new Frame();
 		Log.d("bplux_service", "Service created");
 	}
@@ -89,45 +88,48 @@ public class LocalService extends Service {
 			}
 		}, 0, 100L);
 		isRunning = true;
-		showNotification();
+		showNotification(intent);
 		return mMessenger.getBinder();
 	}
 
 	private void getInfoFromActivity(Intent intent) {
-		recording_name = intent.getStringExtra("recName").toString();
-		config = (Configuration) intent.getSerializableExtra("currentConfig");
-		
+		recording_name = intent.getStringExtra("recordingName").toString();
+		config = (Configuration) intent.getSerializableExtra("configSelected");
+
 		boolean[] ctd_tmp = new boolean[8];
 		ctd_tmp = config.getchannelsToDisplay();
-		for(int i=0; i<ctd_tmp.length;i++)
-			if(ctd_tmp[i]){
-				channelToDisplay= (i+1);
-				Log.d("test", "channel to display: "+channelToDisplay);
+		for (int i = 0; i < ctd_tmp.length; i++)
+			if (ctd_tmp[i]) {
+				channelToDisplay = (i + 1);
+				Log.d("test", "channel to display: " + channelToDisplay);
 			}
-		
+
 	}
 
 	private void connectToBiopluxDevice() {
-		
+
 		// bioPlux initialization
 		try {
-			connection = Device.Create(config.getMac_address());// Device mac addr 00:07:80:4C:2A:FB
-			connection.BeginAcq(config.getFreq(),255,config.getnBits());
+			connection = Device.Create(config.getMac_address());// Device mac
+																// addr
+																// 00:07:80:4C:2A:FB
+			connection.BeginAcq(config.getFreq(), 255, config.getnBits());
 		} catch (BPException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private void processFrames() {
+		Log.d("test", "doing work");
 		try {
 			getFrames(20);
-			for(Frame f : frames){
+			for (Frame f : frames) {
 				if (sendingData)
-					sendMessageToUI(f.an_in[(channelToDisplay-1)]);
+					sendMessageToUI(f.an_in[(channelToDisplay - 1)]);
 			}
-		} catch (Throwable t) { 
-			Log.d("test", "TIMER ERROR");//, t);
+		} catch (Throwable t) {
+			Log.d("test", "TIMER ERROR");// , t);
 		}
 	}
 
@@ -140,7 +142,7 @@ public class LocalService extends Service {
 
 	}
 
-	private void showNotification() {
+	private void showNotification(Intent parentIntent) {
 
 		// SET THE BASICS
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
@@ -152,13 +154,18 @@ public class LocalService extends Service {
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 		stackBuilder.addParentStack(RecordingConfigsActivity.class);
 		Intent newRecActIntent = new Intent(this, NewRecordingActivity.class);
+		Bundle b = parentIntent.getExtras();
+		newRecActIntent.putExtra("recordingName",
+				recording_name);
+		newRecActIntent.putExtra("configSelected",
+				config);
 		newRecActIntent.putExtra("notification", true);
 		stackBuilder.addNextIntent(newRecActIntent);
 		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		mBuilder.setContentIntent(resultPendingIntent);
 
-		mBuilder.setAutoCancel(true);
+		//mBuilder.setAutoCancel(true);
 		mBuilder.setOngoing(true);
 		Notification notification = mBuilder.build();
 

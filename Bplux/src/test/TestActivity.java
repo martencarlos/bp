@@ -66,8 +66,6 @@ public class TestActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date date = new Date();
 
-	
-
 		session.setConfig(config);
 		session.setDuration(1000);
 		session.setName("session 1");
@@ -77,30 +75,28 @@ public class TestActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	public void onClickedSaveSession(View view) {
 		saveDeviceConfig(config);
 		saveSession(session);
-		
+
 	}
 
 	public void onClickedLoadSessions(View view) {
-		
+
 		sessions = loadSessions();
 		TextView t = (TextView) findViewById(R.id.txtResult);
-		
+
 		t.setText("Sessions:\n\n");
 		for (Recording s : sessions) {
-			
+
 			try {
-				Configuration dev= s.getConfig();
+				Configuration dev = s.getConfig();
 				getHelper().getDeviceConfigDao().refresh(dev);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 			t.append(s.toString() + "\n");
 		}
-		
-		
-		
+
 	}
-	
+
 	public void saveDeviceConfig(Configuration config) {
 		Dao<Configuration, Integer> dao;
 		try {
@@ -111,8 +107,8 @@ public class TestActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			e.printStackTrace();
 		}
 	}
-	
-	public ArrayList<Configuration> loadDevicesConfig(){
+
+	public ArrayList<Configuration> loadDevicesConfig() {
 		ArrayList<Configuration> devicesConfig = new ArrayList<Configuration>();
 		Dao<Configuration, Integer> dao;
 		try {
@@ -129,12 +125,12 @@ public class TestActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		try {
 			Dao<Recording, Integer> dao = getHelper().getSessionDao();
 			dao.create(session);
-	
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			Log.d("save", "exception al guardar Session en BD");
 		}
-	
+
 	}
 
 	public List<Recording> loadSessions() {
@@ -151,11 +147,5 @@ public class TestActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 		return sessions;
 	}
-	
-	
-
-	
-
-
 
 }

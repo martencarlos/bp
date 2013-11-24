@@ -11,6 +11,5 @@ public class SelectChannelsDialog extends Dialog {
 		super(context);
 		// TODO Auto-generated constructor stub
 	}
-	
-	
+
 }

@@ -1,6 +1,5 @@
 package ceu.marten.activities;
 
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,20 +29,20 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
-public class StoredRecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper> implements
-		OnDismissCallback {
+public class StoredRecordingsActivity extends
+		OrmLiteBaseActivity<DatabaseHelper> implements OnDismissCallback {
 
 	private Dialog dialog;
 	private ListView lv_sessions;
 	private StoredRecordingsListAdapter baseAdapter;
 	private ArrayList<Recording> al_sessions = null;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_stored_recordings);
-		
+
 		loadSessions();
 		setupSessionDetailsDialog();
 		setupDevicesListView();
@@ -60,7 +59,6 @@ public class StoredRecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper
 		super.onStop();
 	}
 
-
 	private void setupSessionDetailsDialog() {
 
 		dialog = new Dialog(this);
@@ -70,14 +68,13 @@ public class StoredRecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper
 	private void setupDevicesListView() {
 
 		/** SETTING UP THE LISTENERS */
-		
 
 		lv_sessions = (ListView) findViewById(R.id.lvSessions);
 
 		/** SETTING UP THE ADAPTERS */
 		baseAdapter = new StoredRecordingsListAdapter(this, al_sessions);
 		setSwipeToDismissAdapter();
-		
+
 	}
 
 	private void setSwipeToDismissAdapter() {
@@ -86,16 +83,15 @@ public class StoredRecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper
 		swipeAdapter.setAbsListView(lv_sessions);
 		lv_sessions.setAdapter(baseAdapter);
 	}
-	
 
 	@Override
 	public void onDismiss(AbsListView listView, int[] reverseSortedPositions) {
 		for (int position : reverseSortedPositions) {
 			baseAdapter.remove(position);
 			Dao<Recording, Integer> dao = null;
-			
+
 			try {
-				 dao = getHelper().getSessionDao();
+				dao = getHelper().getSessionDao();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -111,9 +107,6 @@ public class StoredRecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper
 		Toast.makeText(this, "session removed ", Toast.LENGTH_SHORT).show();
 	}
 
-	
-
-	
 	public void loadSessions() {
 		Dao<Recording, Integer> dao;
 		al_sessions = new ArrayList<Recording>();
@@ -126,9 +119,5 @@ public class StoredRecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper
 			e.printStackTrace();
 		}
 	}
-	
-
-	
-
 
 }

@@ -1,6 +1,8 @@
 package ceu.marten.activities;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -29,15 +31,15 @@ import com.jjoe64.graphview.GraphView.GraphViewData;
 public class NewRecordingActivity extends Activity {
 
 	private LinearLayout ui_graph;
-	private TextView ui_recName, ui_configName, ui_bits, ui_freq, ui_aChannels, ui_macAddr;
+	private TextView ui_recName, ui_configName, ui_bits, ui_freq, ui_aChannels,
+			ui_macAddr;
 	private Button ui_startStop;
 
 	private Configuration currentConfig;
-	String recordingName="";
+	String recordingName = "";
 	Bundle extras;
 	Messenger mService = null;
 	static int dato = 0;
-	private boolean isServiceStarted=false;
 	static HRGraph graph;
 	boolean isServiceBounded = false;
 	boolean isReceivingData = false;
@@ -75,7 +77,7 @@ public class NewRecordingActivity extends Activity {
 						"error: service could not be initialized");
 			}
 		}
-	
+
 		public void onServiceDisconnected(ComponentName className) {
 			mService = null;
 			Log.d("bplux_service", "service disconnected!");
@@ -93,53 +95,59 @@ public class NewRecordingActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_new_recording);
-		
+
 		extras = getIntent().getExtras();
-		
-		if(extras.getBoolean("notification")!=false){
-		    Log.d("test", "comes from a notification with value: "+extras.getBoolean("notification"));
-		}else{
-			
-		
-		initUI();
-		currentConfig = (Configuration) extras.getSerializable(
-				"configSelected");
+
+		currentConfig = (Configuration) extras
+				.getSerializable("configSelected");
 		recordingName = extras.getString("recordingName").toString();
+
+		if (extras.getBoolean("notification") != false) {
+			if (isServiceRunning()){
+				bindToService();
+				ui_startStop = (Button) findViewById(R.id.nr_bttn_StartPause);
+				ui_startStop.setText("stop recording");
+				isReceivingData = true;
+				Log.d("test", "notificacionIniciaServicio");
+			}
+			
+		}
+
+		initUI();
+
 		ui_recName.setText(recordingName);
 		ui_configName.setText(currentConfig.getName());
-		ui_freq.setText(String.valueOf(currentConfig.getFreq())+" Hz");
-		ui_bits.setText(String.valueOf(currentConfig.getnBits())+" bits");
+		ui_freq.setText(String.valueOf(currentConfig.getFreq()) + " Hz");
+		ui_bits.setText(String.valueOf(currentConfig.getnBits()) + " bits");
 		ui_macAddr.setText(currentConfig.getMac_address());
-		
-		String strAC="";
+
+		String strAC = "";
 		String[] ac = currentConfig.getActiveChannels();
-		for(int i=0;i<ac.length;i++){
-			if(ac[i].compareToIgnoreCase("null")!=0)
-				strAC+="\t"+"channel "+(i+1)+" with sensor "+ac[i]+"\n";
+		for (int i = 0; i < ac.length; i++) {
+			if (ac[i].compareToIgnoreCase("null") != 0)
+				strAC += "\t" + "channel " + (i + 1) + " with sensor " + ac[i]
+						+ "\n";
 		}
-			
+
 		ui_aChannels.setText(strAC);
-		// restoreMeIfNeeded(savedInstanceState);
-		//bindIfServiceRunning();
 		graph = new HRGraph(this);
 		ui_graph.addView(graph.getGraphView());
-		}
+
 	}
 
 	@Override
-	protected void onSaveInstanceState (Bundle savedInstanceState) {
+	protected void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
 		savedInstanceState.putAll(extras);
 	}
-	
+
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		currentConfig = (Configuration) savedInstanceState.getSerializable(
-				"configSelected");
-		Log.d("test", "config name after restarted "+currentConfig.getName());
-		recordingName = savedInstanceState.getString("recordingName").toString();
-		
+		currentConfig = (Configuration) savedInstanceState
+				.getSerializable("configSelected");
+		recordingName = savedInstanceState.getString("recordingName")
+				.toString();
 	}
 
 	private void initUI() {
@@ -153,7 +161,6 @@ public class NewRecordingActivity extends Activity {
 		ui_macAddr = (TextView) findViewById(R.id.nr_txt_mac);
 	}
 
-
 	private void start_receiving_data() {
 		if (isServiceBounded) {
 			if (mService != null) {
@@ -162,19 +169,19 @@ public class NewRecordingActivity extends Activity {
 							LocalService.MSG_START_SENDING_DATA, 0, 0);
 					msg.replyTo = mActivity;
 					mService.send(msg);
-					
+
 				} catch (RemoteException e) {
 				}
 			}
 		}
 	}
 
-	private void stop_receiving_data() {
+	private void stop_service() {
 		if (isServiceBounded) {
 			if (mService != null) {
 				try {
 					Message msg = Message.obtain(null,
-							LocalService.MSG_STOP_SENDING_DATA, 0, 0);
+							LocalService.MSG_STOP_SERVICE);
 					msg.replyTo = mActivity;
 					mService.send(msg);
 				} catch (RemoteException e) {
@@ -184,23 +191,36 @@ public class NewRecordingActivity extends Activity {
 	}
 
 	public void onClickedStartStop(View view) {
-		if (!isServiceStarted) {
-			startService(new Intent(NewRecordingActivity.this, LocalService.class));
+		if (!isServiceRunning()) {
+			startService(new Intent(NewRecordingActivity.this,
+					LocalService.class));
 			bindToService();
 			displayToast("recording started");
 			ui_startStop.setText("stop recording");
-			isReceivingData=true;
-			isServiceStarted= true;
-		}else{
+			isReceivingData = true;
+		} else {
 			unbindOfService();
+			stopService(new Intent(NewRecordingActivity.this,
+					LocalService.class));
 			displayToast("recording stopped");
 			ui_startStop.setText("start recording");
-			isReceivingData=false;
-			isServiceStarted= false;
+			isReceivingData = false;
 		}
-			
+
 	}
-	
+
+	private boolean isServiceRunning() {
+		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+		for (RunningServiceInfo service : manager
+				.getRunningServices(Integer.MAX_VALUE)) {
+			if (LocalService.class.getName().equals(
+					service.service.getClassName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void displayToast(String messageToDisplay) {
 		Toast t = Toast.makeText(getApplicationContext(), messageToDisplay,
 				Toast.LENGTH_SHORT);
@@ -211,11 +231,9 @@ public class NewRecordingActivity extends Activity {
 
 	void bindToService() {
 		Intent intent = new Intent(this, LocalService.class);
-		intent.putExtra("recName",
-				ui_configName.getText().toString());
-		intent.putExtra("currentConfig", currentConfig);
-		bindService(intent, mConnection,
-				Context.BIND_AUTO_CREATE);
+		intent.putExtra("recordingName", recordingName);
+		intent.putExtra("configSelected", currentConfig);
+		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 		isServiceBounded = true;
 	}
 
@@ -237,7 +255,6 @@ public class NewRecordingActivity extends Activity {
 			// Detach our existing connection.
 			unbindService(mConnection);
 			isServiceBounded = false;
-			Log.d("bplux_service", "unbinding!");
 		}
 	}
 
@@ -258,7 +275,7 @@ public class NewRecordingActivity extends Activity {
 	protected void onDestroy() {
 		super.onDestroy();
 		try {
-			unbindOfService();
+			 unbindOfService();
 		} catch (Throwable t) {
 			Log.d("bplux_service", "Failed to unbind from the service", t);
 		}

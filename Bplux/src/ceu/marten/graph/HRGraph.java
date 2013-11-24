@@ -29,7 +29,7 @@ public class HRGraph {
 				new GraphViewData(1.0, 60.0), new GraphViewData(1.5, 100) });
 
 		// INIT GRAPHVIEW
-		graphView = new LineGraphView(context, "");//title
+		graphView = new LineGraphView(context, "");// title
 
 		// ADD SERIES TO GRAPHVIEW and SET SCROLLABLE
 		graphView.addSeries(serie);
