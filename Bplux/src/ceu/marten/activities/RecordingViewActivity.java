@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Window;
 import android.widget.TextView;
@@ -45,6 +46,7 @@ public class RecordingViewActivity extends Activity {
 					buf.append(str + "\n");
 				}
 				in.close();
+				ui_recording_data.setTypeface(Typeface.MONOSPACE);
 				ui_recording_data.setText(buf.toString());
 			}
 		} catch (FileNotFoundException e) {

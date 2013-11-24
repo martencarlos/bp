@@ -1,9 +1,7 @@
 package ceu.marten.dialogs;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.os.Bundle;
 
 public class SelectChannelsDialog extends Dialog {
 

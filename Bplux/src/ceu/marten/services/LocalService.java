@@ -42,6 +42,7 @@ public class LocalService extends Service {
 
 	private Device connection;
 	private Device.Frame[] frames;
+	private int counter=0;
 
 	ArrayList<Messenger> mClients = new ArrayList<Messenger>();
 	public static final int MSG_REGISTER_CLIENT = 1;
@@ -101,14 +102,18 @@ public class LocalService extends Service {
 
 	private void writeHeaderOfTextFile() {
 		OutputStreamWriter out;
-		String formatStr = "%-10s %-10s%n";
+		String formatHeader = "%-10s %-10s%n";
+		String formatStr = "%-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s%n";
 		try {
 			out = new OutputStreamWriter(openFileOutput(recording_name+".txt",MODE_PRIVATE ));
-			out.write(String.format(formatStr,"configuration name: ",config.getName())); 
-			out.write(String.format(formatStr,"freq: ",config.getFreq()));
-			out.write(String.format(formatStr,"nbits: ",config.getnBits()));
-			out.write(String.format(formatStr,"start date and time ",config.getCreateDate()));
-			out.write(String.format(formatStr,"channels active: ",config.getActiveChannelsAsString()));
+			out.write(String.format(formatHeader,"configuration name: ",config.getName())); 
+			out.write(String.format(formatHeader,"freq: ",config.getFreq()));
+			out.write(String.format(formatHeader,"nbits: ",config.getnBits()));
+			out.write(String.format(formatHeader,"start date and time ",config.getCreateDate()));
+			out.write(String.format(formatHeader,"channels active: ",config.getActiveChannelsAsString()));
+			out.write(String.format(formatStr, "#num","ch 1", 
+					"ch 2", "ch 3", "ch 4", "ch 5",
+					"ch 6", "ch 7", "ch 8"));
 			out.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -117,12 +122,12 @@ public class LocalService extends Service {
 		}
 	}
 	public void writeFrameToTextFile(Frame f){
-		String formatStr = "%-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s%n";
-		
+		String formatStr = "%-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s%n";
+		counter++;
 		OutputStreamWriter out;
 		try {
 			out = new OutputStreamWriter(openFileOutput(recording_name+".txt", MODE_APPEND));
-			out.write(String.format(formatStr, String.valueOf(f.an_in[0]), 
+			out.write(String.format(formatStr, counter,String.valueOf(f.an_in[0]), 
 					String.valueOf(f.an_in[1]), String.valueOf(f.an_in[2]), String.valueOf(f.an_in[3]), String.valueOf(f.an_in[4]),
 					String.valueOf(f.an_in[5]), String.valueOf(f.an_in[6]), String.valueOf(f.an_in[7])));
 			out.close();
