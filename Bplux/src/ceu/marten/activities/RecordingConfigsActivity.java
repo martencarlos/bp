@@ -18,10 +18,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+import ceu.marten.IO.DatabaseHelper;
 import ceu.marten.adapters.RecordingConfigListAdapter;
 import ceu.marten.bplux.R;
 import ceu.marten.data.Configuration;
-import ceu.marten.dataBase.DatabaseHelper;
 
 import com.haarman.listviewanimations.itemmanipulation.OnDismissCallback;
 import com.haarman.listviewanimations.itemmanipulation.SwipeDismissAdapter;
@@ -47,7 +47,7 @@ public class RecordingConfigsActivity extends
 
 		loadDevicesConfig();
 		setupRecordingNameDialog();
-		setupDevicesListView();
+		setupConfigurationsListView();
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class RecordingConfigsActivity extends
 
 				saveDeviceConfig(config);
 				loadDevicesConfig();
-				setupDevicesListView();
+				setupConfigurationsListView();
 			}
 			if (resultCode == RESULT_CANCELED) {
 				// Write your code if there's no result
@@ -112,9 +112,7 @@ public class RecordingConfigsActivity extends
 
 	}
 
-	private void setupDevicesListView() {
-
-		/** SETTING UP THE LISTENERS */
+	private void setupConfigurationsListView() {
 
 		final OnItemClickListener shortPressListener = new OnItemClickListener() {
 			@Override

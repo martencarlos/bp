@@ -5,7 +5,7 @@ import java.io.Serializable;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "sessions")
+@DatabaseTable(tableName = "recordings")
 public class Recording implements Serializable {
 
 	private static final long serialVersionUID = -5456569572649294107L;
@@ -14,14 +14,11 @@ public class Recording implements Serializable {
 	@DatabaseField(canBeNull = true)
 	private String name;
 	@DatabaseField(canBeNull = true)
-	private String startDate;
+	private String savedDate;
 	@DatabaseField(canBeNull = true)
 	private long duration = 0;
 	@DatabaseField(canBeNull = true, foreign = true)
 	private Configuration config;
-
-	@DatabaseField(canBeNull = true)
-	private String data_id;
 
 	public Recording() {
 		// needed by OrmLite
@@ -31,10 +28,9 @@ public class Recording implements Serializable {
 			Configuration initConfig, String initDataId) {
 		super();
 		this.name = initName;
-		this.startDate = initStartDate;
+		this.savedDate = initStartDate;
 		this.duration = initDuration;
 		this.config = initConfig;
-		this.data_id = initDataId;
 	}
 
 	public void setName(String name) {
@@ -45,16 +41,16 @@ public class Recording implements Serializable {
 		return name;
 	}
 
-	public String getStartDate() {
-		return startDate;
+	public String getSavedDate() {
+		return savedDate;
 	}
 
 	public long getDuration() {
 		return duration;
 	}
 
-	public void setStartDate(String startDate) {
-		this.startDate = startDate;
+	public void setSavedDate(String startDate) {
+		this.savedDate = startDate;
 	}
 
 	public void setDuration(long duration) {
@@ -69,17 +65,9 @@ public class Recording implements Serializable {
 		return config;
 	}
 
-	public void setData_id(String data_id) {
-		this.data_id = data_id;
-	}
-
-	public String getData_id() {
-		return data_id;
-	}
-
 	@Override
 	public String toString() {
-		return "name " + name + "\n " + "startDate " + startDate + "\n "
+		return "name " + name + "\n " + "startDate " + savedDate + "\n "
 				+ "duration " + duration + "\n\t " + config.toString();
 	}
 

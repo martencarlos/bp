@@ -1,4 +1,4 @@
-package ceu.marten.dataBase;
+package ceu.marten.IO;
 
 import java.sql.SQLException;
 
@@ -65,7 +65,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return deviceConfigDao;
 	}
 
-	public Dao<Recording, Integer> getSessionDao() throws SQLException {
+	public Dao<Recording, Integer> getRecordingDao() throws SQLException {
 		if (sessionDao == null) {
 			sessionDao = getDao(Recording.class);
 		}

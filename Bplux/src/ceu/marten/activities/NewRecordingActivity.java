@@ -1,5 +1,10 @@
 package ceu.marten.activities;
 
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
@@ -21,14 +26,18 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import ceu.marten.IO.DatabaseHelper;
 import ceu.marten.bplux.R;
 import ceu.marten.data.Configuration;
+import ceu.marten.data.Recording;
 import ceu.marten.graph.HRGraph;
 import ceu.marten.services.LocalService;
 
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
+import com.j256.ormlite.dao.Dao;
 import com.jjoe64.graphview.GraphView.GraphViewData;
 
-public class NewRecordingActivity extends Activity {
+public class NewRecordingActivity extends  OrmLiteBaseActivity<DatabaseHelper>  {
 
 	private LinearLayout ui_graph;
 	private TextView ui_recName, ui_configName, ui_bits, ui_freq, ui_aChannels,
@@ -205,8 +214,26 @@ public class NewRecordingActivity extends Activity {
 			displayToast("recording stopped");
 			ui_startStop.setText("start recording");
 			isReceivingData = false;
+			saveRecording();
 		}
 
+	}
+	public void saveRecording() {
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		Date date = new Date();
+
+		Recording recording = new Recording();
+		recording.setName(recordingName);
+		recording.setConfig(currentConfig);
+		recording.setSavedDate(dateFormat.format(date));
+		recording.setDuration(20);
+		try {
+			Dao<Recording, Integer> dao = getHelper().getRecordingDao();
+			dao.create(recording);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	
 	}
 
 	private boolean isServiceRunning() {

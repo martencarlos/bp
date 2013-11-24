@@ -1,4 +1,4 @@
-package ceu.marten.dataBase;
+package ceu.marten.IO;
 
 import java.io.IOException;
 import java.sql.SQLException;

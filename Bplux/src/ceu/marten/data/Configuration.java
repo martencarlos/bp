@@ -134,10 +134,21 @@ public class Configuration implements Serializable {
 			return null;
 	}
 
-	private String activeChannelsToString() {
+	public String getActiveChannelsAsString() {
 		String strActChnls = "";
-
-		return strActChnls;
+		String[] arrayStrings;
+		if (this.activeChannels != null) {
+			String entire = new String(this.activeChannels);
+			arrayStrings = entire.split("\\*\\.\\*");
+			for (int i = 0; i < arrayStrings.length; i++) {
+				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
+					strActChnls += "\t" + "channel " + (i + 1) + " with sensor " + arrayStrings[i]
+							+ "\n";
+			}
+			return strActChnls;
+		} else
+			return null;
+		
 	}
 
 	@Override

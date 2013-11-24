@@ -1,5 +1,11 @@
 package ceu.marten.services;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -7,13 +13,11 @@ import java.util.TimerTask;
 import plux.android.bioplux.BPException;
 import plux.android.bioplux.Device;
 import plux.android.bioplux.Device.Frame;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -57,6 +61,7 @@ public class LocalService extends Service {
 				break;
 			case MSG_UNREGISTER_CLIENT:
 				mClients.remove(msg.replyTo);
+				readFile();
 				break;
 			case MSG_START_SENDING_DATA:
 				// sendingData = true;
@@ -84,12 +89,82 @@ public class LocalService extends Service {
 		connectToBiopluxDevice();
 		timer.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
+
 				processFrames();
 			}
 		}, 0, 100L);
 		isRunning = true;
 		showNotification(intent);
+		writeHeaderOfTextFile();
 		return mMessenger.getBinder();
+	}
+
+	private void writeHeaderOfTextFile() {
+		OutputStreamWriter out;
+		String formatStr = "%-10s %-10s%n";
+		try {
+			out = new OutputStreamWriter(openFileOutput(recording_name+".txt",MODE_PRIVATE ));
+			out.write(String.format(formatStr,"configuration name: ",config.getName())); 
+			out.write(String.format(formatStr,"freq: ",config.getFreq()));
+			out.write(String.format(formatStr,"nbits: ",config.getnBits()));
+			out.write(String.format(formatStr,"start date and time ",config.getCreateDate()));
+			out.write(String.format(formatStr,"channels active: ",config.getActiveChannelsAsString()));
+			out.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public void writeFrameToTextFile(Frame f){
+		String formatStr = "%-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s%n";
+		
+		OutputStreamWriter out;
+		try {
+			out = new OutputStreamWriter(openFileOutput(recording_name+".txt", MODE_APPEND));
+			out.write(String.format(formatStr, String.valueOf(f.an_in[0]), 
+					String.valueOf(f.an_in[1]), String.valueOf(f.an_in[2]), String.valueOf(f.an_in[3]), String.valueOf(f.an_in[4]),
+					String.valueOf(f.an_in[5]), String.valueOf(f.an_in[6]), String.valueOf(f.an_in[7])));
+			out.close();
+		} catch (FileNotFoundException e) {
+						e.printStackTrace();
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		
+		/*
+		try {
+			writer.write(String.format(formatStr, String.valueOf(f.an_in[0]), 
+					String.valueOf(f.an_in[1]), String.valueOf(f.an_in[2]), String.valueOf(f.an_in[3]), String.valueOf(f.an_in[4]),
+					String.valueOf(f.an_in[5]), String.valueOf(f.an_in[6]), String.valueOf(f.an_in[7])));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		*/
+	}
+	private void readFile() {
+		InputStream in = null;
+		try {
+			in = openFileInput(recording_name+".txt");
+			if (in != null) {
+				InputStreamReader tmp = new InputStreamReader(in);
+				BufferedReader reader = new BufferedReader(tmp);
+				String str;
+				StringBuilder buf = new StringBuilder();
+				while ((str = reader.readLine()) != null) {
+					buf.append(str + "\n");
+				}
+				in.close();
+				Log.d("test", buf.toString());
+			}
+		} catch (FileNotFoundException e) {
+		
+			e.printStackTrace();
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
 	}
 
 	private void getInfoFromActivity(Intent intent) {
@@ -125,11 +200,11 @@ public class LocalService extends Service {
 		try {
 			getFrames(20);
 			for (Frame f : frames) {
-				if (sendingData)
-					sendMessageToUI(f.an_in[(channelToDisplay - 1)]);
+				sendMessageToUI(f.an_in[(channelToDisplay - 1)]);
+				writeFrameToTextFile(f);
 			}
 		} catch (Throwable t) {
-			Log.d("test", "TIMER ERROR");// , t);
+			Log.d("test", "TIMER ERROR", t);
 		}
 	}
 
@@ -154,18 +229,15 @@ public class LocalService extends Service {
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 		stackBuilder.addParentStack(RecordingConfigsActivity.class);
 		Intent newRecActIntent = new Intent(this, NewRecordingActivity.class);
-		Bundle b = parentIntent.getExtras();
-		newRecActIntent.putExtra("recordingName",
-				recording_name);
-		newRecActIntent.putExtra("configSelected",
-				config);
+		newRecActIntent.putExtra("recordingName", recording_name);
+		newRecActIntent.putExtra("configSelected", config);
 		newRecActIntent.putExtra("notification", true);
 		stackBuilder.addNextIntent(newRecActIntent);
 		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		mBuilder.setContentIntent(resultPendingIntent);
 
-		//mBuilder.setAutoCancel(true);
+		// mBuilder.setAutoCancel(true);
 		mBuilder.setOngoing(true);
 		Notification notification = mBuilder.build();
 
@@ -197,7 +269,7 @@ public class LocalService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.d("bplux_service", "Received start id " + startId + ": " + intent);
-		return START_STICKY; // run until explicitly stopped.
+		return START_NOT_STICKY; // run until explicitly stopped.
 	}
 
 	public static boolean isRunning() {
@@ -207,9 +279,11 @@ public class LocalService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+
 		if (timer != null) {
 			timer.cancel();
 		}
+		// writer.closeWriter();
 		try {
 			connection.EndAcq();
 		} catch (BPException e) {

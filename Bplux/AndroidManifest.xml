@@ -10,7 +10,7 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" /> 
+   	<uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -37,19 +37,17 @@
             android:parentActivityName="ceu.marten.activities.HomeActivity" >
         </activity>
         <activity
-            android:name="test.TestActivity"
-            android:label="@string/title_activity_test" >
-        </activity>
-        <activity
             android:name="ceu.marten.activities.StoredRecordingsActivity"
             android:label="@string/title_activity_sessions" >
         </activity>
         <activity
             android:name="ceu.marten.activities.NewRecordingActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation"
             android:label="@string/title_activity_new_session" >
         </activity>
-		<service android:name="ceu.marten.services.RunningDataService"/>
+        <activity
+            android:name="ceu.marten.activities.RecordingViewActivity"
+            android:label="@string/title_activity_recordings_view" >
+        </activity>
 		<service android:name="ceu.marten.services.LocalService"/>    
     </application>
 

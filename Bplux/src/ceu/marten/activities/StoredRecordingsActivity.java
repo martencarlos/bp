@@ -2,26 +2,22 @@ package ceu.marten.activities;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
-import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import ceu.marten.adapters.RecordingConfigListAdapter;
+import ceu.marten.IO.DatabaseHelper;
 import ceu.marten.adapters.StoredRecordingsListAdapter;
 import ceu.marten.bplux.R;
-import ceu.marten.data.Configuration;
 import ceu.marten.data.Recording;
-import ceu.marten.dataBase.DatabaseHelper;
 
 import com.haarman.listviewanimations.itemmanipulation.OnDismissCallback;
 import com.haarman.listviewanimations.itemmanipulation.SwipeDismissAdapter;
@@ -32,10 +28,10 @@ import com.j256.ormlite.stmt.QueryBuilder;
 public class StoredRecordingsActivity extends
 		OrmLiteBaseActivity<DatabaseHelper> implements OnDismissCallback {
 
-	private Dialog dialog;
-	private ListView lv_sessions;
+	private ListView lv_recordings;
 	private StoredRecordingsListAdapter baseAdapter;
-	private ArrayList<Recording> al_sessions = null;
+	private ArrayList<Recording> recordingsArrayList = null;
+	private Context myContext = this;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,36 +39,26 @@ public class StoredRecordingsActivity extends
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_stored_recordings);
 
-		loadSessions();
-		setupSessionDetailsDialog();
-		setupDevicesListView();
+		loadRecordings();
+		setupRecordingListView();
 	}
 
-	@Override
-	protected void onRestart() {
-		super.onRestart();
 
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-	}
-
-	private void setupSessionDetailsDialog() {
-
-		dialog = new Dialog(this);
-		dialog.setTitle("Session details");
-	}
-
-	private void setupDevicesListView() {
-
-		/** SETTING UP THE LISTENERS */
-
-		lv_sessions = (ListView) findViewById(R.id.lvSessions);
-
-		/** SETTING UP THE ADAPTERS */
-		baseAdapter = new StoredRecordingsListAdapter(this, al_sessions);
+	private void setupRecordingListView() {
+		
+		final OnItemClickListener shortPressListener = new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> AdapterView, View v,
+					int position, long id) {
+				TextView tv = (TextView) v.findViewById(R.id.dli_name);
+				Intent intent = new Intent(myContext, RecordingViewActivity.class);
+				intent.putExtra("recordingName", tv.getText().toString());
+				startActivity(intent);
+			}
+		};
+		lv_recordings = (ListView) findViewById(R.id.lvSessions);
+		lv_recordings.setOnItemClickListener(shortPressListener);
+		baseAdapter = new StoredRecordingsListAdapter(this, recordingsArrayList);
 		setSwipeToDismissAdapter();
 
 	}
@@ -80,8 +66,8 @@ public class StoredRecordingsActivity extends
 	private void setSwipeToDismissAdapter() {
 		SwipeDismissAdapter swipeAdapter = new SwipeDismissAdapter(baseAdapter,
 				this);
-		swipeAdapter.setAbsListView(lv_sessions);
-		lv_sessions.setAdapter(baseAdapter);
+		swipeAdapter.setAbsListView(lv_recordings);
+		lv_recordings.setAdapter(baseAdapter);
 	}
 
 	@Override
@@ -91,30 +77,30 @@ public class StoredRecordingsActivity extends
 			Dao<Recording, Integer> dao = null;
 
 			try {
-				dao = getHelper().getSessionDao();
+				dao = getHelper().getRecordingDao();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			try {
-				dao.delete(al_sessions.get(position));
+				dao.delete(recordingsArrayList.get(position));
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			al_sessions.remove(position);
+			recordingsArrayList.remove(position);
 		}
 		Toast.makeText(this, "session removed ", Toast.LENGTH_SHORT).show();
 	}
 
-	public void loadSessions() {
+	public void loadRecordings() {
 		Dao<Recording, Integer> dao;
-		al_sessions = new ArrayList<Recording>();
+		recordingsArrayList = new ArrayList<Recording>();
 		try {
-			dao = getHelper().getSessionDao();
+			dao = getHelper().getRecordingDao();
 			QueryBuilder<Recording, Integer> builder = dao.queryBuilder();
-			builder.orderBy("startDate", false).limit(30L);
-			al_sessions = (ArrayList<Recording>) dao.query(builder.prepare());
+			builder.orderBy("savedDate", false).limit(30L);
+			recordingsArrayList = (ArrayList<Recording>) dao.query(builder.prepare());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
