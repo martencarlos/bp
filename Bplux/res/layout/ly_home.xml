@@ -63,13 +63,13 @@
             <Button
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onClickedConfigs"
+                android:onClick="onClickedStartRecording"
                 android:text="Start Recording" />
 
             <Button
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onClickedSessions"
+                android:onClick="onClickedBrowseRecordings"
                 android:text="Browse Recordings" />
         </LinearLayout>
 
