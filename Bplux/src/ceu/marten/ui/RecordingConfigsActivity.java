@@ -1,4 +1,4 @@
-package ceu.marten.activities;
+package ceu.marten.ui;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,10 +17,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-import ceu.marten.IO.DatabaseHelper;
-import ceu.marten.adapters.RecordingConfigListAdapter;
 import ceu.marten.bplux.R;
-import ceu.marten.data.Configuration;
+import ceu.marten.model.Configuration;
+import ceu.marten.model.io.DatabaseHelper;
+import ceu.marten.ui.adapters.RecordingConfigListAdapter;
 
 import com.haarman.listviewanimations.itemmanipulation.OnDismissCallback;
 import com.haarman.listviewanimations.itemmanipulation.SwipeDismissAdapter;
@@ -44,6 +44,7 @@ public class RecordingConfigsActivity extends
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_recording_configs);
 
+		//@todo ¿esto no debería hacerse de modo asíncrono?
 		loadDevicesConfig();
 		setupRecordingNameDialog();
 		setupConfigurationsListView();
@@ -67,6 +68,7 @@ public class RecordingConfigsActivity extends
 						.getSerializableExtra("config"));
 
 				saveDeviceConfig(config);
+
 				loadDevicesConfig();
 				setupConfigurationsListView();
 			}

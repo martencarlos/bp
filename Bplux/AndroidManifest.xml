@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="16" />
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="ceu.marten.activities.HomeActivity"
+            android:name="ceu.marten.ui.HomeActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,26 +26,26 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ceu.marten.activities.RecordingConfigsActivity"
+            android:name="ceu.marten.ui.RecordingConfigsActivity"
             android:label="@string/settingsTitle"
-            android:parentActivityName="ceu.marten.activities.HomeActivity" >
+            android:parentActivityName="ceu.marten.ui.HomeActivity" >
         </activity>
         <activity
-            android:name="ceu.marten.activities.NewConfigActivity"
+            android:name="ceu.marten.ui.NewConfigActivity"
             android:label="@string/graphtitle"
             
-            android:parentActivityName="ceu.marten.activities.HomeActivity" >
+            android:parentActivityName="ceu.marten.ui.HomeActivity" >
         </activity>
         <activity
-            android:name="ceu.marten.activities.StoredRecordingsActivity"
+            android:name="ceu.marten.ui.StoredRecordingsActivity"
             android:label="@string/title_activity_sessions" >
         </activity>
         <activity
-            android:name="ceu.marten.activities.NewRecordingActivity"
+            android:name="ceu.marten.ui.NewRecordingActivity"
             android:label="@string/title_activity_new_session" >
         </activity>
         <activity
-            android:name="ceu.marten.activities.RecordingViewActivity"
+            android:name="ceu.marten.ui.RecordingViewActivity"
             android:label="@string/title_activity_recordings_view" >
         </activity>
 		<service android:name="ceu.marten.services.LocalService"/>    

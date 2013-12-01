@@ -1,4 +1,4 @@
-package ceu.marten.data;
+package ceu.marten.model;
 
 import java.io.Serializable;
 
@@ -14,7 +14,7 @@ public class Recording implements Serializable {
 	@DatabaseField(canBeNull = true)
 	private String name;
 	@DatabaseField(canBeNull = true)
-	private String savedDate;
+	private String startDate;
 	@DatabaseField(canBeNull = true)
 	private long duration = 0;
 	@DatabaseField(canBeNull = true, foreign = true)
@@ -28,7 +28,7 @@ public class Recording implements Serializable {
 			Configuration initConfig, String initDataId) {
 		super();
 		this.name = initName;
-		this.savedDate = initStartDate;
+		this.startDate = initStartDate;
 		this.duration = initDuration;
 		this.config = initConfig;
 	}
@@ -42,7 +42,7 @@ public class Recording implements Serializable {
 	}
 
 	public String getSavedDate() {
-		return savedDate;
+		return startDate;
 	}
 
 	public long getDuration() {
@@ -50,7 +50,7 @@ public class Recording implements Serializable {
 	}
 
 	public void setSavedDate(String startDate) {
-		this.savedDate = startDate;
+		this.startDate = startDate;
 	}
 
 	public void setDuration(long duration) {
@@ -67,7 +67,7 @@ public class Recording implements Serializable {
 
 	@Override
 	public String toString() {
-		return "name " + name + "\n " + "startDate " + savedDate + "\n "
+		return "name " + name + "\n " + "startDate " + startDate + "\n "
 				+ "duration " + duration + "\n\t " + config.toString();
 	}
 

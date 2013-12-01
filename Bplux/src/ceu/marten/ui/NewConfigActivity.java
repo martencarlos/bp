@@ -1,4 +1,4 @@
-package ceu.marten.activities;
+package ceu.marten.ui;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -25,14 +25,16 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
-import ceu.marten.adapters.ActiveChannelsListAdapter;
-import ceu.marten.adapters.ChannelsToDisplayListAdapter;
 import ceu.marten.bplux.R;
-import ceu.marten.data.Configuration;
+import ceu.marten.model.Configuration;
+import ceu.marten.ui.adapters.ActiveChannelsListAdapter;
+import ceu.marten.ui.adapters.ChannelsToDisplayListAdapter;
 
 public class NewConfigActivity extends Activity {
 
 	Configuration config;
+	public static final int FREQ_MAX = 1000;
+	public static final int FREQ_MIN = 36;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +44,8 @@ public class NewConfigActivity extends Activity {
 
 		/* initialize variables */
 		config = new Configuration();
-		config.setFreq(500);
-		config.setnBits(8);
+		config.setFrequency(500);
+		config.setNumberOfBits(8);
 		/* initialize view components */
 
 		SeekBar frequency = (SeekBar) findViewById(R.id.freq_seekbar);
@@ -53,8 +55,8 @@ public class NewConfigActivity extends Activity {
 					boolean fromUser) {
 				if (fromUser) {
 					((TextView) findViewById(R.id.freq_view)).setText(String
-							.valueOf(progress + 36));
-					config.setFreq(progress);
+							.valueOf(progress + FREQ_MIN));
+					config.setFrequency(progress);
 				}
 			}
 
@@ -73,21 +75,20 @@ public class NewConfigActivity extends Activity {
 				boolean handled = false;
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
 					SeekBar frequency = (SeekBar) findViewById(R.id.freq_seekbar);
-
 					int new_frec = Integer.parseInt(v.getText().toString());
-					if (new_frec > 36 && new_frec <= 1000) {
-						frequency.setProgress((new_frec - 36));
-						config.setFreq(new_frec);
-					} else if (new_frec > 1000) {
-						frequency.setProgress(1000);
-						freqView.setText("1000");
-						config.setFreq(1000);
-						displayToast("max freq is 1000 Hz");
+					if (new_frec > FREQ_MIN && new_frec <= FREQ_MAX) {
+						frequency.setProgress((new_frec - FREQ_MIN));
+						config.setFrequency(new_frec);
+					} else if (new_frec > FREQ_MAX) {
+						frequency.setProgress(FREQ_MAX);
+						freqView.setText(FREQ_MAX);
+						config.setFrequency(FREQ_MAX);
+						displayToast("max freq is"+FREQ_MAX+ "Hz");
 					} else {
 						frequency.setProgress(0);
-						freqView.setText("36");
-						config.setFreq(36);
-						displayToast("min freq is 36 Hz");
+						freqView.setText(FREQ_MIN);
+						config.setFrequency(FREQ_MIN);
+						displayToast("min freq is"+FREQ_MIN+" Hz");
 					}
 					freqView.clearFocus();
 					InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -103,7 +104,7 @@ public class NewConfigActivity extends Activity {
 		});
 
 	}
-
+	//@todo saca las cadena de caracteres de la interfaz de usuario y usa i18n
 	private void setupActiveChannelsDialog() {
 
 		final ArrayList<String> channels = new ArrayList<String>();
@@ -236,7 +237,7 @@ public class NewConfigActivity extends Activity {
 								}
 							}
 							ca.append(si);
-							config.setchannelsToDisplay(ctd);
+							config.setChannelsToDisplay(ctd);
 						}
 
 					}
@@ -266,7 +267,7 @@ public class NewConfigActivity extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 		config.setName(((EditText) findViewById(R.id.dev_name)).getText()
 				.toString());
-		config.setMac_address(((EditText) findViewById(R.id.nc_mac_address))
+		config.setMacAddress(((EditText) findViewById(R.id.nc_mac_address))
 				.getText().toString());
 		savedInstanceState.putSerializable("configSaved", config);
 		savedInstanceState.putString("actChannels",
@@ -303,7 +304,7 @@ public class NewConfigActivity extends Activity {
 		Date date = new Date();
 		config.setName(((EditText) findViewById(R.id.dev_name)).getText()
 				.toString());
-		config.setMac_address(((EditText) findViewById(R.id.nc_mac_address))
+		config.setMacAddress(((EditText) findViewById(R.id.nc_mac_address))
 				.getText().toString());
 		config.setCreateDate(dateFormat.format(date));
 
@@ -329,11 +330,11 @@ public class NewConfigActivity extends Activity {
 		switch (view.getId()) {
 		case R.id.radioBttn8:
 			if (checked)
-				config.setnBits(8);
+				config.setNumberOfBits(8);
 			break;
 		case R.id.radioBttn12:
 			if (checked)
-				config.setnBits(12);
+				config.setNumberOfBits(12);
 			break;
 		}
 	}

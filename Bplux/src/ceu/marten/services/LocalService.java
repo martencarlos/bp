@@ -26,19 +26,24 @@ import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
-import ceu.marten.activities.NewRecordingActivity;
-import ceu.marten.activities.RecordingConfigsActivity;
 import ceu.marten.bplux.R;
-import ceu.marten.data.Configuration;
+import ceu.marten.model.Configuration;
+import ceu.marten.ui.NewRecordingActivity;
+import ceu.marten.ui.RecordingConfigsActivity;
 
 public class LocalService extends Service {
-	private NotificationManager nm;
+	//@todo dar nombres a las cosas como Dios manda
+	private NotificationManager notificationManager;
 	private Timer timer = new Timer();
 	private boolean sendingData = true;
 	private static boolean isRunning = false;
 	private Configuration config;
 	private String recording_name;
 	private int channelToDisplay = 0;
+	
+	//@todo esta es la forma estándar de hacer log en Android; actualiza todo el proyecto
+	//mira la segunda parte de este comentario más abajo
+	private static final String TAG = LocalService.class.getName();
 
 	private Device connection;
 	private Device.Frame[] frames;
@@ -81,6 +86,9 @@ public class LocalService extends Service {
 		frames = new Device.Frame[20];
 		for (int i = 0; i < frames.length; i++)
 			frames[i] = new Frame();
+
+		//@todo esta es la segunda parte del comentario
+		Log.d(TAG, "Service created");
 	}
 
 	@Override
@@ -101,13 +109,15 @@ public class LocalService extends Service {
 
 	private void writeHeaderOfTextFile() {
 		OutputStreamWriter out;
+		//@todo define estas cadenas de caracteres como variables globales de la clase para qué no haya que
+		//reservar las cada vez que se meta dentro de este método
 		String formatHeader = "%-10s %-10s%n";
 		String formatStr = "%-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s%n";
 		try {
 			out = new OutputStreamWriter(openFileOutput(recording_name+".txt",MODE_PRIVATE ));
 			out.write(String.format(formatHeader,"configuration name: ",config.getName())); 
-			out.write(String.format(formatHeader,"freq: ",config.getFreq()));
-			out.write(String.format(formatHeader,"nbits: ",config.getnBits()));
+			out.write(String.format(formatHeader,"freq: ",config.getFrequency()));
+			out.write(String.format(formatHeader,"nbits: ",config.getNumberOfBits()));
 			out.write(String.format(formatHeader,"start date and time ",config.getCreateDate()));
 			out.write(String.format(formatHeader,"channels active: ",config.getActiveChannelsAsString()));
 			out.write(String.format(formatStr, "#num","ch 1", 
@@ -115,12 +125,13 @@ public class LocalService extends Service {
 					"ch 6", "ch 7", "ch 8"));
 			out.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			e.printStackTrace();//@todo no imprimas ninguna traza ¡haz log! no quiero ver un solo printStackTrace() en el proyecto
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}//@todo ¿y cerrar los ficheros?
 	}
 	public void writeFrameToTextFile(Frame f){
+		//@todo ¿es la misma cadena de caracteres que en la clase anterior? No repetirse!
 		String formatStr = "%-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s%n";
 		counter++;
 		OutputStreamWriter out;
@@ -135,7 +146,7 @@ public class LocalService extends Service {
 		} catch (IOException e) {
 			
 			e.printStackTrace();
-		}
+		}//@todo ¿y cerrar los ficheros?
 		
 	}
 	private void readFile() {
@@ -158,17 +169,17 @@ public class LocalService extends Service {
 		} catch (IOException e) {
 			
 			e.printStackTrace();
-		}
+		}// @todo ¿y cerrar los ficheros?
 	}
 
 	private void getInfoFromActivity(Intent intent) {
 		recording_name = intent.getStringExtra("recordingName").toString();
 		config = (Configuration) intent.getSerializableExtra("configSelected");
-
-		boolean[] ctd_tmp = new boolean[8];
-		ctd_tmp = config.getchannelsToDisplay();
-		for (int i = 0; i < ctd_tmp.length; i++)
-			if (ctd_tmp[i]) {
+//@todo ¡no crees objetos a lo tonto! ¡Y dale nombres Java!
+		boolean[] ctdTmp;
+		ctdTmp = config.getChannelsToDisplay();
+		for (int i = 0; i < ctdTmp.length; i++)
+			if (ctdTmp[i]) {
 				channelToDisplay = (i + 1);
 				Log.d("test", "channel to display: " + channelToDisplay);
 			}
@@ -179,10 +190,11 @@ public class LocalService extends Service {
 
 		// bioPlux initialization
 		try {
-			connection = Device.Create(config.getMac_address());// Device mac
+			connection = Device.Create(config.getMacAddress());// Device mac
 																// addr
 																// 00:07:80:4C:2A:FB
-			connection.BeginAcq(config.getFreq(), 255, config.getnBits());
+			//@todo entiendo que falta configurar los canales que se adquieren realmente ¿no?
+			connection.BeginAcq(config.getFrequency(), 255, config.getNumberOfBits());
 		} catch (BPException e) {
 			e.printStackTrace();
 		}
@@ -235,8 +247,8 @@ public class LocalService extends Service {
 		mBuilder.setOngoing(true);
 		Notification notification = mBuilder.build();
 
-		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		nm.notify(R.string.service_id, notification);
+		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		notificationManager.notify(R.string.service_id, notification);
 	}
 
 	private void sendMessageToUI(int intvaluetosend) {
@@ -284,7 +296,7 @@ public class LocalService extends Service {
 			Log.d("test", "error ending ACQ");
 			e.printStackTrace();
 		}
-		nm.cancel(R.string.service_id); // Cancel the persistent notification.
+		notificationManager.cancel(R.string.service_id); // Cancel the persistent notification.
 		Log.d("MyService", "Service Stopped.");
 		isRunning = false;
 	}

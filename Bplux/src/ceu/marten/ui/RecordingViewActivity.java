@@ -1,4 +1,4 @@
-package ceu.marten.activities;
+package ceu.marten.ui;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,6 +34,7 @@ public class RecordingViewActivity extends Activity {
 		Bundle b = getIntent().getExtras();
 		recording_name = b.getString("recordingName");
 		initUI();
+		//@todo ¿esto no debería hacerse de modo asíncrono?
 		readFile();
 	}
 	

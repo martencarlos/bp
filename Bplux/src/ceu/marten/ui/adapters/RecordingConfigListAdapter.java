@@ -1,4 +1,4 @@
-package ceu.marten.adapters;
+package ceu.marten.ui.adapters;
 
 import java.util.ArrayList;
 
@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import ceu.marten.bplux.R;
-import ceu.marten.data.Configuration;
+import ceu.marten.model.Configuration;
 
 import com.haarman.listviewanimations.ArrayAdapter;
 

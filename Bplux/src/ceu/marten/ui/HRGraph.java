@@ -1,4 +1,4 @@
-package ceu.marten.graph;
+package ceu.marten.ui;
 
 import android.graphics.Color;
 
@@ -11,6 +11,7 @@ import com.jjoe64.graphview.LineGraphView;
 /**
  * Created by martencarlos on 25/07/13.
  */
+
 public class HRGraph {
 
 	private GraphViewSeries serie;

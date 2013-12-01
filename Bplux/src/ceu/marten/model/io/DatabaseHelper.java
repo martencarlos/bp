@@ -1,4 +1,4 @@
-package ceu.marten.IO;
+package ceu.marten.model.io;
 
 import java.sql.SQLException;
 
@@ -6,8 +6,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import ceu.marten.data.Configuration;
-import ceu.marten.data.Recording;
+import ceu.marten.model.Configuration;
+import ceu.marten.model.Recording;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
@@ -29,8 +29,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private Dao<Recording, Integer> sessionDao;
 
 	public DatabaseHelper(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);// ,
-																// R.raw.ormlite_config
+		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
 	@Override
@@ -40,6 +39,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Configuration.class);
 			TableUtils.createTable(connectionSource, Recording.class);
 		} catch (SQLException e) {
+			//@todo ¡aquí sí que haces bien el log! Aunque mejor con la variable estática, más eficiente
 			Log.e(DatabaseHelper.class.getName(), "Unable to create datbase", e);
 		}
 	}

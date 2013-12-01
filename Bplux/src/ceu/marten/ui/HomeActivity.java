@@ -1,4 +1,5 @@
-package ceu.marten.activities;
+
+package ceu.marten.ui;
 
 import android.app.Activity;
 import android.content.Intent;

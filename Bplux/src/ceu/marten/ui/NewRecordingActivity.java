@@ -1,4 +1,4 @@
-package ceu.marten.activities;
+package ceu.marten.ui;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -25,27 +25,27 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import ceu.marten.IO.DatabaseHelper;
 import ceu.marten.bplux.R;
-import ceu.marten.data.Configuration;
-import ceu.marten.data.Recording;
-import ceu.marten.graph.HRGraph;
+import ceu.marten.model.Configuration;
+import ceu.marten.model.Recording;
+import ceu.marten.model.io.DatabaseHelper;
 import ceu.marten.services.LocalService;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 import com.jjoe64.graphview.GraphView.GraphViewData;
 
-public class NewRecordingActivity extends  OrmLiteBaseActivity<DatabaseHelper>  {
-
+public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
+	private TextView ui_recordingName, ui_configurationName, ui_bits, ui_freq,
+	ui_activeChannels, ui_macAddress;
 	private LinearLayout ui_graph;
-	private TextView ui_recName, ui_configName, ui_bits, ui_freq, ui_aChannels,
-			ui_macAddr;
-	private Button ui_startStop;
+	private Button ui_startStopbutton;
+	
 
-	private Configuration currentConfig;
-	String recordingName = "";
+	private Configuration currentConfiguration;
+	String recordingName;
 	Bundle extras;
+	
 	Messenger mService = null;
 	static int dato = 0;
 	static HRGraph graph;
@@ -61,11 +61,6 @@ public class NewRecordingActivity extends  OrmLiteBaseActivity<DatabaseHelper>  
 				dato = msg.arg1;
 				appendDataToGraph();
 				break;
-			/*
-			 * case LocalService.MSG_SET_STRING_VALUE: String str1 =
-			 * msg.getData().getString("str1");
-			 * Log.d("bplux_service","Int Message: " + str1); break;
-			 */
 			default:
 				super.handleMessage(msg);
 			}
@@ -106,38 +101,36 @@ public class NewRecordingActivity extends  OrmLiteBaseActivity<DatabaseHelper>  
 
 		extras = getIntent().getExtras();
 
-		currentConfig = (Configuration) extras
+		currentConfiguration = (Configuration) extras
 				.getSerializable("configSelected");
 		recordingName = extras.getString("recordingName").toString();
 
-		
-			if (isServiceRunning()){
-				bindToService();
-				ui_startStop = (Button) findViewById(R.id.nr_bttn_StartPause);
-				ui_startStop.setText("stop recording");
-				isReceivingData = true;
-				Log.d("test", "notificacionIniciaServicio");
-			}
-			
-		
+		if (isServiceRunning()) {
+			bindToService();
+			ui_startStopbutton = (Button) findViewById(R.id.nr_bttn_StartPause);
+			ui_startStopbutton.setText("stop recording");
+			isReceivingData = true;
+			Log.d("test", "notificacionIniciaServicio");
+		}
 
 		initUI();
 
-		ui_recName.setText(recordingName);
-		ui_configName.setText(currentConfig.getName());
-		ui_freq.setText(String.valueOf(currentConfig.getFreq()) + " Hz");
-		ui_bits.setText(String.valueOf(currentConfig.getnBits()) + " bits");
-		ui_macAddr.setText(currentConfig.getMac_address());
+		ui_recordingName.setText(recordingName);
+		ui_configurationName.setText(currentConfiguration.getName());
+		ui_freq.setText(String.valueOf(currentConfiguration.getFrequency()) + " Hz");
+		ui_bits.setText(String.valueOf(currentConfiguration.getNumberOfBits())
+				+ " bits");
+		ui_macAddress.setText(currentConfiguration.getMacAddress());
 
 		String strAC = "";
-		String[] ac = currentConfig.getActiveChannels();
+		String[] ac = currentConfiguration.getActiveChannels();
 		for (int i = 0; i < ac.length; i++) {
 			if (ac[i].compareToIgnoreCase("null") != 0)
 				strAC += "\t" + "channel " + (i + 1) + " with sensor " + ac[i]
 						+ "\n";
 		}
 
-		ui_aChannels.setText(strAC);
+		ui_activeChannels.setText(strAC);
 		graph = new HRGraph(this);
 		ui_graph.addView(graph.getGraphView());
 
@@ -152,7 +145,7 @@ public class NewRecordingActivity extends  OrmLiteBaseActivity<DatabaseHelper>  
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		currentConfig = (Configuration) savedInstanceState
+		currentConfiguration = (Configuration) savedInstanceState
 				.getSerializable("configSelected");
 		recordingName = savedInstanceState.getString("recordingName")
 				.toString();
@@ -160,13 +153,13 @@ public class NewRecordingActivity extends  OrmLiteBaseActivity<DatabaseHelper>  
 
 	private void initUI() {
 		ui_graph = (LinearLayout) findViewById(R.id.nr_graph_data);
-		ui_startStop = (Button) findViewById(R.id.nr_bttn_StartPause);
-		ui_recName = (TextView) findViewById(R.id.nr_txt_recordingName);
-		ui_configName = (TextView) findViewById(R.id.nr_txt_configName);
+		ui_startStopbutton = (Button) findViewById(R.id.nr_bttn_StartPause);
+		ui_recordingName = (TextView) findViewById(R.id.nr_txt_recordingName);
+		ui_configurationName = (TextView) findViewById(R.id.nr_txt_configName);
 		ui_bits = (TextView) findViewById(R.id.nr_txt_config_nbits);
 		ui_freq = (TextView) findViewById(R.id.nr_txt_config_freq);
-		ui_aChannels = (TextView) findViewById(R.id.nr_txt_channels_active);
-		ui_macAddr = (TextView) findViewById(R.id.nr_txt_mac);
+		ui_activeChannels = (TextView) findViewById(R.id.nr_txt_channels_active);
+		ui_macAddress = (TextView) findViewById(R.id.nr_txt_mac);
 	}
 
 	private void start_receiving_data() {
@@ -204,26 +197,27 @@ public class NewRecordingActivity extends  OrmLiteBaseActivity<DatabaseHelper>  
 					LocalService.class));
 			bindToService();
 			displayToast("recording started");
-			ui_startStop.setText("stop recording");
+			ui_startStopbutton.setText("stop recording");
 			isReceivingData = true;
 		} else {
 			unbindOfService();
 			stopService(new Intent(NewRecordingActivity.this,
 					LocalService.class));
 			displayToast("recording stopped");
-			ui_startStop.setText("start recording");
+			ui_startStopbutton.setText("start recording");
 			isReceivingData = false;
 			saveRecording();
 		}
 
 	}
+
 	public void saveRecording() {
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date date = new Date();
 
 		Recording recording = new Recording();
 		recording.setName(recordingName);
-		recording.setConfig(currentConfig);
+		recording.setConfig(currentConfiguration);
 		recording.setSavedDate(dateFormat.format(date));
 		recording.setDuration(20);
 		try {
@@ -232,7 +226,7 @@ public class NewRecordingActivity extends  OrmLiteBaseActivity<DatabaseHelper>  
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	
+
 	}
 
 	private boolean isServiceRunning() {
@@ -258,7 +252,7 @@ public class NewRecordingActivity extends  OrmLiteBaseActivity<DatabaseHelper>  
 	void bindToService() {
 		Intent intent = new Intent(this, LocalService.class);
 		intent.putExtra("recordingName", recordingName);
-		intent.putExtra("configSelected", currentConfig);
+		intent.putExtra("configSelected", currentConfiguration);
 		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 		isServiceBounded = true;
 	}
@@ -301,7 +295,7 @@ public class NewRecordingActivity extends  OrmLiteBaseActivity<DatabaseHelper>  
 	protected void onDestroy() {
 		super.onDestroy();
 		try {
-			 unbindOfService();
+			unbindOfService();
 		} catch (Throwable t) {
 			Log.d("bplux_service", "Failed to unbind from the service", t);
 		}

@@ -1,4 +1,4 @@
-package ceu.marten.adapters;
+package ceu.marten.ui.adapters;
 
 import java.util.ArrayList;
 

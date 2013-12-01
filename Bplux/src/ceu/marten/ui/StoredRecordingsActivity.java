@@ -1,4 +1,4 @@
-package ceu.marten.activities;
+package ceu.marten.ui;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -14,10 +14,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import ceu.marten.IO.DatabaseHelper;
-import ceu.marten.adapters.StoredRecordingsListAdapter;
 import ceu.marten.bplux.R;
-import ceu.marten.data.Recording;
+import ceu.marten.model.Recording;
+import ceu.marten.model.io.DatabaseHelper;
+import ceu.marten.ui.adapters.StoredRecordingsListAdapter;
 
 import com.haarman.listviewanimations.itemmanipulation.OnDismissCallback;
 import com.haarman.listviewanimations.itemmanipulation.SwipeDismissAdapter;
@@ -38,7 +38,7 @@ public class StoredRecordingsActivity extends
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_stored_recordings);
-
+		//@todo ¿esto no debería hacerse de modo asíncrono?
 		loadRecordings();
 		setupRecordingListView();
 	}
@@ -99,7 +99,7 @@ public class StoredRecordingsActivity extends
 		try {
 			dao = getHelper().getRecordingDao();
 			QueryBuilder<Recording, Integer> builder = dao.queryBuilder();
-			builder.orderBy("savedDate", false).limit(30L);
+			builder.orderBy("startDate", false).limit(30L);
 			recordingsArrayList = (ArrayList<Recording>) dao.query(builder.prepare());
 		} catch (SQLException e) {
 			e.printStackTrace();
