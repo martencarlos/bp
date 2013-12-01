@@ -50,7 +50,7 @@ public class NewConfigActivity extends Activity {
 
 		initializeVariables();
 		findViews();
-		initializeComponents();
+		initializeFrequencyComponents();
 
 	}
 
@@ -59,7 +59,7 @@ public class NewConfigActivity extends Activity {
 		frequencyEditor = (EditText) findViewById(R.id.freq_view);
 		configurationName = (EditText) findViewById(R.id.dev_name);
 		macAddress = (EditText) findViewById(R.id.nc_mac_address);
-		activeChannels = (TextView) findViewById(R.id.txt_canales_activos);
+		activeChannels = (TextView) findViewById(R.id.nc_txt_active_channels);
 		channelsToDisplay = (TextView) findViewById(R.id.nc_txt_channels_to_show);
 	}
 
@@ -67,13 +67,10 @@ public class NewConfigActivity extends Activity {
 		newConfiguration = new Configuration();
 		newConfiguration.setFrequency(DEFAULT_FREQUENCY);
 		newConfiguration.setNumberOfBits(DEFAULT_NUMBER_OF_BITS);
-
 	}
 
-	private void initializeComponents() {
-
-		frequencySeekbar
-				.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+	private void initializeFrequencyComponents() {
+		frequencySeekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 					public void onProgressChanged(SeekBar seekBar,
 							int progress, boolean changedByUser) {
 						if (changedByUser) {
@@ -89,7 +86,6 @@ public class NewConfigActivity extends Activity {
 					public void onStopTrackingTouch(SeekBar seekBar) {
 					}
 				});
-
 		frequencyEditor.setOnEditorActionListener(new OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView currentView, int actionId,
@@ -97,14 +93,22 @@ public class NewConfigActivity extends Activity {
 				boolean handled = false;
 
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
-
-					int new_frec = Integer.parseInt(currentView.getText()
+					int newFrequency = Integer.parseInt(currentView.getText()
 							.toString());
-					if (new_frec >= FREQUENCY_MIN && new_frec <= FREQUENCY_MAX) {
+					
+					setFrequency(newFrequency);
+					closeKeyboardAndClearFocus();
+					handled = true;
+				}
+				return handled;
+			}
+
+			private void setFrequency(int newFrequency) {
+				if (newFrequency >= FREQUENCY_MIN && newFrequency <= FREQUENCY_MAX) {
 						frequencySeekbar
-								.setProgress((new_frec - FREQUENCY_MIN));
-						newConfiguration.setFrequency(new_frec);
-					} else if (new_frec > FREQUENCY_MAX) {
+								.setProgress((newFrequency - FREQUENCY_MIN));
+						newConfiguration.setFrequency(newFrequency);
+					} else if (newFrequency > FREQUENCY_MAX) {
 						frequencySeekbar.setProgress(FREQUENCY_MAX);
 						frequencyEditor.setText(FREQUENCY_MAX);
 						newConfiguration.setFrequency(FREQUENCY_MAX);
@@ -116,12 +120,6 @@ public class NewConfigActivity extends Activity {
 						displayToast("min frequency is " + FREQUENCY_MIN
 								+ " Hz");
 					}
-
-					closeKeyboardAndClearFocus();
-
-					handled = true;
-				}
-				return handled;
 			}
 
 			private void closeKeyboardAndClearFocus() {
@@ -133,7 +131,6 @@ public class NewConfigActivity extends Activity {
 
 			}
 		});
-
 	}
 
 	// @todo saca las cadena de caracteres de la interfaz de usuario y usa i18n
@@ -147,44 +144,56 @@ public class NewConfigActivity extends Activity {
 
 		final ActiveChannelsListAdapter activeChannelsListAdapter = 
 				new ActiveChannelsListAdapter(this, channels);
+		
 		AlertDialog.Builder activeChannelsBuilder;
 		AlertDialog activeChannelsDialog;
 		ListView activeChannelsListView;
 
 		// ACTIVE CHANNELS BUILDER
 		activeChannelsBuilder = new AlertDialog.Builder(this);
-		activeChannelsBuilder.setIcon(R.drawable.ic_launcher);
-		activeChannelsBuilder.setTitle("Select active channels");
-		activeChannelsBuilder.setView(getLayoutInflater().inflate(
+		activeChannelsBuilder.setIcon(R.drawable.ic_launcher)
+			.setTitle("Select channels to activate")
+			.setView(getLayoutInflater().inflate(
 				R.layout.dialog_channels_listview, null));
 
 		activeChannelsBuilder.setPositiveButton("accept",
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						TextView ca = (TextView) findViewById(R.id.txt_canales_activos);
+						
 						String[] channelsActivated = activeChannelsListAdapter
 								.getChecked();
+						
 						newConfiguration.setActiveChannels(channelsActivated);
+						
+						if (noChannelsActivated(channelsActivated))
+							activeChannels.setText("no channels selected");
+						else 
+							printActivatedChannels(channelsActivated);
+					}
+
+					private void printActivatedChannels(String[] channelsActivated) {
+						activeChannels.setText("channels to activate: ");
+						String si = "";
+						for (int i = 0; i < channelsActivated.length; i++) {
+							if (channelsActivated[i] != null)
+								si = si + "\n\t channel " + (i + 1)
+										+ " with sensor "
+										+ channelsActivated[i];
+						}
+						activeChannels.append(si);
+						
+					}
+					private boolean noChannelsActivated(String[] channelsActivated) {
 						int counter = 0;
 						for (int i = 0; i < channelsActivated.length; i++) {
 							if (channelsActivated[i] != null)
 								counter++;
 						}
 						if (counter == 0)
-							ca.setText("no channels selected");
-						else {
-							ca.setText("channels to activate: ");
-
-							String si = "";
-							for (int i = 0; i < channelsActivated.length; i++) {
-								if (channelsActivated[i] != null)
-									si = si + "\n\t channel " + (i + 1)
-											+ " with sensor "
-											+ channelsActivated[i];
-							}
-							ca.append(si);
-						}
+							return true;
+						else
+							return false;
 					}
 				});
 		activeChannelsBuilder.setNegativeButton("cancel",
@@ -204,13 +213,13 @@ public class NewConfigActivity extends Activity {
 		activeChannelsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		activeChannelsListView.setItemsCanFocus(false);
 		activeChannelsListView.setAdapter(activeChannelsListAdapter);
-
 	}
 
 	private void setupChannelsToDisplay() {
 
 		final ArrayList<String> channels = new ArrayList<String>();
 		final ArrayList<String> sensors = new ArrayList<String>();
+		
 		for (int i = 0; i < newConfiguration.getActiveChannels().length; i++) {
 			if (newConfiguration.getActiveChannels()[i].compareTo("null") != 0) {
 				channels.add("channel " + (i + 1));
@@ -237,7 +246,7 @@ public class NewConfigActivity extends Activity {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						boolean[] channelsSelected = ctdla.getChecked();
-						TextView ca = (TextView) findViewById(R.id.nc_txt_channels_to_show);
+						
 						boolean[] ctd = new boolean[8];
 						int counter = 0;
 						for (int i = 0; i < channelsSelected.length; i++) {
@@ -245,13 +254,13 @@ public class NewConfigActivity extends Activity {
 								counter++;
 							}
 						}
-						if (counter > 3)
-							displayToast("channels to display have to be less than 4");
+						if (counter > 2)
+							displayToast("channels to display have to be less than 3");
 						else if (counter == 0)
-							ca.setText("no channels selected");
+							channelsToDisplay.setText("no channels selected");
 						else {
-							ca = (TextView) findViewById(R.id.nc_txt_channels_to_show);
-							ca.setText("channels to show: ");
+							channelsToDisplay = (TextView) findViewById(R.id.nc_txt_channels_to_show);
+							channelsToDisplay.setText("channels to display: ");
 							String si = "";
 							for (int i = 0; i < channelsSelected.length; i++) {
 								if (channelsSelected[i]) {
@@ -266,7 +275,7 @@ public class NewConfigActivity extends Activity {
 											+ sensors.get(i).toString();
 								}
 							}
-							ca.append(si);
+							channelsToDisplay.append(si);
 							newConfiguration.setChannelsToDisplay(ctd);
 						}
 
@@ -334,7 +343,7 @@ public class NewConfigActivity extends Activity {
 		newConfiguration.setMacAddress(macAddress.getText().toString());
 
 		Intent returnIntent = new Intent();
-		returnIntent.putExtra("config", newConfiguration);
+		returnIntent.putExtra("configuration", newConfiguration);
 		setResult(RESULT_OK, returnIntent);
 		finish();
 

@@ -36,22 +36,21 @@ import com.j256.ormlite.dao.Dao;
 import com.jjoe64.graphview.GraphView.GraphViewData;
 
 public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
-	private TextView ui_recordingName, ui_configurationName, ui_bits, ui_freq,
-	ui_activeChannels, ui_macAddress;
-	private LinearLayout ui_graph;
-	private Button ui_startStopbutton;
-	
+	private TextView uiRecordingName, uiConfigurationName, uiNumberOfBits,
+			uiFrequency, uiActiveChannels, uiMacAddress;
+	private LinearLayout uiGraph;
+	private Button uiStartStopbutton;
 
 	private Configuration currentConfiguration;
-	String recordingName;
-	Bundle extras;
-	
-	Messenger mService = null;
-	static int dato = 0;
-	static HRGraph graph;
-	boolean isServiceBounded = false;
-	boolean isReceivingData = false;
-	final Messenger mActivity = new Messenger(new IncomingHandler());
+	private String recordingName;
+	private Bundle extras;
+
+	private Messenger mService = null;
+	private static int dato = 0;
+	private static HRGraph graph;
+	private boolean isServiceBounded = false;
+	private boolean isReceivingData = false;
+	private final Messenger mActivity = new Messenger(new IncomingHandler());
 
 	static class IncomingHandler extends Handler {
 		@Override
@@ -107,20 +106,21 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 		if (isServiceRunning()) {
 			bindToService();
-			ui_startStopbutton = (Button) findViewById(R.id.nr_bttn_StartPause);
-			ui_startStopbutton.setText("stop recording");
+			uiStartStopbutton = (Button) findViewById(R.id.nr_bttn_StartPause);
+			uiStartStopbutton.setText("stop recording");
 			isReceivingData = true;
 			Log.d("test", "notificacionIniciaServicio");
 		}
 
 		initUI();
 
-		ui_recordingName.setText(recordingName);
-		ui_configurationName.setText(currentConfiguration.getName());
-		ui_freq.setText(String.valueOf(currentConfiguration.getFrequency()) + " Hz");
-		ui_bits.setText(String.valueOf(currentConfiguration.getNumberOfBits())
-				+ " bits");
-		ui_macAddress.setText(currentConfiguration.getMacAddress());
+		uiRecordingName.setText(recordingName);
+		uiConfigurationName.setText(currentConfiguration.getName());
+		uiFrequency.setText(String.valueOf(currentConfiguration.getFrequency())
+				+ " Hz");
+		uiNumberOfBits.setText(String.valueOf(currentConfiguration
+				.getNumberOfBits()) + " bits");
+		uiMacAddress.setText(currentConfiguration.getMacAddress());
 
 		String strAC = "";
 		String[] ac = currentConfiguration.getActiveChannels();
@@ -130,9 +130,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 						+ "\n";
 		}
 
-		ui_activeChannels.setText(strAC);
+		uiActiveChannels.setText(strAC);
 		graph = new HRGraph(this);
-		ui_graph.addView(graph.getGraphView());
+		uiGraph.addView(graph.getGraphView());
 
 	}
 
@@ -152,14 +152,14 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	private void initUI() {
-		ui_graph = (LinearLayout) findViewById(R.id.nr_graph_data);
-		ui_startStopbutton = (Button) findViewById(R.id.nr_bttn_StartPause);
-		ui_recordingName = (TextView) findViewById(R.id.nr_txt_recordingName);
-		ui_configurationName = (TextView) findViewById(R.id.nr_txt_configName);
-		ui_bits = (TextView) findViewById(R.id.nr_txt_config_nbits);
-		ui_freq = (TextView) findViewById(R.id.nr_txt_config_freq);
-		ui_activeChannels = (TextView) findViewById(R.id.nr_txt_channels_active);
-		ui_macAddress = (TextView) findViewById(R.id.nr_txt_mac);
+		uiGraph = (LinearLayout) findViewById(R.id.nr_graph_data);
+		uiStartStopbutton = (Button) findViewById(R.id.nr_bttn_StartPause);
+		uiRecordingName = (TextView) findViewById(R.id.nr_txt_recordingName);
+		uiConfigurationName = (TextView) findViewById(R.id.nr_txt_configName);
+		uiNumberOfBits = (TextView) findViewById(R.id.nr_txt_config_nbits);
+		uiFrequency = (TextView) findViewById(R.id.nr_txt_config_freq);
+		uiActiveChannels = (TextView) findViewById(R.id.nr_txt_channels_active);
+		uiMacAddress = (TextView) findViewById(R.id.nr_txt_mac);
 	}
 
 	private void start_receiving_data() {
@@ -197,14 +197,14 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 					LocalService.class));
 			bindToService();
 			displayToast("recording started");
-			ui_startStopbutton.setText("stop recording");
+			uiStartStopbutton.setText("stop recording");
 			isReceivingData = true;
 		} else {
 			unbindOfService();
 			stopService(new Intent(NewRecordingActivity.this,
 					LocalService.class));
 			displayToast("recording stopped");
-			ui_startStopbutton.setText("start recording");
+			uiStartStopbutton.setText("start recording");
 			isReceivingData = false;
 			saveRecording();
 		}

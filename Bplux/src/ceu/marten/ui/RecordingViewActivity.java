@@ -8,14 +8,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import android.app.Activity;
-import android.content.ContentProvider;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;

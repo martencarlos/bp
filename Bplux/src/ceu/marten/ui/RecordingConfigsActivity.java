@@ -31,12 +31,12 @@ import com.j256.ormlite.stmt.QueryBuilder;
 public class RecordingConfigsActivity extends
 		OrmLiteBaseActivity<DatabaseHelper> implements OnDismissCallback {
 
-	public AlertDialog RecName;
-	private ListView devListView;
+	private AlertDialog recordingNameDialog;
+	private ListView configurationsListView;
 	private RecordingConfigListAdapter baseAdapter;
-	private ArrayList<Configuration> configs = null;
-	private Context RCAcontext = this;
-	private int configSelectedPos = 0;
+	private ArrayList<Configuration> configurations = null;
+	private Context classContext = this;
+	private int currentConfigurationsPosition = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,35 +45,23 @@ public class RecordingConfigsActivity extends
 		setContentView(R.layout.ly_recording_configs);
 
 		//@todo ¿esto no debería hacerse de modo asíncrono?
-		loadDevicesConfig();
+		loadConfigurations();
 		setupRecordingNameDialog();
 		setupConfigurationsListView();
-	}
-
-	@Override
-	protected void onRestart() {
-		super.onRestart();
-
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 1) {
 			if (resultCode == RESULT_OK) {
-				Configuration config = ((Configuration) data
-						.getSerializableExtra("config"));
-
-				saveDeviceConfig(config);
-
-				loadDevicesConfig();
+			
+				Configuration configuration = ((Configuration) data
+						.getSerializableExtra("configuration"));
+				saveConfiguration(configuration);
+				loadConfigurations();
 				setupConfigurationsListView();
 			}
 			if (resultCode == RESULT_CANCELED) {
-				// Write your code if there's no result
+				
 			}
 		}
 	}
@@ -89,17 +77,17 @@ public class RecordingConfigsActivity extends
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int id) {
-								EditText et = (EditText) RecName
+								EditText et = (EditText) recordingNameDialog
 										.findViewById(R.id.dialog_txt_new_recording_name);
 								String newRecordingName = et.getText()
 										.toString();
 
-								Intent intent = new Intent(RCAcontext,
+								Intent intent = new Intent(classContext,
 										NewRecordingActivity.class);
 								intent.putExtra("recordingName",
 										newRecordingName);
 								intent.putExtra("configSelected",
-										configs.get(configSelectedPos));
+										configurations.get(currentConfigurationsPosition));
 								startActivity(intent);
 							}
 						})
@@ -109,7 +97,7 @@ public class RecordingConfigsActivity extends
 								// hide dialog
 							}
 						});
-		RecName = builder.create();
+		recordingNameDialog = builder.create();
 
 	}
 
@@ -119,17 +107,17 @@ public class RecordingConfigsActivity extends
 			@Override
 			public void onItemClick(AdapterView<?> AdapterView, View v,
 					int position, long id) {
-				configSelectedPos = position;
-				RecName.show();
+				currentConfigurationsPosition = position;
+				recordingNameDialog.show();
 
 			}
 		};
 
-		devListView = (ListView) findViewById(R.id.lvConfigs);
-		devListView.setOnItemClickListener(shortPressListener);
+		configurationsListView = (ListView) findViewById(R.id.lvConfigs);
+		configurationsListView.setOnItemClickListener(shortPressListener);
 
 		/** SETTING UP THE ADAPTER */
-		baseAdapter = new RecordingConfigListAdapter(this, configs);
+		baseAdapter = new RecordingConfigListAdapter(this, configurations);
 		setSwipeToDismissAdapter();
 
 	}
@@ -137,8 +125,8 @@ public class RecordingConfigsActivity extends
 	private void setSwipeToDismissAdapter() {
 		SwipeDismissAdapter swipeAdapter = new SwipeDismissAdapter(baseAdapter,
 				this);
-		swipeAdapter.setAbsListView(devListView);
-		devListView.setAdapter(baseAdapter);
+		swipeAdapter.setAbsListView(configurationsListView);
+		configurationsListView.setAdapter(baseAdapter);
 	}
 
 	@Override
@@ -154,17 +142,17 @@ public class RecordingConfigsActivity extends
 				e.printStackTrace();
 			}
 			try {
-				dao.delete(configs.get(position));
+				dao.delete(configurations.get(position));
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			configs.remove(position);
+			configurations.remove(position);
 		}
 		Toast.makeText(this, "config. removed ", Toast.LENGTH_SHORT).show();
 	}
 
-	public void saveDeviceConfig(Configuration config) {
+	public void saveConfiguration(Configuration config) {
 		Dao<Configuration, Integer> dao;
 		try {
 			dao = getHelper().getDeviceConfigDao();
@@ -174,14 +162,14 @@ public class RecordingConfigsActivity extends
 		}
 	}
 
-	public void loadDevicesConfig() {
-		configs = new ArrayList<Configuration>();
+	public void loadConfigurations() {
+		configurations = new ArrayList<Configuration>();
 		Dao<Configuration, Integer> dao;
 		try {
 			dao = getHelper().getDeviceConfigDao();
 			QueryBuilder<Configuration, Integer> builder = dao.queryBuilder();
 			builder.orderBy("createDate", false).limit(30L);
-			configs = (ArrayList<Configuration>) dao.query(builder.prepare());
+			configurations = (ArrayList<Configuration>) dao.query(builder.prepare());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

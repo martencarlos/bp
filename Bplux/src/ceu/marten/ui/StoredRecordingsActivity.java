@@ -79,13 +79,11 @@ public class StoredRecordingsActivity extends
 			try {
 				dao = getHelper().getRecordingDao();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			try {
 				dao.delete(recordingsArrayList.get(position));
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			recordingsArrayList.remove(position);
