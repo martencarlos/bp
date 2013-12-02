@@ -31,7 +31,7 @@
             android:parentActivityName="ceu.marten.ui.HomeActivity" >
         </activity>
         <activity
-            android:name="ceu.marten.ui.NewConfigActivity"
+            android:name="ceu.marten.ui.NewConfigurationActivity"
             android:label="@string/graphtitle"
             
             android:parentActivityName="ceu.marten.ui.HomeActivity" >

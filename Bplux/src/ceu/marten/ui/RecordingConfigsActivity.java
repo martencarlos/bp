@@ -175,7 +175,7 @@ public class RecordingConfigsActivity extends
 	/* BUTTON EVENTS */
 
 	public void onClickedNewConfig(View v) {
-		Intent intent = new Intent(this, NewConfigActivity.class);
+		Intent intent = new Intent(this, NewConfigurationActivity.class);
 		startActivityForResult(intent, 1);
 	}
 

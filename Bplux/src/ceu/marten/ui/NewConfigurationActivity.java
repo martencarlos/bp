@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -29,10 +30,8 @@ import ceu.marten.model.Configuration;
 import ceu.marten.ui.adapters.ActiveChannelsListAdapter;
 import ceu.marten.ui.adapters.ChannelsToDisplayListAdapter;
 
-public class NewConfigActivity extends Activity {
+public class NewConfigurationActivity extends Activity {
 
-	//private static final String TAG = NewConfigActivity.class.getName();
-	
 	private static final int FREQUENCY_MAX = 1000;
 	private static final int FREQUENCY_MIN = 36;
 	private static final int DEFAULT_FREQUENCY = 500;
@@ -50,10 +49,13 @@ public class NewConfigActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_new_config);
 
-		initializeVariables();
-		findViews();
-		initializeFrequencyComponents();
+		new InitActivity().execute("");
+	}
 
+	private void initializeVariables() {
+		newConfiguration = new Configuration();
+		newConfiguration.setFrequency(DEFAULT_FREQUENCY);
+		newConfiguration.setNumberOfBits(DEFAULT_NUMBER_OF_BITS);
 	}
 
 	private void findViews() {
@@ -65,20 +67,16 @@ public class NewConfigActivity extends Activity {
 		channelsToDisplay = (TextView) findViewById(R.id.nc_txt_channels_to_show);
 	}
 
-	private void initializeVariables() {
-		newConfiguration = new Configuration();
-		newConfiguration.setFrequency(DEFAULT_FREQUENCY);
-		newConfiguration.setNumberOfBits(DEFAULT_NUMBER_OF_BITS);
-	}
-
 	private void initializeFrequencyComponents() {
-		frequencySeekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+		frequencySeekbar
+				.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 					public void onProgressChanged(SeekBar seekBar,
 							int progress, boolean changedByUser) {
 						if (changedByUser) {
 							frequencyEditor.setText(String.valueOf(progress
 									+ FREQUENCY_MIN));
-							newConfiguration.setFrequency(progress + FREQUENCY_MIN);
+							newConfiguration.setFrequency(progress
+									+ FREQUENCY_MIN);
 						}
 					}
 
@@ -97,7 +95,7 @@ public class NewConfigActivity extends Activity {
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
 					int newFrequency = Integer.parseInt(currentView.getText()
 							.toString());
-					
+
 					setFrequency(newFrequency);
 					closeKeyboardAndClearFocus();
 					handled = true;
@@ -106,22 +104,22 @@ public class NewConfigActivity extends Activity {
 			}
 
 			private void setFrequency(int newFrequency) {
-				if (newFrequency >= FREQUENCY_MIN && newFrequency <= FREQUENCY_MAX) {
-						frequencySeekbar
-								.setProgress((newFrequency - FREQUENCY_MIN));
-						newConfiguration.setFrequency(newFrequency);
-					} else if (newFrequency > FREQUENCY_MAX) {
-						frequencySeekbar.setProgress(FREQUENCY_MAX);
-						frequencyEditor.setText(String.valueOf(FREQUENCY_MAX));
-						newConfiguration.setFrequency(FREQUENCY_MAX);
-						displayToast("max frequency is " + FREQUENCY_MAX + "Hz");
-					} else {
-						frequencySeekbar.setProgress(0);
-						frequencyEditor.setText(String.valueOf(FREQUENCY_MIN));
-						newConfiguration.setFrequency(FREQUENCY_MIN);
-						displayToast("min frequency is " + FREQUENCY_MIN
-								+ " Hz");
-					}
+				if (newFrequency >= FREQUENCY_MIN
+						&& newFrequency <= FREQUENCY_MAX) {
+					frequencySeekbar
+							.setProgress((newFrequency - FREQUENCY_MIN));
+					newConfiguration.setFrequency(newFrequency);
+				} else if (newFrequency > FREQUENCY_MAX) {
+					frequencySeekbar.setProgress(FREQUENCY_MAX);
+					frequencyEditor.setText(String.valueOf(FREQUENCY_MAX));
+					newConfiguration.setFrequency(FREQUENCY_MAX);
+					displayToast("max frequency is " + FREQUENCY_MAX + "Hz");
+				} else {
+					frequencySeekbar.setProgress(0);
+					frequencyEditor.setText(String.valueOf(FREQUENCY_MIN));
+					newConfiguration.setFrequency(FREQUENCY_MIN);
+					displayToast("min frequency is " + FREQUENCY_MIN + " Hz");
+				}
 			}
 
 			private void closeKeyboardAndClearFocus() {
@@ -135,46 +133,53 @@ public class NewConfigActivity extends Activity {
 		});
 	}
 
-	// @todo saca las cadena de caracteres de la interfaz de usuario y usa i18n
 	private void setupActiveChannelsDialog() {
 
+		// INIT CHANNELS ARRAY
 		final ArrayList<String> channels = new ArrayList<String>();
-		channels.add("channel 1");channels.add("channel 2");
-		channels.add("channel 3");channels.add("channel 4");
-		channels.add("channel 5");channels.add("channel 6");
-		channels.add("channel 7");channels.add("channel 8");
+		channels.add(getResources().getString(R.string.channel1));
+		channels.add(getResources().getString(R.string.channel2));
+		channels.add(getResources().getString(R.string.channel3));
+		channels.add(getResources().getString(R.string.channel4));
+		channels.add(getResources().getString(R.string.channel5));
+		channels.add(getResources().getString(R.string.channel6));
+		channels.add(getResources().getString(R.string.channel7));
+		channels.add(getResources().getString(R.string.channel8));
 
-		final ActiveChannelsListAdapter activeChannelsListAdapter = 
-				new ActiveChannelsListAdapter(this, channels);
-		
+		final ActiveChannelsListAdapter activeChannelsListAdapter = new ActiveChannelsListAdapter(
+				this, channels);
+
 		AlertDialog.Builder activeChannelsBuilder;
 		AlertDialog activeChannelsDialog;
 		ListView activeChannelsListView;
 
 		// ACTIVE CHANNELS BUILDER
 		activeChannelsBuilder = new AlertDialog.Builder(this);
-		activeChannelsBuilder.setIcon(R.drawable.ic_launcher)
-			.setTitle("Select channels to activate")
-			.setView(getLayoutInflater().inflate(
-				R.layout.dialog_channels_listview, null));
+		activeChannelsBuilder
+				.setIcon(R.drawable.ic_launcher)
+				.setTitle("Select channels to activate")
+				.setView(
+						getLayoutInflater().inflate(
+								R.layout.dialog_channels_listview, null));
 
 		activeChannelsBuilder.setPositiveButton("accept",
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						
+
 						String[] channelsActivated = activeChannelsListAdapter
 								.getChecked();
-						
+
 						newConfiguration.setActiveChannels(channelsActivated);
-						
+
 						if (noChannelsActivated(channelsActivated))
 							activeChannels.setText("no channels selected");
-						else 
+						else
 							printActivatedChannels(channelsActivated);
 					}
 
-					private void printActivatedChannels(String[] channelsActivated) {
+					private void printActivatedChannels(
+							String[] channelsActivated) {
 						activeChannels.setText("channels to activate: ");
 						String si = "";
 						for (int i = 0; i < channelsActivated.length; i++) {
@@ -184,8 +189,9 @@ public class NewConfigActivity extends Activity {
 										+ channelsActivated[i];
 						}
 						activeChannels.append(si);
-						
+
 					}
+
 					private boolean noChannelsActivated(String[] channelsActivated) {
 						int counter = 0;
 						for (int i = 0; i < channelsActivated.length; i++) {
@@ -221,7 +227,8 @@ public class NewConfigActivity extends Activity {
 
 		final ArrayList<String> channels = new ArrayList<String>();
 		final ArrayList<String> sensors = new ArrayList<String>();
-		
+
+		// FILL THE TWO ARRAYS
 		for (int i = 0; i < newConfiguration.getActiveChannels().length; i++) {
 			if (newConfiguration.getActiveChannels()[i].compareTo("null") != 0) {
 				channels.add("channel " + (i + 1));
@@ -229,13 +236,12 @@ public class NewConfigActivity extends Activity {
 			}
 		}
 
-		final ChannelsToDisplayListAdapter ctdla = new ChannelsToDisplayListAdapter(
+		final ChannelsToDisplayListAdapter channelsToDisplayListAdapter = new ChannelsToDisplayListAdapter(
 				this, channels, sensors);
 		AlertDialog.Builder channelsToDisplayBuilder;
 		AlertDialog channelsToDisplayDialog;
-		ListView lv;
 
-		// CHANNELS TO DISPLAY BUILDER
+		//BUILDER
 		channelsToDisplayBuilder = new AlertDialog.Builder(this);
 		channelsToDisplayBuilder.setIcon(R.drawable.ic_launcher);
 		channelsToDisplayBuilder.setTitle("Select channels to display");
@@ -247,40 +253,48 @@ public class NewConfigActivity extends Activity {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						boolean[] channelsSelected = ctdla.getChecked();
+						boolean[] channelsSelected = channelsToDisplayListAdapter.getChecked();
+						boolean[] channelsToDisplayArray = new boolean[8];
 						
-						boolean[] ctd = new boolean[8];
+						if (numberOfChannelsSelected(channelsSelected) > 2)
+							displayToast("channels to display have to be less than 3");
+						else if (numberOfChannelsSelected(channelsSelected) == 0)
+							channelsToDisplay.setText("no channels were selected");
+						else {
+							channelsToDisplay.setText("channels to display: ");
+							printChannelsToDisplay(channelsToDisplayArray,channelsSelected);
+							newConfiguration.setChannelsToDisplay(channelsToDisplayArray);
+						}
+
+					}
+
+					private void printChannelsToDisplay(boolean[] channelsToDisplayArray,boolean[] channelsSelected) {
+						String si = "";
+						for (int i = 0; i < channelsSelected.length; i++) {
+							if (channelsSelected[i]) {
+								int in = Character.getNumericValue((channels
+										.get(i).toString().charAt(channels
+										.get(i).toString().length() - 1)) - 1);
+								channelsToDisplayArray[in] = true;
+
+								si = si + "\n\t"
+										+ channels.get(i).toString()
+										+ " with sensor "
+										+ sensors.get(i).toString();
+							}
+						}
+						channelsToDisplay.append(si);
+						
+					}
+
+					private int numberOfChannelsSelected(boolean[] channelsSelected) {
 						int counter = 0;
 						for (int i = 0; i < channelsSelected.length; i++) {
 							if (channelsSelected[i]) {
 								counter++;
 							}
 						}
-						if (counter > 2)
-							displayToast("channels to display have to be less than 3");
-						else if (counter == 0)
-							channelsToDisplay.setText("no channels selected");
-						else {
-							channelsToDisplay = (TextView) findViewById(R.id.nc_txt_channels_to_show);
-							channelsToDisplay.setText("channels to display: ");
-							String si = "";
-							for (int i = 0; i < channelsSelected.length; i++) {
-								if (channelsSelected[i]) {
-									int in = Character.getNumericValue((channels
-											.get(i).toString().charAt(channels
-											.get(i).toString().length() - 1)) - 1);
-									ctd[in] = true;
-
-									si = si + "\n\t"
-											+ channels.get(i).toString()
-											+ " with sensor "
-											+ sensors.get(i).toString();
-								}
-							}
-							channelsToDisplay.append(si);
-							newConfiguration.setChannelsToDisplay(ctd);
-						}
-
+						return counter;
 					}
 				});
 		channelsToDisplayBuilder.setNegativeButton("cancel",
@@ -292,14 +306,17 @@ public class NewConfigActivity extends Activity {
 					}
 				});
 
+		//CREATE DIALOG
 		channelsToDisplayDialog = channelsToDisplayBuilder.create();
 		channelsToDisplayDialog.show();
 
-		lv = (ListView) channelsToDisplayDialog
+		//LIST VIEW CONFIGURATION
+		ListView channelsToDisplayListView;
+		channelsToDisplayListView = (ListView) channelsToDisplayDialog
 				.findViewById(R.id.lv_channelsSelection);
-		lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-		lv.setItemsCanFocus(false);
-		lv.setAdapter(ctdla);
+		channelsToDisplayListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+		channelsToDisplayListView.setItemsCanFocus(false);
+		channelsToDisplayListView.setAdapter(channelsToDisplayListAdapter);
 
 	}
 
@@ -332,7 +349,6 @@ public class NewConfigActivity extends Activity {
 	private void displayToast(String messageToDisplay) {
 		Toast.makeText(getApplicationContext(), messageToDisplay,
 				Toast.LENGTH_SHORT).show();
-
 	}
 
 	public void onClickedSubmit(View view) {
@@ -392,5 +408,30 @@ public class NewConfigActivity extends Activity {
 				displayToast("please select active channels first");
 		} else
 			displayToast("please select active channels first");
+	}
+	
+	private class InitActivity extends AsyncTask<String, Void, String> {
+		
+		@Override
+		protected String doInBackground(String... params) {
+			initializeVariables();
+			findViews();
+			initializeFrequencyComponents();
+			return "execuded";
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			
+		}
+
+		@Override
+		protected void onPreExecute() {
+			
+		}
+
+		@Override
+		protected void onProgressUpdate(Void... values) {
+		}
 	}
 }

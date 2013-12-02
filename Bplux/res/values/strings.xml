@@ -6,6 +6,15 @@
     <string name="menu_settings">Settings</string>
     <string name="action_settings">Settings</string>
     <string name="graphtitle">HR graph</string>
+    
+    <string name="channel1">channel 1</string>
+    <string name="channel2">channel 2</string>
+    <string name="channel3">channel 3</string>
+    <string name="channel4">channel 4</string>
+    <string name="channel5">channel 5</string>
+    <string name="channel6">channel 6</string>
+    <string name="channel7">channel 7</string>
+    <string name="channel8">channel 8</string>
 
     <string-array name="itemsList">
         <item>show settings  ></item>

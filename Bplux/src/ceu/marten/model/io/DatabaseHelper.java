@@ -53,7 +53,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Recording.class, true);
 			onCreate(sqliteDatabase, connectionSource);
 		} catch (SQLException e) {
-			Log.e(DatabaseHelper.class.getName(),
+			Log.e(TAG,
 					"Unable to upgrade database from version " + oldVer
 							+ " to new " + newVer, e);
 		}

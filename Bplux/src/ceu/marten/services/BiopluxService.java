@@ -47,10 +47,10 @@ public class BiopluxService extends Service {
 	ArrayList<Messenger> mClients = new ArrayList<Messenger>();
 	private NotificationManager notificationManager;
 	private Timer timer = new Timer();
-	private static boolean isRunning = false;
 	private Configuration configuration;
 	private String recordingName;
 	private int channelToDisplay = 0;
+	OutputStreamWriter out;
 
 	private Device connection;
 	private Device.Frame[] frames;
@@ -68,7 +68,6 @@ public class BiopluxService extends Service {
 				break;
 			case MSG_UNREGISTER_CLIENT:
 				mClients.remove(msg.replyTo);
-				readFile();
 				break;
 			case MSG_START_SENDING_DATA:
 				break;
@@ -96,18 +95,16 @@ public class BiopluxService extends Service {
 		connectToBiopluxDevice();
 		timer.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
-
 				processFrames();
 			}
 		}, 0, 100L);
-		isRunning = true;
 		showNotification(intent);
 		writeHeaderOfTextFile();
 		return mMessenger.getBinder();
 	}
 
 	private void writeHeaderOfTextFile() {
-		OutputStreamWriter out;
+		
 		try {
 			out = new OutputStreamWriter(openFileOutput(recordingName + ".txt",
 					MODE_PRIVATE));
@@ -123,6 +120,7 @@ public class BiopluxService extends Service {
 					configuration.getActiveChannelsAsString()));
 			out.write(String.format(formatFileCollectedData, "#num", "ch 1",
 					"ch 2", "ch 3", "ch 4", "ch 5", "ch 6", "ch 7", "ch 8"));
+			out.flush();
 			out.close();
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "file to write header on, not found",e);
@@ -133,7 +131,6 @@ public class BiopluxService extends Service {
 
 	public void writeFrameToTextFile(Frame f) {
 		counter++;
-		OutputStreamWriter out;
 		try {
 			out = new OutputStreamWriter(openFileOutput(recordingName + ".txt",
 					MODE_APPEND));
@@ -142,6 +139,7 @@ public class BiopluxService extends Service {
 					String.valueOf(f.an_in[2]), String.valueOf(f.an_in[3]),
 					String.valueOf(f.an_in[4]), String.valueOf(f.an_in[5]),
 					String.valueOf(f.an_in[6]), String.valueOf(f.an_in[7])));
+			out.flush();
 			out.close();
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "file to write frames on, not found",e);
@@ -151,26 +149,7 @@ public class BiopluxService extends Service {
 
 	}
 
-	private void readFile() {
-		InputStream in = null;
-		try {
-			in = openFileInput(recordingName + ".txt");
-			if (in != null) {
-				InputStreamReader tmp = new InputStreamReader(in);
-				BufferedReader reader = new BufferedReader(tmp);
-				String str;
-				StringBuilder buf = new StringBuilder();
-				while ((str = reader.readLine()) != null) {
-					buf.append(str + "\n");
-				}
-				in.close();
-			}
-		} catch (FileNotFoundException e) {
-			Log.e(TAG, "file to read, not found",e);
-		} catch (IOException e) {
-			Log.e(TAG, "file to read, stream expception",e);
-		}// @todo ¿y cerrar los ficheros?
-	}
+	
 
 	private void getInfoFromActivity(Intent intent) {
 		recordingName = intent.getStringExtra("recordingName").toString();
@@ -228,17 +207,25 @@ public class BiopluxService extends Service {
 				this).setSmallIcon(R.drawable.ic_launcher)
 				.setContentTitle("Device Connected")
 				.setContentText("service running, receiving data..");
-
-		// SET BACK BUTTON PROPERLY
+		
+		Intent newRecordingIntent = new Intent(this, NewRecordingActivity.class);
+		newRecordingIntent.putExtra("recordingName", recordingName);
+		newRecordingIntent.putExtra("configSelected", configuration);
+		// The stack builder object will contain an artificial back stack for the
+		// started Activity.
+		// This ensures that navigating backward from the Activity leads out of
+		// your application to the Home screen.
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-		stackBuilder.addParentStack(RecordingConfigsActivity.class);
-		Intent newRecActIntent = new Intent(this, NewRecordingActivity.class);
-		newRecActIntent.putExtra("recordingName", recordingName);
-		newRecActIntent.putExtra("configSelected", configuration);
-		newRecActIntent.putExtra("notification", true);
-		stackBuilder.addNextIntent(newRecActIntent);
-		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
-				PendingIntent.FLAG_UPDATE_CURRENT);
+		// Adds the back stack for the Intent (but not the Intent itself)
+		stackBuilder.addParentStack(NewRecordingActivity.class);
+		// Adds the Intent that starts the Activity to the top of the stack
+		stackBuilder.addNextIntent(newRecordingIntent);
+		PendingIntent resultPendingIntent =
+		        stackBuilder.getPendingIntent(
+		            0,
+		            PendingIntent.FLAG_UPDATE_CURRENT
+		        );
+		
 		mBuilder.setContentIntent(resultPendingIntent);
 
 		// mBuilder.setAutoCancel(true);
@@ -266,9 +253,6 @@ public class BiopluxService extends Service {
 		return START_NOT_STICKY; // run until explicitly stopped.
 	}
 
-	public static boolean isRunning() {
-		return isRunning;
-	}
 
 	@Override
 	public void onDestroy() {
@@ -284,6 +268,5 @@ public class BiopluxService extends Service {
 		}
 		notificationManager.cancel(R.string.service_id); 
 		Log.d(TAG, "service stopped");
-		isRunning = false;
 	}
 }

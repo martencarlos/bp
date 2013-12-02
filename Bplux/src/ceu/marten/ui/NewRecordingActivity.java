@@ -97,20 +97,17 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_new_recording);
+		Log.d(TAG, "entro a traves de la notificacion");
+		findViews();
 		
-		initializeComponents();
 		extras = getIntent().getExtras();
-
-		currentConfiguration = (Configuration) extras
-				.getSerializable("configSelected");
+		currentConfiguration = (Configuration) extras.getSerializable("configSelected");
 		recordingName = extras.getString("recordingName").toString();
 
 		if (isServiceRunning()) {
 			bindToService();
 			uiStartStopbutton.setText("stop recording");
 		}
-
-		
 
 		uiRecordingName.setText(recordingName);
 		uiConfigurationName.setText(currentConfiguration.getName());
@@ -119,16 +116,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		uiNumberOfBits.setText(String.valueOf(currentConfiguration
 				.getNumberOfBits()) + " bits");
 		uiMacAddress.setText(currentConfiguration.getMacAddress());
-
-		String strAC = "";
-		String[] ac = currentConfiguration.getActiveChannels();
-		for (int i = 0; i < ac.length; i++) {
-			if (ac[i].compareToIgnoreCase("null") != 0)
-				strAC += "\t" + "channel " + (i + 1) + " with sensor " + ac[i]
-						+ "\n";
-		}
-
-		uiActiveChannels.setText(strAC);
+		uiActiveChannels.setText(currentConfiguration.getActiveChannelsAsString());
+		
 		graph = new HRGraph(this);
 		uiGraph.addView(graph.getGraphView());
 
@@ -149,7 +138,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				.toString();
 	}
 
-	private void initializeComponents() {
+	private void findViews() {
 		uiGraph = (LinearLayout) findViewById(R.id.nr_graph_data);
 		uiStartStopbutton = (Button) findViewById(R.id.nr_bttn_StartPause);
 		uiRecordingName = (TextView) findViewById(R.id.nr_txt_recordingName);
