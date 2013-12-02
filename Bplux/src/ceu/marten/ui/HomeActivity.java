@@ -14,7 +14,6 @@ public class HomeActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_home);
-
 	}
 
 	/* BUTTON EVENTS */

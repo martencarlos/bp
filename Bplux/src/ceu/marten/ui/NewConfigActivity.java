@@ -31,6 +31,8 @@ import ceu.marten.ui.adapters.ChannelsToDisplayListAdapter;
 
 public class NewConfigActivity extends Activity {
 
+	//private static final String TAG = NewConfigActivity.class.getName();
+	
 	private static final int FREQUENCY_MAX = 1000;
 	private static final int FREQUENCY_MIN = 36;
 	private static final int DEFAULT_FREQUENCY = 500;
@@ -110,12 +112,12 @@ public class NewConfigActivity extends Activity {
 						newConfiguration.setFrequency(newFrequency);
 					} else if (newFrequency > FREQUENCY_MAX) {
 						frequencySeekbar.setProgress(FREQUENCY_MAX);
-						frequencyEditor.setText(FREQUENCY_MAX);
+						frequencyEditor.setText(String.valueOf(FREQUENCY_MAX));
 						newConfiguration.setFrequency(FREQUENCY_MAX);
 						displayToast("max frequency is " + FREQUENCY_MAX + "Hz");
 					} else {
 						frequencySeekbar.setProgress(0);
-						frequencyEditor.setText(FREQUENCY_MIN);
+						frequencyEditor.setText(String.valueOf(FREQUENCY_MIN));
 						newConfiguration.setFrequency(FREQUENCY_MIN);
 						displayToast("min frequency is " + FREQUENCY_MIN
 								+ " Hz");

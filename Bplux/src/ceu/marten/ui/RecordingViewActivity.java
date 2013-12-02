@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ import ceu.marten.bplux.R;
 
 public class RecordingViewActivity extends Activity {
 
+	private static final String TAG = RecordingViewActivity.class.getName();
 	private String recording_name="";
 	private TextView ui_recording_data = null;
 	
@@ -64,15 +66,9 @@ public class RecordingViewActivity extends Activity {
 				ui_recording_data.setText(buf.toString());
 			}
 		} catch (FileNotFoundException e) {
-		
-			e.printStackTrace();
+			Log.e(TAG, "file to read not found",e);
 		} catch (IOException e) {
-			
-			e.printStackTrace();
+			Log.e(TAG, "inputStream/bufferedReader exception, reading file",e);
 		}
 	}
-	
-		
-	
-	
 }

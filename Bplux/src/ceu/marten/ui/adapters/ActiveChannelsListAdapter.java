@@ -53,8 +53,6 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 		spinner.setTag(position);
 		spinner.setOnItemSelectedListener(this);
 
-		// rowView.setOnClickListener(this);
-
 		TextView channelNumber = (TextView) rowView
 				.findViewById(R.id.li_ac_channelNumber);
 		String currentItem = strings.get(position);
@@ -77,10 +75,6 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 
 	}
 
-	/*
-	 * @Override public void onClick(View v) { CheckBox cb = (CheckBox)
-	 * v.findViewById(R.id.li_ac_checkbox); cb.toggle(); }
-	 */
 	public String[] getChecked() {
 		return sensorsChecked;
 	}

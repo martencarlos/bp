@@ -73,10 +73,6 @@ public class ChannelsToDisplayListAdapter extends ArrayAdapter<String>
 		}
 	}
 
-	/*
-	 * @Override public void onClick(View v) { CheckBox cb = (CheckBox)
-	 * v.findViewById(R.id.li_ac_checkbox); cb.toggle(); }
-	 */
 	public boolean[] getChecked() {
 		return channelsToDisplay;
 	}

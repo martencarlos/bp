@@ -17,8 +17,8 @@ public class StoredRecordingsListAdapter extends ArrayAdapter<Recording> {
 	private final Context context;
 
 	public StoredRecordingsListAdapter(Context context,
-			ArrayList<Recording> loadedDevices) {
-		super(loadedDevices);
+			ArrayList<Recording> recordings) {
+		super(recordings);
 		this.context = context;
 	}
 

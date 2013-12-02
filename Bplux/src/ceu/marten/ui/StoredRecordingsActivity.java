@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AbsListView;
@@ -28,6 +29,8 @@ import com.j256.ormlite.stmt.QueryBuilder;
 public class StoredRecordingsActivity extends
 		OrmLiteBaseActivity<DatabaseHelper> implements OnDismissCallback {
 
+	private static final String TAG = StoredRecordingsActivity.class.getName();
+	
 	private ListView lv_recordings;
 	private StoredRecordingsListAdapter baseAdapter;
 	private ArrayList<Recording> recordingsArrayList = null;
@@ -78,13 +81,9 @@ public class StoredRecordingsActivity extends
 
 			try {
 				dao = getHelper().getRecordingDao();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			try {
 				dao.delete(recordingsArrayList.get(position));
 			} catch (SQLException e) {
-				e.printStackTrace();
+				Log.e(TAG, "Exception removing recording from database ",e);
 			}
 			recordingsArrayList.remove(position);
 		}
@@ -100,7 +99,7 @@ public class StoredRecordingsActivity extends
 			builder.orderBy("startDate", false).limit(30L);
 			recordingsArrayList = (ArrayList<Recording>) dao.query(builder.prepare());
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Log.e(TAG, "exception loading recordings from database ",e);
 		}
 	}
 

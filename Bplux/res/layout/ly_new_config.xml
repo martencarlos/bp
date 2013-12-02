@@ -45,7 +45,7 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/stDeviceName"
+                    android:text="Configuration name"
                     android:textColor="#372c24" />
 
                 <EditText
@@ -87,7 +87,7 @@
                 <TextView
                     android:layout_width="66dp"
                     android:layout_height="45dip"
-                    android:text="@string/stFrecRec"
+                    android:text="frequency: "
                     android:textColor="#372c24" />
 
                 <SeekBar
@@ -151,14 +151,14 @@
                         android:layout_height="wrap_content"
                         android:checked="true"
                         android:onClick="onRadioButtonClicked"
-                        android:text="@string/stNbits8" />
+                        android:text="8" />
 
                     <RadioButton
                         android:id="@+id/radioBttn12"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:onClick="onRadioButtonClicked"
-                        android:text="@string/stNbits12" />
+                        android:text="12" />
                 </RadioGroup>
             </LinearLayout>
 
@@ -251,7 +251,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onClickedCancel"
-                    android:text="@string/st_bttnTxt_cancel" />
+                    android:text="cancel" />
 
                 <Button
                     android:id="@+id/btnRegister"
@@ -259,7 +259,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onClickedSubmit"
-                    android:text="@string/stButton" />
+                    android:text="submit" />
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>

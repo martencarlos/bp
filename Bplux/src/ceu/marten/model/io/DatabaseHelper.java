@@ -8,6 +8,7 @@ import android.util.Log;
 
 import ceu.marten.model.Configuration;
 import ceu.marten.model.Recording;
+import ceu.marten.ui.StoredRecordingsActivity;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
@@ -22,6 +23,7 @@ import com.j256.ormlite.table.TableUtils;
  */
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
+	private static final String TAG = DatabaseHelper.class.getName();
 	private static final String DATABASE_NAME = "model.db";
 	private static final int DATABASE_VERSION = 1;
 
@@ -39,8 +41,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Configuration.class);
 			TableUtils.createTable(connectionSource, Recording.class);
 		} catch (SQLException e) {
-			//@todo ¡aquí sí que haces bien el log! Aunque mejor con la variable estática, más eficiente
-			Log.e(DatabaseHelper.class.getName(), "Unable to create datbase", e);
+			Log.e(TAG, "Unable to create datbase", e);
 		}
 	}
 

@@ -31,30 +31,31 @@ import ceu.marten.model.Configuration;
 import ceu.marten.ui.NewRecordingActivity;
 import ceu.marten.ui.RecordingConfigsActivity;
 
-public class LocalService extends Service {
-	//@todo dar nombres a las cosas como Dios manda
-	private NotificationManager notificationManager;
-	private Timer timer = new Timer();
-	private boolean sendingData = true;
-	private static boolean isRunning = false;
-	private Configuration config;
-	private String recording_name;
-	private int channelToDisplay = 0;
-	
-	//@todo esta es la forma estándar de hacer log en Android; actualiza todo el proyecto
-	//mira la segunda parte de este comentario más abajo
-	private static final String TAG = LocalService.class.getName();
+public class BiopluxService extends Service {
 
-	private Device connection;
-	private Device.Frame[] frames;
-	private int counter=0;
+	private static final String TAG = BiopluxService.class.getName();
 
-	ArrayList<Messenger> mClients = new ArrayList<Messenger>();
 	public static final int MSG_REGISTER_CLIENT = 1;
 	public static final int MSG_UNREGISTER_CLIENT = 2;
 	public static final int MSG_START_SENDING_DATA = 3;
 	public static final int MSG_STOP_SERVICE = 4;
 	public static final int MSG_VALUE = 5;
+
+	private String formatFileHeader = "%-10s %-10s%n";
+	private String formatFileCollectedData = "%-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s%n";
+
+	ArrayList<Messenger> mClients = new ArrayList<Messenger>();
+	private NotificationManager notificationManager;
+	private Timer timer = new Timer();
+	private static boolean isRunning = false;
+	private Configuration configuration;
+	private String recordingName;
+	private int channelToDisplay = 0;
+
+	private Device connection;
+	private Device.Frame[] frames;
+	private int counter = 0;
+
 	final Messenger mMessenger = new Messenger(new IncomingHandler());
 
 	class IncomingHandler extends Handler { // Handler of incoming messages from
@@ -70,7 +71,6 @@ public class LocalService extends Service {
 				readFile();
 				break;
 			case MSG_START_SENDING_DATA:
-				// sendingData = true;
 				break;
 			case MSG_STOP_SERVICE:
 				break;
@@ -87,7 +87,6 @@ public class LocalService extends Service {
 		for (int i = 0; i < frames.length; i++)
 			frames[i] = new Frame();
 
-		//@todo esta es la segunda parte del comentario
 		Log.d(TAG, "Service created");
 	}
 
@@ -109,50 +108,53 @@ public class LocalService extends Service {
 
 	private void writeHeaderOfTextFile() {
 		OutputStreamWriter out;
-		//@todo define estas cadenas de caracteres como variables globales de la clase para qué no haya que
-		//reservar las cada vez que se meta dentro de este método
-		String formatHeader = "%-10s %-10s%n";
-		String formatStr = "%-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s%n";
 		try {
-			out = new OutputStreamWriter(openFileOutput(recording_name+".txt",MODE_PRIVATE ));
-			out.write(String.format(formatHeader,"configuration name: ",config.getName())); 
-			out.write(String.format(formatHeader,"freq: ",config.getFrequency()));
-			out.write(String.format(formatHeader,"nbits: ",config.getNumberOfBits()));
-			out.write(String.format(formatHeader,"start date and time ",config.getCreateDate()));
-			out.write(String.format(formatHeader,"channels active: ",config.getActiveChannelsAsString()));
-			out.write(String.format(formatStr, "#num","ch 1", 
-					"ch 2", "ch 3", "ch 4", "ch 5",
-					"ch 6", "ch 7", "ch 8"));
+			out = new OutputStreamWriter(openFileOutput(recordingName + ".txt",
+					MODE_PRIVATE));
+			out.write(String.format(formatFileHeader, "configuration name: ",
+					configuration.getName()));
+			out.write(String.format(formatFileHeader, "freq: ",
+					configuration.getFrequency()));
+			out.write(String.format(formatFileHeader, "nbits: ",
+					configuration.getNumberOfBits()));
+			out.write(String.format(formatFileHeader, "start date and time ",
+					configuration.getCreateDate()));
+			out.write(String.format(formatFileHeader, "channels active: ",
+					configuration.getActiveChannelsAsString()));
+			out.write(String.format(formatFileCollectedData, "#num", "ch 1",
+					"ch 2", "ch 3", "ch 4", "ch 5", "ch 6", "ch 7", "ch 8"));
 			out.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();//@todo no imprimas ninguna traza ¡haz log! no quiero ver un solo printStackTrace() en el proyecto
+			Log.e(TAG, "file to write header on, not found",e);
 		} catch (IOException e) {
-			e.printStackTrace();
-		}//@todo ¿y cerrar los ficheros?
+			Log.e(TAG, "write header stream exception",e);
+		}
 	}
-	public void writeFrameToTextFile(Frame f){
-		//@todo ¿es la misma cadena de caracteres que en la clase anterior? No repetirse!
-		String formatStr = "%-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s%n";
+
+	public void writeFrameToTextFile(Frame f) {
 		counter++;
 		OutputStreamWriter out;
 		try {
-			out = new OutputStreamWriter(openFileOutput(recording_name+".txt", MODE_APPEND));
-			out.write(String.format(formatStr, counter,String.valueOf(f.an_in[0]), 
-					String.valueOf(f.an_in[1]), String.valueOf(f.an_in[2]), String.valueOf(f.an_in[3]), String.valueOf(f.an_in[4]),
-					String.valueOf(f.an_in[5]), String.valueOf(f.an_in[6]), String.valueOf(f.an_in[7])));
+			out = new OutputStreamWriter(openFileOutput(recordingName + ".txt",
+					MODE_APPEND));
+			out.write(String.format(formatFileCollectedData, counter,
+					String.valueOf(f.an_in[0]), String.valueOf(f.an_in[1]),
+					String.valueOf(f.an_in[2]), String.valueOf(f.an_in[3]),
+					String.valueOf(f.an_in[4]), String.valueOf(f.an_in[5]),
+					String.valueOf(f.an_in[6]), String.valueOf(f.an_in[7])));
 			out.close();
 		} catch (FileNotFoundException e) {
-						e.printStackTrace();
+			Log.e(TAG, "file to write frames on, not found",e);
 		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}//@todo ¿y cerrar los ficheros?
-		
+			Log.e(TAG, "write frames stream exception",e);
+		}// @todo ¿y cerrar los ficheros?
+
 	}
+
 	private void readFile() {
 		InputStream in = null;
 		try {
-			in = openFileInput(recording_name+".txt");
+			in = openFileInput(recordingName + ".txt");
 			if (in != null) {
 				InputStreamReader tmp = new InputStreamReader(in);
 				BufferedReader reader = new BufferedReader(tmp);
@@ -164,45 +166,42 @@ public class LocalService extends Service {
 				in.close();
 			}
 		} catch (FileNotFoundException e) {
-		
-			e.printStackTrace();
+			Log.e(TAG, "file to read, not found",e);
 		} catch (IOException e) {
-			
-			e.printStackTrace();
+			Log.e(TAG, "file to read, stream expception",e);
 		}// @todo ¿y cerrar los ficheros?
 	}
 
 	private void getInfoFromActivity(Intent intent) {
-		recording_name = intent.getStringExtra("recordingName").toString();
-		config = (Configuration) intent.getSerializableExtra("configSelected");
-//@todo ¡no crees objetos a lo tonto! ¡Y dale nombres Java!
-		boolean[] ctdTmp;
-		ctdTmp = config.getChannelsToDisplay();
-		for (int i = 0; i < ctdTmp.length; i++)
-			if (ctdTmp[i]) {
+		recordingName = intent.getStringExtra("recordingName").toString();
+		configuration = (Configuration) intent
+				.getSerializableExtra("configSelected");
+		
+		boolean[] channelsToDisplayTmp;
+		channelsToDisplayTmp = configuration.getChannelsToDisplay();
+		for (int i = 0; i < channelsToDisplayTmp.length; i++)
+			if (channelsToDisplayTmp[i]) {
 				channelToDisplay = (i + 1);
-				Log.d("test", "channel to display: " + channelToDisplay);
 			}
-
 	}
 
 	private void connectToBiopluxDevice() {
 
 		// bioPlux initialization
 		try {
-			connection = Device.Create(config.getMacAddress());// Device mac
-																// addr
-																// 00:07:80:4C:2A:FB
-			//@todo entiendo que falta configurar los canales que se adquieren realmente ¿no?
-			connection.BeginAcq(config.getFrequency(), 255, config.getNumberOfBits());
+			connection = Device.Create(configuration.getMacAddress());
+			// Device mac addr 00:07:80:4C:2A:FB
+			// TODO still need to be implemented
+			connection.BeginAcq(configuration.getFrequency(), 255,
+					configuration.getNumberOfBits());
 		} catch (BPException e) {
-			e.printStackTrace();
+			Log.e(TAG, "bioplux connection exception",e);
 		}
 
 	}
 
 	private void processFrames() {
-		Log.d("test", "doing work");
+		Log.d(TAG, "service doing work");
 		try {
 			getFrames(20);
 			for (Frame f : frames) {
@@ -210,7 +209,7 @@ public class LocalService extends Service {
 				writeFrameToTextFile(f);
 			}
 		} catch (Throwable t) {
-			Log.d("test", "TIMER ERROR", t);
+			Log.e(TAG, "error processing frames",t);
 		}
 	}
 
@@ -218,9 +217,8 @@ public class LocalService extends Service {
 		try {
 			connection.GetFrames(nFrames, frames);
 		} catch (BPException e) {
-			e.printStackTrace();
+			Log.e(TAG, "exception getting frames",e);
 		}
-
 	}
 
 	private void showNotification(Intent parentIntent) {
@@ -235,8 +233,8 @@ public class LocalService extends Service {
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 		stackBuilder.addParentStack(RecordingConfigsActivity.class);
 		Intent newRecActIntent = new Intent(this, NewRecordingActivity.class);
-		newRecActIntent.putExtra("recordingName", recording_name);
-		newRecActIntent.putExtra("configSelected", config);
+		newRecActIntent.putExtra("recordingName", recordingName);
+		newRecActIntent.putExtra("configSelected", configuration);
 		newRecActIntent.putExtra("notification", true);
 		stackBuilder.addNextIntent(newRecActIntent);
 		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
@@ -254,19 +252,10 @@ public class LocalService extends Service {
 	private void sendMessageToUI(int intvaluetosend) {
 		for (int i = mClients.size() - 1; i >= 0; i--) {
 			try {
-				// Send data as an Integer
 				mClients.get(i).send(
 						Message.obtain(null, MSG_VALUE, intvaluetosend, 0));
-				/*
-				 * //Send data as a String Bundle b = new Bundle();
-				 * b.putString("str1", "ab" + intvaluetosend + "cd"); Message
-				 * msg = Message.obtain(null, MSG_SET_STRING_VALUE);
-				 * msg.setData(b); mClients.get(i).send(msg);
-				 */
 			} catch (RemoteException e) {
-				// The client is dead. Remove it from the list; we are going
-				// through the list from back to front so this is safe to do
-				// inside the loop.
+				Log.e(TAG, "client is dead. Removing from clients list",e);
 				mClients.remove(i);
 			}
 		}
@@ -274,7 +263,6 @@ public class LocalService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.d("bplux_service", "Received start id " + startId + ": " + intent);
 		return START_NOT_STICKY; // run until explicitly stopped.
 	}
 
@@ -289,15 +277,13 @@ public class LocalService extends Service {
 		if (timer != null) {
 			timer.cancel();
 		}
-		// writer.closeWriter();
 		try {
 			connection.EndAcq();
 		} catch (BPException e) {
-			Log.d("test", "error ending ACQ");
-			e.printStackTrace();
+			Log.e(TAG, "error ending ACQ", e);
 		}
-		notificationManager.cancel(R.string.service_id); // Cancel the persistent notification.
-		Log.d("MyService", "Service Stopped.");
+		notificationManager.cancel(R.string.service_id); 
+		Log.d(TAG, "service stopped");
 		isRunning = false;
 	}
 }

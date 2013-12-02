@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -31,6 +32,8 @@ import com.j256.ormlite.stmt.QueryBuilder;
 public class RecordingConfigsActivity extends
 		OrmLiteBaseActivity<DatabaseHelper> implements OnDismissCallback {
 
+	private static final String TAG = RecordingConfigsActivity.class.getName();
+	
 	private AlertDialog recordingNameDialog;
 	private ListView configurationsListView;
 	private RecordingConfigListAdapter baseAdapter;
@@ -137,15 +140,9 @@ public class RecordingConfigsActivity extends
 
 			try {
 				dao = getHelper().getDeviceConfigDao();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
 				dao.delete(configurations.get(position));
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.e(TAG, "exception removing configuration from database by swiping",e);
 			}
 			configurations.remove(position);
 		}
@@ -158,7 +155,7 @@ public class RecordingConfigsActivity extends
 			dao = getHelper().getDeviceConfigDao();
 			dao.create(config);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Log.e(TAG, "exception saving configuration on database",e);
 		}
 	}
 
@@ -171,7 +168,7 @@ public class RecordingConfigsActivity extends
 			builder.orderBy("createDate", false).limit(30L);
 			configurations = (ArrayList<Configuration>) dao.query(builder.prepare());
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Log.e(TAG, "exception loading configurations from database ",e);
 		}
 	}
 

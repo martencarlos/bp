@@ -32,9 +32,7 @@ public class RecordingConfigListAdapter extends ArrayAdapter<Configuration> {
 		}
 
 		TextView name = (TextView) rowView.findViewById(R.id.dli_name);
-
 		Configuration dev = getItem(position);
-
 		name.setText(dev.getName());
 
 		return rowView;
