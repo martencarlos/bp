@@ -82,7 +82,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 		public void onServiceDisconnected(ComponentName className) {
 			mService = null;
-			Log.d(TAG, "service disconnected");
+			Log.i(TAG, "service disconnected");
 		}
 	};
 
@@ -97,7 +97,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_new_recording);
-		Log.d(TAG, "entro a traves de la notificacion");
 		findViews();
 		
 		extras = getIntent().getExtras();

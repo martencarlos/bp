@@ -4,10 +4,10 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -36,14 +36,12 @@ public class StoredRecordingsActivity extends
 	private ListView lv_recordings;
 	private StoredRecordingsListAdapter baseAdapter;
 	private ArrayList<Recording> recordingsArrayList = null;
-	private Context myContext = this;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_stored_recordings);
-		//@todo ¿esto no debería hacerse de modo asíncrono?
 		loadRecordings();
 		setupRecordingListView();
 	}
@@ -57,9 +55,6 @@ public class StoredRecordingsActivity extends
 					int position, long id) {
 				TextView tv = (TextView) v.findViewById(R.id.dli_name);
 				sendDataViaEmail(tv.getText().toString());
-				/*Intent intent = new Intent(myContext, RecordingViewActivity.class);
-				intent.putExtra("recordingName", tv.getText().toString());
-				startActivity(intent);*/
 			}
 		};
 		lv_recordings = (ListView) findViewById(R.id.lvSessions);
@@ -69,17 +64,17 @@ public class StoredRecordingsActivity extends
 
 	}
 	public void sendDataViaEmail(String recordingName) {
-		for(int i=0;i<fileList().length;i++)
-			Log.d(TAG, fileList()[i]);
-		
-		File F = new File(getFilesDir()+"/"+recordingName + ".zip");
+
+		File root = Environment.getExternalStorageDirectory();
+		File F = new File(root+"/"+recordingName + ".zip");
 		Uri U = Uri.fromFile(F);
 		Intent i = new Intent(Intent.ACTION_SEND);
-		i.setType("text/rtf");
+		i.setType("application/zip");
 		i.putExtra(Intent.EXTRA_STREAM, U);
 		startActivity(Intent.createChooser(i, "select email client"));
+		
 	}
-
+	
 	private void setSwipeToDismissAdapter() {
 		SwipeDismissAdapter swipeAdapter = new SwipeDismissAdapter(baseAdapter,
 				this);
@@ -116,5 +111,6 @@ public class StoredRecordingsActivity extends
 			Log.e(TAG, "exception loading recordings from database ",e);
 		}
 	}
+	
 
 }

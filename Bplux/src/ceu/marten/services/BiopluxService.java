@@ -2,6 +2,7 @@ package ceu.marten.services;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -21,6 +22,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -86,9 +88,10 @@ public class BiopluxService extends Service {
 				
 				String zipFileName = recordingName + ".zip";
 				String file = recordingName + ".txt";
+				File root = Environment.getExternalStorageDirectory();
 				int BUFFER = 500;
 				BufferedInputStream origin = null;
-				FileOutputStream dest = new FileOutputStream(getFilesDir()+"/"+zipFileName);
+				FileOutputStream dest = new FileOutputStream(root+"/"+zipFileName);
 				ZipOutputStream out = new ZipOutputStream(
 						new BufferedOutputStream(dest));
 				byte data[] = new byte[BUFFER];
@@ -144,7 +147,7 @@ public class BiopluxService extends Service {
 	}
 
 	private void writeHeaderOfTextFile() {
-
+		
 		try {
 			out = new OutputStreamWriter(openFileOutput(recordingName + ".txt",
 					MODE_PRIVATE));
@@ -166,7 +169,7 @@ public class BiopluxService extends Service {
 			Log.e(TAG, "file to write header on, not found", e);
 		} catch (IOException e) {
 			Log.e(TAG, "write header stream exception", e);
-		}
+		}	
 	}
 
 	public void writeFrameToTextFile(Frame f) {
