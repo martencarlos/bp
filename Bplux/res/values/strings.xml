@@ -28,28 +28,19 @@
 
     <string name="prompt">choose a channel</string>
 
-    <string-array name="channelList">
-        <item>channel 1</item>
-        <item>channel 2</item>
-        <item>channel 3</item>
-        <item>channel 4</item>
-        <item>channel 5</item>
-        <item>channel 6</item>
-        <item>channel 7</item>
-        <item>channel 8</item>
-    </string-array>
+   
 
     <string name="footer">credits: Abraham Otero, Carlos Marten, CEU</string>
 
     <string-array name="sensors">
-        <item>electrocardiograma</item>
-        <item >electromiograma</item>
-        <item >conductividad dermal</item>
-        <item >respiracion</item>
-        <item >temperatura</item>
-        <item >fuerza de pisada</item>
-        <item >acelerometro de tres ejes</item>
-        <item >presion arterial</item>
+        <item>electrocardiogram</item>
+        <item >electromiogram</item>
+        <item >dermal conductivity</item>
+        <item >respiration</item>
+        <item >temperature</item>
+        <item >strength stepped</item>
+        <item >three-axis accelerometer</item>
+        <item >blood pressure</item>
     </string-array>
 
     <string name="title_activity_device_details">DeviceDetailsActivity</string>

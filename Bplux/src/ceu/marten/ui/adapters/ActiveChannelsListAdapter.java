@@ -84,11 +84,10 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 			int pos, long id) {
 
 		TextView t = (TextView) currentText;
-		if (t.getText().toString().compareTo("electrocardiograma") != 0) {
+		if (t.getText().toString().compareTo("electrocardiogram") != 0) {
 			int position = (Integer) spinner.getTag();
 			sensorsChecked[position] = ((Spinner) spinner).getSelectedItem()
 					.toString();
-			Log.d("test", t.getText().toString());
 		}
 
 	}
