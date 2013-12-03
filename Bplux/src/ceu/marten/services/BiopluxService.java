@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -72,6 +73,7 @@ public class BiopluxService extends Service {
 				break;
 			case MSG_UNREGISTER_CLIENT:
 				mClients.remove(msg.replyTo);
+				writeTextFile();
 				compressFile();
 				break;
 			case MSG_RECORDING_DURATION:
@@ -143,11 +145,11 @@ public class BiopluxService extends Service {
 			}
 		}, 0, 100L);
 		showNotification(intent);
-		writeHeaderOfTextFile();
+		//writeHeaderOfTextFile();
 		return mMessenger.getBinder();
 	}
 
-	private void writeHeaderOfTextFile() {
+	private void writeTextFile() {
 		
 		try {
 			out = new OutputStreamWriter(openFileOutput(recordingName + ".txt",
@@ -166,6 +168,22 @@ public class BiopluxService extends Service {
 					"ch 2", "ch 3", "ch 4", "ch 5", "ch 6", "ch 7", "ch 8"));
 			out.flush();
 			out.close();
+			
+			//APPEND DATA
+			FileOutputStream outBytes = new FileOutputStream(getFilesDir()+"/"+recordingName + ".txt",true);
+			BufferedOutputStream dest = new BufferedOutputStream(outBytes);
+			FileInputStream fi = new FileInputStream(getFilesDir()+"/"+"tmp.txt");
+			BufferedInputStream origin = new BufferedInputStream(fi, 5000); 
+			int count;
+			byte data[] = new byte[5000];
+			while ((count = origin.read(data, 0, 5000)) != -1) {
+				dest.write(data, 0, count);
+			}
+			origin.close();
+			dest.close();
+			deleteFile("tmp.txt");
+			
+			
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "file to write header on, not found", e);
 		} catch (IOException e) {
@@ -173,10 +191,10 @@ public class BiopluxService extends Service {
 		}	
 	}
 
-	public void writeFrameToTextFile(Frame f) {
+	public void writeFramesToTmpFile(Frame f) {
 		counter++;
 		try {
-			out = new OutputStreamWriter(openFileOutput(recordingName + ".txt",
+			out = new OutputStreamWriter(openFileOutput("tmp.txt",
 					MODE_APPEND));
 			out.write(String.format(formatFileCollectedData, counter,
 					String.valueOf(f.an_in[0]), String.valueOf(f.an_in[1]),
@@ -227,7 +245,7 @@ public class BiopluxService extends Service {
 			getFrames(20);
 			for (Frame f : frames) {
 				sendMessageToUI(f.an_in[(channelToDisplay - 1)]);
-				writeFrameToTextFile(f);
+				writeFramesToTmpFile(f);
 			}
 		} catch (Throwable t) {
 			Log.e(TAG, "error processing frames", t);
