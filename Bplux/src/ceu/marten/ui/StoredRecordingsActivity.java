@@ -1,10 +1,12 @@
 package ceu.marten.ui;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -54,9 +56,10 @@ public class StoredRecordingsActivity extends
 			public void onItemClick(AdapterView<?> AdapterView, View v,
 					int position, long id) {
 				TextView tv = (TextView) v.findViewById(R.id.dli_name);
-				Intent intent = new Intent(myContext, RecordingViewActivity.class);
+				sendDataViaEmail(tv.getText().toString());
+				/*Intent intent = new Intent(myContext, RecordingViewActivity.class);
 				intent.putExtra("recordingName", tv.getText().toString());
-				startActivity(intent);
+				startActivity(intent);*/
 			}
 		};
 		lv_recordings = (ListView) findViewById(R.id.lvSessions);
@@ -64,6 +67,17 @@ public class StoredRecordingsActivity extends
 		baseAdapter = new StoredRecordingsListAdapter(this, recordingsArrayList);
 		setSwipeToDismissAdapter();
 
+	}
+	public void sendDataViaEmail(String recordingName) {
+		for(int i=0;i<fileList().length;i++)
+			Log.d(TAG, fileList()[i]);
+		
+		File F = new File(getFilesDir()+"/"+recordingName + ".zip");
+		Uri U = Uri.fromFile(F);
+		Intent i = new Intent(Intent.ACTION_SEND);
+		i.setType("text/rtf");
+		i.putExtra(Intent.EXTRA_STREAM, U);
+		startActivity(Intent.createChooser(i, "select email client"));
 	}
 
 	private void setSwipeToDismissAdapter() {

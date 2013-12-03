@@ -1,14 +1,17 @@
 package ceu.marten.services;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import plux.android.bioplux.BPException;
 import plux.android.bioplux.Device;
@@ -29,7 +32,6 @@ import android.util.Log;
 import ceu.marten.bplux.R;
 import ceu.marten.model.Configuration;
 import ceu.marten.ui.NewRecordingActivity;
-import ceu.marten.ui.RecordingConfigsActivity;
 
 public class BiopluxService extends Service {
 
@@ -68,6 +70,7 @@ public class BiopluxService extends Service {
 				break;
 			case MSG_UNREGISTER_CLIENT:
 				mClients.remove(msg.replyTo);
+				compressFile();
 				break;
 			case MSG_START_SENDING_DATA:
 				break;
@@ -75,6 +78,43 @@ public class BiopluxService extends Service {
 				break;
 			default:
 				super.handleMessage(msg);
+			}
+		}
+
+		private void compressFile() {
+			try {
+				
+				String zipFileName = recordingName + ".zip";
+				String file = recordingName + ".txt";
+				int BUFFER = 500;
+				BufferedInputStream origin = null;
+				FileOutputStream dest = new FileOutputStream(getFilesDir()+"/"+zipFileName);
+				ZipOutputStream out = new ZipOutputStream(
+						new BufferedOutputStream(dest));
+				byte data[] = new byte[BUFFER];
+
+				
+				FileInputStream fi = new FileInputStream(getFilesDir()+"/"+file);
+				origin = new BufferedInputStream(fi, BUFFER);
+
+				ZipEntry entry = new ZipEntry(file.substring(file
+						.lastIndexOf("/") + 1));
+				out.putNextEntry(entry);
+				int count;
+
+				while ((count = origin.read(data, 0, BUFFER)) != -1) {
+					out.write(data, 0, count);
+				}
+				origin.close();
+				out.close();
+				for(int i=0;i<fileList().length;i++)
+					Log.d(TAG, fileList()[i]);
+				deleteFile(recordingName+".txt");
+				
+				for(int i=0;i<fileList().length;i++)
+					Log.d(TAG, fileList()[i]);
+			} catch (Exception e) {
+				Log.d(TAG, "exception while zipping", e);
 			}
 		}
 	}
@@ -104,7 +144,7 @@ public class BiopluxService extends Service {
 	}
 
 	private void writeHeaderOfTextFile() {
-		
+
 		try {
 			out = new OutputStreamWriter(openFileOutput(recordingName + ".txt",
 					MODE_PRIVATE));
@@ -123,9 +163,9 @@ public class BiopluxService extends Service {
 			out.flush();
 			out.close();
 		} catch (FileNotFoundException e) {
-			Log.e(TAG, "file to write header on, not found",e);
+			Log.e(TAG, "file to write header on, not found", e);
 		} catch (IOException e) {
-			Log.e(TAG, "write header stream exception",e);
+			Log.e(TAG, "write header stream exception", e);
 		}
 	}
 
@@ -142,20 +182,18 @@ public class BiopluxService extends Service {
 			out.flush();
 			out.close();
 		} catch (FileNotFoundException e) {
-			Log.e(TAG, "file to write frames on, not found",e);
+			Log.e(TAG, "file to write frames on, not found", e);
 		} catch (IOException e) {
-			Log.e(TAG, "write frames stream exception",e);
+			Log.e(TAG, "write frames stream exception", e);
 		}// @todo ¿y cerrar los ficheros?
 
 	}
-
-	
 
 	private void getInfoFromActivity(Intent intent) {
 		recordingName = intent.getStringExtra("recordingName").toString();
 		configuration = (Configuration) intent
 				.getSerializableExtra("configSelected");
-		
+
 		boolean[] channelsToDisplayTmp;
 		channelsToDisplayTmp = configuration.getChannelsToDisplay();
 		for (int i = 0; i < channelsToDisplayTmp.length; i++)
@@ -174,7 +212,7 @@ public class BiopluxService extends Service {
 			connection.BeginAcq(configuration.getFrequency(), 255,
 					configuration.getNumberOfBits());
 		} catch (BPException e) {
-			Log.e(TAG, "bioplux connection exception",e);
+			Log.e(TAG, "bioplux connection exception", e);
 		}
 
 	}
@@ -188,7 +226,7 @@ public class BiopluxService extends Service {
 				writeFrameToTextFile(f);
 			}
 		} catch (Throwable t) {
-			Log.e(TAG, "error processing frames",t);
+			Log.e(TAG, "error processing frames", t);
 		}
 	}
 
@@ -196,7 +234,7 @@ public class BiopluxService extends Service {
 		try {
 			connection.GetFrames(nFrames, frames);
 		} catch (BPException e) {
-			Log.e(TAG, "exception getting frames",e);
+			Log.e(TAG, "exception getting frames", e);
 		}
 	}
 
@@ -207,11 +245,12 @@ public class BiopluxService extends Service {
 				this).setSmallIcon(R.drawable.ic_launcher)
 				.setContentTitle("Device Connected")
 				.setContentText("service running, receiving data..");
-		
+
 		Intent newRecordingIntent = new Intent(this, NewRecordingActivity.class);
 		newRecordingIntent.putExtra("recordingName", recordingName);
 		newRecordingIntent.putExtra("configSelected", configuration);
-		// The stack builder object will contain an artificial back stack for the
+		// The stack builder object will contain an artificial back stack for
+		// the
 		// started Activity.
 		// This ensures that navigating backward from the Activity leads out of
 		// your application to the Home screen.
@@ -220,12 +259,9 @@ public class BiopluxService extends Service {
 		stackBuilder.addParentStack(NewRecordingActivity.class);
 		// Adds the Intent that starts the Activity to the top of the stack
 		stackBuilder.addNextIntent(newRecordingIntent);
-		PendingIntent resultPendingIntent =
-		        stackBuilder.getPendingIntent(
-		            0,
-		            PendingIntent.FLAG_UPDATE_CURRENT
-		        );
-		
+		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+
 		mBuilder.setContentIntent(resultPendingIntent);
 
 		// mBuilder.setAutoCancel(true);
@@ -242,7 +278,7 @@ public class BiopluxService extends Service {
 				mClients.get(i).send(
 						Message.obtain(null, MSG_VALUE, intvaluetosend, 0));
 			} catch (RemoteException e) {
-				Log.e(TAG, "client is dead. Removing from clients list",e);
+				Log.e(TAG, "client is dead. Removing from clients list", e);
 				mClients.remove(i);
 			}
 		}
@@ -252,7 +288,6 @@ public class BiopluxService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		return START_NOT_STICKY; // run until explicitly stopped.
 	}
-
 
 	@Override
 	public void onDestroy() {
@@ -266,7 +301,7 @@ public class BiopluxService extends Service {
 		} catch (BPException e) {
 			Log.e(TAG, "error ending ACQ", e);
 		}
-		notificationManager.cancel(R.string.service_id); 
+		notificationManager.cancel(R.string.service_id);
 		Log.d(TAG, "service stopped");
 	}
 }
