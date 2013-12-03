@@ -96,9 +96,7 @@ public class StoredRecordingsActivity extends
 				Log.e(TAG, "Exception removing recording from database ",e);
 			}
 			recordingsArrayList.remove(position);
-			File root = Environment.getExternalStorageDirectory();
-			
-			deleteFile(root+"/"+recordingName + ".zip");
+			deleteFile(recordingName + ".zip");
 		}
 		Toast.makeText(this, "recording removed ", Toast.LENGTH_SHORT).show();
 	}
