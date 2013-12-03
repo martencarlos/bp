@@ -17,10 +17,12 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,9 +44,11 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			uiFrequency, uiActiveChannels, uiMacAddress;
 	private LinearLayout uiGraph;
 	private Button uiStartStopbutton;
+	 private Chronometer chronometer;
 
 	private Configuration currentConfiguration;
 	private String recordingName;
+	String duration;
 	private Bundle extras;
 
 	private Messenger mService = null;
@@ -146,15 +150,19 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		uiFrequency = (TextView) findViewById(R.id.nr_txt_config_freq);
 		uiActiveChannels = (TextView) findViewById(R.id.nr_txt_channels_active);
 		uiMacAddress = (TextView) findViewById(R.id.nr_txt_mac);
+		chronometer = (Chronometer) findViewById(R.id.nr_chronometer);
 	}
 
-	/*
-	private void start_receiving_data() {
+	
+	private void sendRecordingDuration() {
 		if (isServiceBounded) {
 			if (mService != null) {
 				try {
 					Message msg = Message.obtain(null,
-							BiopluxService.MSG_START_SENDING_DATA, 0, 0);
+							BiopluxService.MSG_RECORDING_DURATION, 0, 0);
+					Bundle extras = new Bundle();
+					extras.putString("duration", duration);
+					msg.setData(extras);
 					msg.replyTo = mActivity;
 					mService.send(msg);
 
@@ -163,7 +171,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			}
 		}
 	}
-
+/*
 	private void stop_service() {
 		if (isServiceBounded) {
 			if (mService != null) {
@@ -185,7 +193,11 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			bindToService();
 			displayToast("recording started");
 			uiStartStopbutton.setText("stop recording");
+			startChronometer();
+			
 		} else {
+			stopChronometer();
+			sendRecordingDuration();
 			unbindOfService();
 			stopService(new Intent(NewRecordingActivity.this,
 					BiopluxService.class));
@@ -196,6 +208,18 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	}
 
+	private void startChronometer() {
+		chronometer.setBase(SystemClock.elapsedRealtime());
+            chronometer.start();
+	}
+
+	private void stopChronometer() {
+		chronometer.stop();
+		Date elapsedMiliseconds = new Date(SystemClock.elapsedRealtime() - chronometer.getBase());
+		DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+		duration= formatter.format(elapsedMiliseconds);
+	}
+
 	public void saveRecording() {
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date date = new Date();
@@ -204,7 +228,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		recording.setName(recordingName);
 		recording.setConfig(currentConfiguration);
 		recording.setSavedDate(dateFormat.format(date));
-		recording.setDuration(20);
+		recording.setDuration(duration);
 		try {
 			Dao<Recording, Integer> dao = getHelper().getRecordingDao();
 			dao.create(recording);

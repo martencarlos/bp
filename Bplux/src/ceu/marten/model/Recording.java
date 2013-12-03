@@ -16,7 +16,7 @@ public class Recording implements Serializable {
 	@DatabaseField(canBeNull = true)
 	private String startDate;
 	@DatabaseField(canBeNull = true)
-	private long duration = 0;
+	private String duration;
 	@DatabaseField(canBeNull = true, foreign = true)
 	private Configuration config;
 
@@ -24,7 +24,7 @@ public class Recording implements Serializable {
 		// needed by OrmLite
 	}
 
-	public Recording(String initName, String initStartDate, long initDuration,
+	public Recording(String initName, String initStartDate, String initDuration,
 			Configuration initConfig, String initDataId) {
 		super();
 		this.name = initName;
@@ -45,7 +45,7 @@ public class Recording implements Serializable {
 		return startDate;
 	}
 
-	public long getDuration() {
+	public String getDuration() {
 		return duration;
 	}
 
@@ -53,7 +53,7 @@ public class Recording implements Serializable {
 		this.startDate = startDate;
 	}
 
-	public void setDuration(long duration) {
+	public void setDuration(String duration) {
 		this.duration = duration;
 	}
 

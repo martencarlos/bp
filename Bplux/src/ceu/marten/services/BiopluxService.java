@@ -41,11 +41,10 @@ public class BiopluxService extends Service {
 
 	public static final int MSG_REGISTER_CLIENT = 1;
 	public static final int MSG_UNREGISTER_CLIENT = 2;
-	public static final int MSG_START_SENDING_DATA = 3;
-	public static final int MSG_STOP_SERVICE = 4;
+	public static final int MSG_RECORDING_DURATION = 0;
 	public static final int MSG_VALUE = 5;
+	
 
-	private String formatFileHeader = "%-10s %-10s%n";
 	private String formatFileCollectedData = "%-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s%n";
 
 	ArrayList<Messenger> mClients = new ArrayList<Messenger>();
@@ -53,6 +52,7 @@ public class BiopluxService extends Service {
 	private Timer timer = new Timer();
 	private Configuration configuration;
 	private String recordingName;
+	private String duration;
 	private int channelToDisplay = 0;
 	OutputStreamWriter out;
 
@@ -74,10 +74,11 @@ public class BiopluxService extends Service {
 				mClients.remove(msg.replyTo);
 				compressFile();
 				break;
-			case MSG_START_SENDING_DATA:
+			case MSG_RECORDING_DURATION:
+				duration = msg.getData().getString("duration");
+				Log.d(TAG, "duration: "+ duration);
 				break;
-			case MSG_STOP_SERVICE:
-				break;
+			
 			default:
 				super.handleMessage(msg);
 			}
@@ -129,7 +130,7 @@ public class BiopluxService extends Service {
 		for (int i = 0; i < frames.length; i++)
 			frames[i] = new Frame();
 
-		Log.d(TAG, "Service created");
+		Log.i(TAG, "Service created");
 	}
 
 	@Override
@@ -151,15 +152,15 @@ public class BiopluxService extends Service {
 		try {
 			out = new OutputStreamWriter(openFileOutput(recordingName + ".txt",
 					MODE_PRIVATE));
-			out.write(String.format(formatFileHeader, "configuration name: ",
+			out.write(String.format("%-10s %-10s%n", "configuration name: ",
 					configuration.getName()));
-			out.write(String.format(formatFileHeader, "freq: ",
-					configuration.getFrequency()));
-			out.write(String.format(formatFileHeader, "nbits: ",
-					configuration.getNumberOfBits()));
-			out.write(String.format(formatFileHeader, "start date and time ",
+			out.write(String.format("%-6s %-4s %-6s %-3s%n", "freq: ",
+					configuration.getFrequency(),"nbits: ",configuration.getNumberOfBits()));
+			out.write(String.format("%-12s %-14s%n", "start date: ",
 					configuration.getCreateDate()));
-			out.write(String.format(formatFileHeader, "channels active: ",
+			out.write(String.format("%-10s %-14s%n", "duration: ",
+					duration));
+			out.write(String.format("%-12s %n %-14s%n", "channels active: ",
 					configuration.getActiveChannelsAsString()));
 			out.write(String.format(formatFileCollectedData, "#num", "ch 1",
 					"ch 2", "ch 3", "ch 4", "ch 5", "ch 6", "ch 7", "ch 8"));
@@ -188,7 +189,7 @@ public class BiopluxService extends Service {
 			Log.e(TAG, "file to write frames on, not found", e);
 		} catch (IOException e) {
 			Log.e(TAG, "write frames stream exception", e);
-		}// @todo ¿y cerrar los ficheros?
+		}
 
 	}
 
