@@ -2,12 +2,15 @@ package ceu.marten.services;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -55,11 +58,11 @@ public class BiopluxService extends Service {
 	private String recordingName;
 	private String duration;
 	private int channelToDisplay = 0;
-	OutputStreamWriter out;
+	
 
 	private Device connection;
 	private Device.Frame[] frames;
-	private int counter = 0;
+	private int counter;
 
 	final Messenger mMessenger = new Messenger(new IncomingHandler());
 
@@ -72,6 +75,13 @@ public class BiopluxService extends Service {
 				mClients.add(msg.replyTo);
 				break;
 			case MSG_UNREGISTER_CLIENT:
+				if (timer != null) 
+					timer.cancel();
+				try {
+					Thread.sleep(100);//for sync with main thread
+				} catch (InterruptedException e) {
+					Log.e(TAG, "interrupted sleep of thread",e);
+				}
 				mClients.remove(msg.replyTo);
 				writeTextFile();
 				compressFile();
@@ -135,6 +145,7 @@ public class BiopluxService extends Service {
 	public IBinder onBind(Intent intent) {
 		getInfoFromActivity(intent);
 		connectToBiopluxDevice();
+		counter = 0;
 		timer.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
 				processFrames();
@@ -148,7 +159,7 @@ public class BiopluxService extends Service {
 	private void writeTextFile() {
 		
 		try {
-			out = new OutputStreamWriter(openFileOutput(recordingName + ".txt",
+			OutputStreamWriter out = new OutputStreamWriter(openFileOutput(recordingName + ".txt",
 					MODE_PRIVATE));
 			out.write(String.format("%-10s %-10s%n", "configuration name: ",
 					configuration.getName()));
@@ -169,15 +180,17 @@ public class BiopluxService extends Service {
 			FileOutputStream outBytes = new FileOutputStream(getFilesDir()+"/"+recordingName + ".txt",true);
 			BufferedOutputStream dest = new BufferedOutputStream(outBytes);
 			FileInputStream fi = new FileInputStream(getFilesDir()+"/"+"tmp.txt");
-			BufferedInputStream origin = new BufferedInputStream(fi, 5000); 
+			BufferedInputStream origin = new BufferedInputStream(fi, 1000); 
 			int count;
-			byte data[] = new byte[5000];
-			while ((count = origin.read(data, 0, 5000)) != -1) {
+			byte data[] = new byte[1000];
+			while ((count = origin.read(data, 0, 1000)) != -1) {
 				dest.write(data, 0, count);
 			}
 			origin.close();
 			dest.close();
+			
 			deleteFile("tmp.txt");
+			
 			
 			
 		} catch (FileNotFoundException e) {
@@ -190,8 +203,9 @@ public class BiopluxService extends Service {
 	public void writeFramesToTmpFile(Frame f) {
 		counter++;
 		try {
-			out = new OutputStreamWriter(openFileOutput("tmp.txt",
+			OutputStreamWriter out = new OutputStreamWriter(openFileOutput("tmp.txt",
 					MODE_APPEND));
+			
 			out.write(String.format(formatFileCollectedData, counter,
 					String.valueOf(f.an_in[0]), String.valueOf(f.an_in[1]),
 					String.valueOf(f.an_in[2]), String.valueOf(f.an_in[3]),
@@ -204,7 +218,6 @@ public class BiopluxService extends Service {
 		} catch (IOException e) {
 			Log.e(TAG, "write frames stream exception", e);
 		}
-
 	}
 
 	private void getInfoFromActivity(Intent intent) {
@@ -310,9 +323,6 @@ public class BiopluxService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 
-		if (timer != null) {
-			timer.cancel();
-		}
 		try {
 			connection.EndAcq();
 		} catch (BPException e) {

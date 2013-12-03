@@ -44,7 +44,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			uiFrequency, uiActiveChannels, uiMacAddress;
 	private LinearLayout uiGraph;
 	private Button uiStartStopbutton;
-	 private Chronometer chronometer;
+	private Chronometer chronometer;
+	private boolean isChronometerRunning = false;
 
 	private Configuration currentConfiguration;
 	private String recordingName;
@@ -128,17 +129,32 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
-		super.onSaveInstanceState(savedInstanceState);
+		super.onSaveInstanceState(savedInstanceState);	
+		if(isChronometerRunning)
+			extras.putLong("chronometerBase", chronometer.getBase());
+		else
+			extras.putLong("chronometerBase", 0);
+		
 		savedInstanceState.putAll(extras);
+		
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
+
+		if(savedInstanceState.getLong("chronometerBase")!=0){
+			chronometer.setBase(savedInstanceState.getLong("chronometerBase"));
+			chronometer.start();
+			isChronometerRunning = true;
+		}
+		
 		currentConfiguration = (Configuration) savedInstanceState
 				.getSerializable("configSelected");
 		recordingName = savedInstanceState.getString("recordingName")
 				.toString();
+		
+		
 	}
 
 	private void findViews() {
@@ -210,7 +226,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private void startChronometer() {
 		chronometer.setBase(SystemClock.elapsedRealtime());
-            chronometer.start();
+        chronometer.start();
+        isChronometerRunning = true;
 	}
 
 	private void stopChronometer() {
@@ -218,6 +235,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		Date elapsedMiliseconds = new Date(SystemClock.elapsedRealtime() - chronometer.getBase());
 		DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
 		duration= formatter.format(elapsedMiliseconds);
+		isChronometerRunning = false;
 	}
 
 	public void saveRecording() {
