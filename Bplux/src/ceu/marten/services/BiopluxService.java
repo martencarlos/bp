@@ -78,7 +78,6 @@ public class BiopluxService extends Service {
 				break;
 			case MSG_RECORDING_DURATION:
 				duration = msg.getData().getString("duration");
-				Log.d(TAG, "duration: "+ duration);
 				break;
 			
 			default:
@@ -113,14 +112,11 @@ public class BiopluxService extends Service {
 				}
 				origin.close();
 				out.close();
-				for(int i=0;i<fileList().length;i++)
-					Log.d(TAG, fileList()[i]);
+				
 				deleteFile(recordingName+".txt");
 				
-				for(int i=0;i<fileList().length;i++)
-					Log.d(TAG, fileList()[i]);
 			} catch (Exception e) {
-				Log.d(TAG, "exception while zipping", e);
+				Log.e(TAG, "exception while zipping", e);
 			}
 		}
 	}
@@ -240,7 +236,6 @@ public class BiopluxService extends Service {
 	}
 
 	private void processFrames() {
-		Log.d(TAG, "service doing work");
 		try {
 			getFrames(20);
 			for (Frame f : frames) {
@@ -324,6 +319,6 @@ public class BiopluxService extends Service {
 			Log.e(TAG, "error ending ACQ", e);
 		}
 		notificationManager.cancel(R.string.service_id);
-		Log.d(TAG, "service stopped");
+		Log.i(TAG, "service stopped");
 	}
 }

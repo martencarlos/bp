@@ -33,7 +33,8 @@ public class StoredRecordingsActivity extends
 
 	private static final String TAG = StoredRecordingsActivity.class.getName();
 	
-	private ListView lv_recordings;
+	private ListView lvRecordings;
+	String recordingName;
 	private StoredRecordingsListAdapter baseAdapter;
 	private ArrayList<Recording> recordingsArrayList = null;
 
@@ -53,17 +54,17 @@ public class StoredRecordingsActivity extends
 			@Override
 			public void onItemClick(AdapterView<?> AdapterView, View v,
 					int position, long id) {
-				TextView tv = (TextView) v.findViewById(R.id.dli_name);
-				sendDataViaEmail(tv.getText().toString());
+				recordingName = ((TextView) v.findViewById(R.id.dli_name)).getText().toString();
+				sendDataViaEmail();
 			}
 		};
-		lv_recordings = (ListView) findViewById(R.id.lvSessions);
-		lv_recordings.setOnItemClickListener(shortPressListener);
+		lvRecordings = (ListView) findViewById(R.id.lvSessions);
+		lvRecordings.setOnItemClickListener(shortPressListener);
 		baseAdapter = new StoredRecordingsListAdapter(this, recordingsArrayList);
 		setSwipeToDismissAdapter();
 
 	}
-	public void sendDataViaEmail(String recordingName) {
+	public void sendDataViaEmail() {
 
 		File root = Environment.getExternalStorageDirectory();
 		File F = new File(root+"/"+recordingName + ".zip");
@@ -78,8 +79,8 @@ public class StoredRecordingsActivity extends
 	private void setSwipeToDismissAdapter() {
 		SwipeDismissAdapter swipeAdapter = new SwipeDismissAdapter(baseAdapter,
 				this);
-		swipeAdapter.setAbsListView(lv_recordings);
-		lv_recordings.setAdapter(baseAdapter);
+		swipeAdapter.setAbsListView(lvRecordings);
+		lvRecordings.setAdapter(baseAdapter);
 	}
 
 	@Override
@@ -95,6 +96,9 @@ public class StoredRecordingsActivity extends
 				Log.e(TAG, "Exception removing recording from database ",e);
 			}
 			recordingsArrayList.remove(position);
+			File root = Environment.getExternalStorageDirectory();
+			
+			deleteFile(root+"/"+recordingName + ".zip");
 		}
 		Toast.makeText(this, "recording removed ", Toast.LENGTH_SHORT).show();
 	}
