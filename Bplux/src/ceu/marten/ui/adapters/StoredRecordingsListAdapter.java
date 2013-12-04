@@ -28,13 +28,19 @@ public class StoredRecordingsListAdapter extends ArrayAdapter<Recording> {
 		ViewGroup rowView = (ViewGroup) convertView;
 		if (rowView == null) {
 			rowView = (ViewGroup) LayoutInflater.from(context).inflate(
-					R.layout.li_config, parent, false);
+					R.layout.li_recording, parent, false);
 		}
 
 		TextView name = (TextView) rowView.findViewById(R.id.dli_name);
+		TextView date = (TextView) rowView.findViewById(R.id.dli_date);
+		TextView duration = (TextView) rowView.findViewById(R.id.dli_duration);
 
-		Recording session = getItem(position);
-		name.setText(session.getName());
+		Recording recording = getItem(position);
+		name.setText(recording.getName());
+		date.setText(recording.getSavedDate());
+		duration.setText("duration "+recording.getDuration());
+		
+		
 		return rowView;
 	}
 
