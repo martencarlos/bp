@@ -29,7 +29,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import ceu.marten.bplux.R;
 import ceu.marten.model.Configuration;
@@ -144,18 +143,22 @@ public class BiopluxService extends Service {
 		try {
 			OutputStreamWriter out = new OutputStreamWriter(openFileOutput(
 					recordingName + ".txt", MODE_PRIVATE));
-			out.write(String.format("%-10s %-10s%n", "configuration name: ",
+			out.write(String.format("%-10s %-10s%n", "#configuration name: ",
 					configuration.getName()));
-			out.write(String.format("%-6s %-4s %-6s %-3s%n", "freq: ",
+			out.write(String.format("%-6s %-4s %-6s %-3s%n", "#freq: ",
 					configuration.getFrequency(), "nbits: ",
 					configuration.getNumberOfBits()));
-			out.write(String.format("%-12s %-14s%n", "start date: ",
+			out.write(String.format("%-12s %-14s%n", "#start date: ",
 					configuration.getCreateDate()));
-			out.write(String.format("%-10s %-14s%n", "duration: ", duration));
-			out.write(String.format("%-12s %n %-14s%n", "channels active: ",
+			out.write(String.format("%-10s %-14s%n", "#duration: ", duration));
+			out.write(String.format("%-12s %n %-14s%n", "#active channels: ",
 					configuration.getActiveChannelsAsString()));
-			out.write(String.format(formatFileCollectedData, "#num", "ch 1",
-					"ch 2", "ch 3", "ch 4", "ch 5", "ch 6", "ch 7", "ch 8"));
+			out.write("#num ");
+			for(int i: configuration.getActiveChannels())
+				out.write("ch "+i+" ");
+			out.write("\n");
+			//out.write(String.format(formatFileCollectedData, "#num", "ch 1",
+			//		"ch 2", "ch 3", "ch 4", "ch 5", "ch 6", "ch 7", "ch 8"));
 			out.flush();
 			out.close();
 
@@ -188,7 +191,7 @@ public class BiopluxService extends Service {
 		try {
 			OutputStreamWriter out = new OutputStreamWriter(openFileOutput(
 					"tmp.txt", MODE_APPEND));
-
+			
 			out.write(String.format(formatFileCollectedData, counter,
 					String.valueOf(f.an_in[0]), String.valueOf(f.an_in[1]),
 					String.valueOf(f.an_in[2]), String.valueOf(f.an_in[3]),
@@ -207,7 +210,7 @@ public class BiopluxService extends Service {
 		recordingName = intent.getStringExtra("recordingName").toString();
 		configuration = (Configuration) intent
 				.getSerializableExtra("configSelected");
-
+		
 		boolean[] channelsToDisplayTmp;
 		channelsToDisplayTmp = configuration.getChannelsToDisplay();
 		for (int i = 0; i < channelsToDisplayTmp.length; i++)
@@ -223,7 +226,7 @@ public class BiopluxService extends Service {
 			connection = Device.Create(configuration.getMacAddress());
 			// Device mac addr 00:07:80:4C:2A:FB
 			// TODO still need to be implemented
-			connection.BeginAcq(configuration.getFrequency(), 255,
+			connection.BeginAcq(configuration.getFrequency(), configuration.getActiveChannelsAsInteger(),
 					configuration.getNumberOfBits());
 		} catch (BPException e) {
 			Log.e(TAG, "bioplux connection exception", e);
@@ -262,25 +265,20 @@ public class BiopluxService extends Service {
 		Intent newRecordingIntent = new Intent(this, NewRecordingActivity.class);
 		newRecordingIntent.putExtra("recordingName", recordingName);
 		newRecordingIntent.putExtra("configSelected", configuration);
-		// The stack builder object will contain an artificial back stack for
-		// the
-		// started Activity.
-		// This ensures that navigating backward from the Activity leads out of
-		// your application to the Home screen.
+		/*
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-		// Adds the back stack for the Intent (but not the Intent itself)
 		stackBuilder.addParentStack(NewRecordingActivity.class);
-		// Adds the Intent that starts the Activity to the top of the stack
 		stackBuilder.addNextIntent(newRecordingIntent);
 		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
 				PendingIntent.FLAG_UPDATE_CURRENT);
-
+		 */
+		PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, 
+                newRecordingIntent, 0);
 		mBuilder.setContentIntent(resultPendingIntent);
 
 		// mBuilder.setAutoCancel(true);
 		mBuilder.setOngoing(true);
 		Notification notification = mBuilder.build();
-
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.notify(R.string.service_id, notification);
 	}

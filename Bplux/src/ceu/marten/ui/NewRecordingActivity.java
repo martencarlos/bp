@@ -103,7 +103,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_new_recording);
 		findViews();
-
+		
 		extras = getIntent().getExtras();
 		currentConfiguration = (Configuration) extras
 				.getSerializable("configSelected");
@@ -135,6 +135,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			extras.putLong("chronometerBase", chronometer.getBase());
 		else
 			extras.putLong("chronometerBase", 0);
+		Log.d(TAG, "guardo instancia");
 		savedInstanceState.putAll(extras);
 		super.onSaveInstanceState(savedInstanceState);
 	}
@@ -146,7 +147,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			chronometer.start();
 			isChronometerRunning = true;
 		}
-
 		currentConfiguration = (Configuration) savedInstanceState
 				.getSerializable("configSelected");
 		recordingName = savedInstanceState.getString("recordingName")
@@ -185,12 +185,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 	}
 
-	/*
-	 * private void stop_service() { if (isServiceBounded) { if (mService !=
-	 * null) { try { Message msg = Message.obtain(null,
-	 * BiopluxService.MSG_STOP_SERVICE); msg.replyTo = mActivity;
-	 * mService.send(msg); } catch (RemoteException e) { } } } }
-	 */
 	public void onClickedStartStop(View view) {
 		if (!isServiceRunning()) {
 			startService(new Intent(NewRecordingActivity.this,

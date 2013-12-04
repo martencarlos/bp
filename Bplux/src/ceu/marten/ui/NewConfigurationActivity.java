@@ -229,10 +229,10 @@ public class NewConfigurationActivity extends Activity {
 		final ArrayList<String> sensors = new ArrayList<String>();
 
 		// FILL THE TWO ARRAYS
-		for (int i = 0; i < newConfiguration.getActiveChannels().length; i++) {
-			if (newConfiguration.getActiveChannels()[i].compareTo("null") != 0) {
+		for (int i = 0; i < newConfiguration.getActiveChannelsWithNullFill().length; i++) {
+			if (newConfiguration.getActiveChannelsWithNullFill()[i].compareTo("null") != 0) {
 				channels.add("channel " + (i + 1));
-				sensors.add(newConfiguration.getActiveChannels()[i]);
+				sensors.add(newConfiguration.getActiveChannelsWithNullFill()[i]);
 			}
 		}
 
@@ -393,7 +393,7 @@ public class NewConfigurationActivity extends Activity {
 	}
 
 	public void onClickedChannelDisplayPickDialog(View view) {
-		String[] channelsActivated = newConfiguration.getActiveChannels();
+		String[] channelsActivated = newConfiguration.getActiveChannelsWithNullFill();
 		if (channelsActivated != null) {
 			int counter = 0;
 			for (int i = 0; i < channelsActivated.length; i++) {

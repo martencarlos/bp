@@ -1,7 +1,9 @@
-
 package ceu.marten.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+
+import android.util.Log;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -27,7 +29,8 @@ public class Configuration implements Serializable {
 	@DatabaseField(canBeNull = true)
 	private int frequency = 0;
 	@DatabaseField(canBeNull = true)
-	private int numberOfBits = 8; // number of bits can be 8 or 12 [0-255] | [0-4095]
+	private int numberOfBits = 8; // number of bits can be 8 or 12 [0-255] |
+									// [0-4095]
 
 	@DatabaseField(dataType = DataType.BYTE_ARRAY)
 	private byte[] activeChannels = null;
@@ -125,7 +128,7 @@ public class Configuration implements Serializable {
 		this.activeChannels = sb.toString().getBytes();
 	}
 
-	public String[] getActiveChannels() {
+	public String[] getActiveChannelsWithNullFill() {
 		if (this.activeChannels != null) {
 			String entire = new String(this.activeChannels);
 			return entire.split("\\*\\.\\*");
@@ -141,18 +144,64 @@ public class Configuration implements Serializable {
 			arrayStrings = entire.split("\\*\\.\\*");
 			for (int i = 0; i < arrayStrings.length; i++) {
 				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
-					strActChnls += "\t" + "channel " + (i + 1) + " with sensor " + arrayStrings[i]
-							+ "\n";
+					strActChnls += "\t" + "channel " + (i + 1)
+							+ " with sensor " + arrayStrings[i] + "\n";
 			}
 			return strActChnls;
 		} else
 			return null;
-		
+	}
+	
+	public ArrayList<Integer> getActiveChannels() {
+		ArrayList<Integer> activatedChannels = new ArrayList<Integer>();
+		String[] arrayStrings;
+		if (this.activeChannels != null) {
+			String entire = new String(this.activeChannels);
+			arrayStrings = entire.split("\\*\\.\\*");
+			for (int i = 0; i < arrayStrings.length; i++) {
+				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
+					activatedChannels.add(i+1);
+			}
+			return activatedChannels;
+		} else
+			return null;
+	}
+
+	public int getActiveChannelsAsInteger() {
+		int activeChannels = 0;
+		String[] arrayStrings;
+		if (this.activeChannels != null) {
+			String entire = new String(this.activeChannels);
+			arrayStrings = entire.split("\\*\\.\\*");
+			for (int i = 0; i < arrayStrings.length; i++) {
+				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
+					activeChannels += Math.pow(2, i);
+			}
+			Log.d("BiopluxService", "activeChannels integer number: "+ activeChannels);
+			return activeChannels;
+		} else
+			return 0;
+
+	}
+	
+	public int getNumberOfChannelsActivated() {
+		int numberOfChannels = 0;
+		if (this.activeChannels != null) {
+			String entire = new String(this.activeChannels);
+			String[] arrayStrings = entire.split("\\*\\.\\*");
+			for (int i = 0; i < arrayStrings.length; i++) {
+				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
+					numberOfChannels++;
+			}
+			return numberOfChannels;
+		} else
+			return 0;
+
 	}
 
 	@Override
 	public String toString() {
-		return "name " + name + "; " + "freq " + frequency + "; " + "nBits " + numberOfBits
-				+ "; " + "\n Active channels ";// +activeChannelsToString()+"\n";
+		return "name " + name + "; " + "freq " + frequency + "; " + "nBits "
+				+ numberOfBits + "; " + "\n Active channels ";// +activeChannelsToString()+"\n";
 	}
 }
