@@ -30,17 +30,14 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/header"
-            android:orientation="vertical"
-            android:padding="10dip" >
+            android:orientation="vertical" >
 
             <ListView
                 android:id="@+id/lvConfigs"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_marginBottom="36dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_weight="0.44"
                 android:gravity="center_horizontal"
                 android:headerDividersEnabled="true" >

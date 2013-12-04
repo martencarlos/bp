@@ -32,9 +32,24 @@ public class RecordingConfigListAdapter extends ArrayAdapter<Configuration> {
 		}
 
 		TextView name = (TextView) rowView.findViewById(R.id.dli_name);
+		TextView frequency = (TextView) rowView.findViewById(R.id.dli_freq);
+		TextView mac = (TextView) rowView.findViewById(R.id.dli_mac);
+		TextView bits = (TextView) rowView.findViewById(R.id.dli_nbits);
+		TextView date = (TextView) rowView.findViewById(R.id.dli_date);
+		TextView activeChannels = (TextView) rowView.findViewById(R.id.dli_active_channels);
+		
 		Configuration dev = getItem(position);
+		
 		name.setText(dev.getName());
-
+		frequency.setText(String.valueOf(dev.getFrequency())+" Hz");
+		mac.setText(dev.getMacAddress());
+		bits.setText(String.valueOf(dev.getNumberOfBits())+" bits");
+		date.setText(dev.getCreateDate());
+		activeChannels.setText("channels active: ");
+		
+		for(int i:dev.getActiveChannels())
+			activeChannels.append(" "+String.valueOf(i)+",");
+		activeChannels.setText(activeChannels.getText().toString().substring(0,activeChannels.getText().length()-1 ));
 		return rowView;
 	}
 

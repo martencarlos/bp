@@ -225,7 +225,6 @@ public class BiopluxService extends Service {
 		try {
 			connection = Device.Create(configuration.getMacAddress());
 			// Device mac addr 00:07:80:4C:2A:FB
-			// TODO still need to be implemented
 			connection.BeginAcq(configuration.getFrequency(), configuration.getActiveChannelsAsInteger(),
 					configuration.getNumberOfBits());
 		} catch (BPException e) {
