@@ -2,15 +2,11 @@ package ceu.marten.services;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -47,7 +43,6 @@ public class BiopluxService extends Service {
 	public static final int MSG_UNREGISTER_CLIENT = 2;
 	public static final int MSG_RECORDING_DURATION = 0;
 	public static final int MSG_VALUE = 5;
-	
 
 	private String formatFileCollectedData = "%-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s%n";
 
@@ -58,7 +53,6 @@ public class BiopluxService extends Service {
 	private String recordingName;
 	private String duration;
 	private int channelToDisplay = 0;
-	
 
 	private Device connection;
 	private Device.Frame[] frames;
@@ -75,59 +69,49 @@ public class BiopluxService extends Service {
 				mClients.add(msg.replyTo);
 				break;
 			case MSG_UNREGISTER_CLIENT:
-				if (timer != null) 
-					timer.cancel();
-				try {
-					Thread.sleep(100);//for sync with main thread
-				} catch (InterruptedException e) {
-					Log.e(TAG, "interrupted sleep of thread",e);
-				}
 				mClients.remove(msg.replyTo);
-				writeTextFile();
-				compressFile();
 				break;
 			case MSG_RECORDING_DURATION:
 				duration = msg.getData().getString("duration");
 				break;
-			
 			default:
 				super.handleMessage(msg);
 			}
 		}
+	}
 
-		private void compressFile() {
-			try {
-				
-				String zipFileName = recordingName + ".zip";
-				String file = recordingName + ".txt";
-				File root = Environment.getExternalStorageDirectory();
-				int BUFFER = 500;
-				BufferedInputStream origin = null;
-				FileOutputStream dest = new FileOutputStream(root+"/"+zipFileName);
-				ZipOutputStream out = new ZipOutputStream(
-						new BufferedOutputStream(dest));
-				byte data[] = new byte[BUFFER];
+	private void compressFile() {
+		try {
 
-				
-				FileInputStream fi = new FileInputStream(getFilesDir()+"/"+file);
-				origin = new BufferedInputStream(fi, BUFFER);
+			String zipFileName = recordingName + ".zip";
+			String file = recordingName + ".txt";
+			File root = Environment.getExternalStorageDirectory();
+			int BUFFER = 500;
+			BufferedInputStream origin = null;
+			FileOutputStream dest = new FileOutputStream(root + "/"
+					+ zipFileName);
+			ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(
+					dest));
+			byte data[] = new byte[BUFFER];
 
-				ZipEntry entry = new ZipEntry(file.substring(file
-						.lastIndexOf("/") + 1));
-				out.putNextEntry(entry);
-				int count;
+			FileInputStream fi = new FileInputStream(getFilesDir() + "/" + file);
+			origin = new BufferedInputStream(fi, BUFFER);
 
-				while ((count = origin.read(data, 0, BUFFER)) != -1) {
-					out.write(data, 0, count);
-				}
-				origin.close();
-				out.close();
-				
-				deleteFile(recordingName+".txt");
-				
-			} catch (Exception e) {
-				Log.e(TAG, "exception while zipping", e);
+			ZipEntry entry = new ZipEntry(
+					file.substring(file.lastIndexOf("/") + 1));
+			out.putNextEntry(entry);
+			int count;
+
+			while ((count = origin.read(data, 0, BUFFER)) != -1) {
+				out.write(data, 0, count);
 			}
+			origin.close();
+			out.close();
+
+			deleteFile(recordingName + ".txt");
+
+		} catch (Exception e) {
+			Log.e(TAG, "exception while zipping", e);
 		}
 	}
 
@@ -152,35 +136,36 @@ public class BiopluxService extends Service {
 			}
 		}, 0, 100L);
 		showNotification(intent);
-		//writeHeaderOfTextFile();
 		return mMessenger.getBinder();
 	}
 
 	private void writeTextFile() {
-		
+
 		try {
-			OutputStreamWriter out = new OutputStreamWriter(openFileOutput(recordingName + ".txt",
-					MODE_PRIVATE));
+			OutputStreamWriter out = new OutputStreamWriter(openFileOutput(
+					recordingName + ".txt", MODE_PRIVATE));
 			out.write(String.format("%-10s %-10s%n", "configuration name: ",
 					configuration.getName()));
 			out.write(String.format("%-6s %-4s %-6s %-3s%n", "freq: ",
-					configuration.getFrequency(),"nbits: ",configuration.getNumberOfBits()));
+					configuration.getFrequency(), "nbits: ",
+					configuration.getNumberOfBits()));
 			out.write(String.format("%-12s %-14s%n", "start date: ",
 					configuration.getCreateDate()));
-			out.write(String.format("%-10s %-14s%n", "duration: ",
-					duration));
+			out.write(String.format("%-10s %-14s%n", "duration: ", duration));
 			out.write(String.format("%-12s %n %-14s%n", "channels active: ",
 					configuration.getActiveChannelsAsString()));
 			out.write(String.format(formatFileCollectedData, "#num", "ch 1",
 					"ch 2", "ch 3", "ch 4", "ch 5", "ch 6", "ch 7", "ch 8"));
 			out.flush();
 			out.close();
-			
-			//APPEND DATA
-			FileOutputStream outBytes = new FileOutputStream(getFilesDir()+"/"+recordingName + ".txt",true);
+
+			// APPEND DATA
+			FileOutputStream outBytes = new FileOutputStream(getFilesDir()
+					+ "/" + recordingName + ".txt", true);
 			BufferedOutputStream dest = new BufferedOutputStream(outBytes);
-			FileInputStream fi = new FileInputStream(getFilesDir()+"/"+"tmp.txt");
-			BufferedInputStream origin = new BufferedInputStream(fi, 1000); 
+			FileInputStream fi = new FileInputStream(getFilesDir() + "/"
+					+ "tmp.txt");
+			BufferedInputStream origin = new BufferedInputStream(fi, 1000);
 			int count;
 			byte data[] = new byte[1000];
 			while ((count = origin.read(data, 0, 1000)) != -1) {
@@ -188,24 +173,22 @@ public class BiopluxService extends Service {
 			}
 			origin.close();
 			dest.close();
-			
+
 			deleteFile("tmp.txt");
-			
-			
-			
+
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "file to write header on, not found", e);
 		} catch (IOException e) {
 			Log.e(TAG, "write header stream exception", e);
-		}	
+		}
 	}
 
 	public void writeFramesToTmpFile(Frame f) {
 		counter++;
 		try {
-			OutputStreamWriter out = new OutputStreamWriter(openFileOutput("tmp.txt",
-					MODE_APPEND));
-			
+			OutputStreamWriter out = new OutputStreamWriter(openFileOutput(
+					"tmp.txt", MODE_APPEND));
+
 			out.write(String.format(formatFileCollectedData, counter,
 					String.valueOf(f.an_in[0]), String.valueOf(f.an_in[1]),
 					String.valueOf(f.an_in[2]), String.valueOf(f.an_in[3]),
@@ -322,12 +305,21 @@ public class BiopluxService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-
+		if (timer != null)
+			timer.cancel();
+		try {
+			Thread.sleep(100);// for sync with main thread
+		} catch (InterruptedException e) {
+			Log.e(TAG, "interrupted sleep of thread", e);
+		}
 		try {
 			connection.EndAcq();
 		} catch (BPException e) {
 			Log.e(TAG, "error ending ACQ", e);
 		}
+		writeTextFile();
+		compressFile();
+
 		notificationManager.cancel(R.string.service_id);
 		Log.i(TAG, "service stopped");
 	}

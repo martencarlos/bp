@@ -1,8 +1,12 @@
 package ceu.marten.ui;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import ceu.marten.bplux.R;
@@ -20,6 +24,8 @@ public class HomeActivity extends Activity {
 	public void onClickedStartRecording(View view) {
 		Intent intent = new Intent(this, RecordingConfigsActivity.class);
 		startActivity(intent);
+		
+		
 	}
 
 	public void onClickedBrowseRecordings(View view) {

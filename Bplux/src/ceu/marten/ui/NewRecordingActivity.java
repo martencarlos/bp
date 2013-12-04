@@ -37,9 +37,9 @@ import com.j256.ormlite.dao.Dao;
 import com.jjoe64.graphview.GraphView.GraphViewData;
 
 public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
-	
+
 	private static final String TAG = NewRecordingActivity.class.getName();
-	
+
 	private TextView uiRecordingName, uiConfigurationName, uiNumberOfBits,
 			uiFrequency, uiActiveChannels, uiMacAddress;
 	private LinearLayout uiGraph;
@@ -81,7 +81,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				msg.replyTo = mActivity;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				Log.e(TAG, "service conection failed",e);
+				Log.e(TAG, "service conection failed", e);
 			}
 		}
 
@@ -103,9 +103,10 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_new_recording);
 		findViews();
-		
+
 		extras = getIntent().getExtras();
-		currentConfiguration = (Configuration) extras.getSerializable("configSelected");
+		currentConfiguration = (Configuration) extras
+				.getSerializable("configSelected");
 		recordingName = extras.getString("recordingName").toString();
 
 		if (isServiceRunning()) {
@@ -120,8 +121,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		uiNumberOfBits.setText(String.valueOf(currentConfiguration
 				.getNumberOfBits()) + " bits");
 		uiMacAddress.setText(currentConfiguration.getMacAddress());
-		uiActiveChannels.setText(currentConfiguration.getActiveChannelsAsString());
-		
+		uiActiveChannels.setText(currentConfiguration
+				.getActiveChannelsAsString());
+
 		graph = new HRGraph(this);
 		uiGraph.addView(graph.getGraphView());
 
@@ -129,32 +131,28 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
-		super.onSaveInstanceState(savedInstanceState);	
-		if(isChronometerRunning)
+		if (isChronometerRunning)
 			extras.putLong("chronometerBase", chronometer.getBase());
 		else
 			extras.putLong("chronometerBase", 0);
-		
 		savedInstanceState.putAll(extras);
-		
+		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-
-		if(savedInstanceState.getLong("chronometerBase")!=0){
+		if (savedInstanceState.getLong("chronometerBase") != 0) {
 			chronometer.setBase(savedInstanceState.getLong("chronometerBase"));
 			chronometer.start();
 			isChronometerRunning = true;
 		}
-		
+
 		currentConfiguration = (Configuration) savedInstanceState
 				.getSerializable("configSelected");
 		recordingName = savedInstanceState.getString("recordingName")
 				.toString();
-		
-		
+
+		super.onRestoreInstanceState(savedInstanceState);
 	}
 
 	private void findViews() {
@@ -169,7 +167,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		chronometer = (Chronometer) findViewById(R.id.nr_chronometer);
 	}
 
-	
 	private void sendRecordingDuration() {
 		if (isServiceBounded) {
 			if (mService != null) {
@@ -187,21 +184,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			}
 		}
 	}
-/*
-	private void stop_service() {
-		if (isServiceBounded) {
-			if (mService != null) {
-				try {
-					Message msg = Message.obtain(null,
-							BiopluxService.MSG_STOP_SERVICE);
-					msg.replyTo = mActivity;
-					mService.send(msg);
-				} catch (RemoteException e) {
-				}
-			}
-		}
-	}
-*/
+
+	/*
+	 * private void stop_service() { if (isServiceBounded) { if (mService !=
+	 * null) { try { Message msg = Message.obtain(null,
+	 * BiopluxService.MSG_STOP_SERVICE); msg.replyTo = mActivity;
+	 * mService.send(msg); } catch (RemoteException e) { } } } }
+	 */
 	public void onClickedStartStop(View view) {
 		if (!isServiceRunning()) {
 			startService(new Intent(NewRecordingActivity.this,
@@ -210,7 +199,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			displayToast("recording started");
 			uiStartStopbutton.setText("stop recording");
 			startChronometer();
-			
+
 		} else {
 			stopChronometer();
 			sendRecordingDuration();
@@ -226,15 +215,16 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private void startChronometer() {
 		chronometer.setBase(SystemClock.elapsedRealtime());
-        chronometer.start();
-        isChronometerRunning = true;
+		chronometer.start();
+		isChronometerRunning = true;
 	}
 
 	private void stopChronometer() {
 		chronometer.stop();
-		Date elapsedMiliseconds = new Date(SystemClock.elapsedRealtime() - chronometer.getBase());
+		Date elapsedMiliseconds = new Date(SystemClock.elapsedRealtime()
+				- chronometer.getBase());
 		DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
-		duration= formatter.format(elapsedMiliseconds);
+		duration = formatter.format(elapsedMiliseconds);
 		isChronometerRunning = false;
 	}
 
@@ -251,7 +241,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			Dao<Recording, Integer> dao = getHelper().getRecordingDao();
 			dao.create(recording);
 		} catch (SQLException e) {
-			Log.e(TAG, "saving recording exception",e);
+			Log.e(TAG, "saving recording exception", e);
 		}
 
 	}
@@ -290,7 +280,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 					msg.replyTo = mActivity;
 					mService.send(msg);
 				} catch (RemoteException e) {
-					Log.e(TAG, "Service crashed",e);
+					Log.e(TAG, "Service crashed", e);
 				}
 			}
 			// Detach our existing connection.
@@ -302,16 +292,15 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	@Override
 	protected void onPause() {
 		super.onPause();
-
 	}
-	
+
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();
+		super.onDestroy();	
 		try {
 			unbindOfService();
 		} catch (Throwable t) {
-			Log.e(TAG, "failed to unbind from service when activity is destroyed",t);
+			Log.e(TAG,"failed to unbind from service when activity is destroyed",t);
 		}
 	}
 
