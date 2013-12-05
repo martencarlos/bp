@@ -30,11 +30,11 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
-public class RecordingConfigsActivity extends
-		OrmLiteBaseActivity<DatabaseHelper> implements OnDismissCallback {
+public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
+		implements OnDismissCallback {
 
-	private static final String TAG = RecordingConfigsActivity.class.getName();
-	
+	private static final String TAG = ConfigurationsActivity.class.getName();
+
 	private AlertDialog recordingNameDialog;
 	private ListView configurationsListView;
 	private RecordingConfigListAdapter baseAdapter;
@@ -46,7 +46,7 @@ public class RecordingConfigsActivity extends
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.ly_recording_configs);
+		setContentView(R.layout.ly_configurations);
 
 		loadConfigurations();
 		setupRecordingNameDialog();
@@ -56,7 +56,7 @@ public class RecordingConfigsActivity extends
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 1) {
 			if (resultCode == RESULT_OK) {
-			
+
 				Configuration configuration = ((Configuration) data
 						.getSerializableExtra("configuration"));
 				saveConfiguration(configuration);
@@ -64,7 +64,7 @@ public class RecordingConfigsActivity extends
 				setupConfigurationsListView();
 			}
 			if (resultCode == RESULT_CANCELED) {
-				
+
 			}
 		}
 	}
@@ -89,8 +89,10 @@ public class RecordingConfigsActivity extends
 										NewRecordingActivity.class);
 								intent.putExtra("recordingName",
 										newRecordingName);
-								intent.putExtra("configSelected",
-										configurations.get(currentConfigurationsPosition));
+								intent.putExtra(
+										"configSelected",
+										configurations
+												.get(currentConfigurationsPosition));
 								startActivity(intent);
 							}
 						})
@@ -118,6 +120,7 @@ public class RecordingConfigsActivity extends
 
 		configurationsListView = (ListView) findViewById(R.id.lvConfigs);
 		configurationsListView.setOnItemClickListener(shortPressListener);
+		configurationsListView.setEmptyView(findViewById(R.id.empty_list_configurations));
 
 		/** SETTING UP THE ADAPTER */
 		baseAdapter = new RecordingConfigListAdapter(this, configurations);
@@ -142,13 +145,15 @@ public class RecordingConfigsActivity extends
 				dao = getHelper().getDeviceConfigDao();
 				dao.delete(configurations.get(position));
 			} catch (SQLException e) {
-				Log.e(TAG, "exception removing configuration from database by swiping",e);
+				Log.e(TAG,
+						"exception removing configuration from database by swiping",
+						e);
 			}
 			configurations.remove(position);
 		}
 		displayInfoToast("Configuration removed");
 	}
-	
+
 	private void displayInfoToast(String messageToDisplay) {
 		Toast infoToast = new Toast(getApplicationContext());
 
@@ -167,7 +172,7 @@ public class RecordingConfigsActivity extends
 			dao = getHelper().getDeviceConfigDao();
 			dao.create(config);
 		} catch (SQLException e) {
-			Log.e(TAG, "exception saving configuration on database",e);
+			Log.e(TAG, "exception saving configuration on database", e);
 		}
 	}
 
@@ -178,9 +183,10 @@ public class RecordingConfigsActivity extends
 			dao = getHelper().getDeviceConfigDao();
 			QueryBuilder<Configuration, Integer> builder = dao.queryBuilder();
 			builder.orderBy("createDate", false).limit(30L);
-			configurations = (ArrayList<Configuration>) dao.query(builder.prepare());
+			configurations = (ArrayList<Configuration>) dao.query(builder
+					.prepare());
 		} catch (SQLException e) {
-			Log.e(TAG, "exception loading configurations from database ",e);
+			Log.e(TAG, "exception loading configurations from database ", e);
 		}
 	}
 

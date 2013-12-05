@@ -135,7 +135,6 @@ public class Configuration implements Serializable {
 		} else
 			return null;
 	}
-	
 
 	public String getActiveChannelsAsString() {
 		String activeChannels = "";
@@ -145,14 +144,15 @@ public class Configuration implements Serializable {
 			arrayStrings = entire.split("\\*\\.\\*");
 			for (int i = 0; i < arrayStrings.length; i++) {
 				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
-					activeChannels+=(" "+String.valueOf(i+1)+",");
+					activeChannels += (" " + String.valueOf(i + 1) + ",");
 			}
-			activeChannels = (activeChannels.substring(0,activeChannels.length()-1 ));
+			activeChannels = (activeChannels.substring(0,
+					activeChannels.length() - 1));
 			return activeChannels;
 		} else
 			return null;
 	}
-	
+
 	public ArrayList<Integer> getActiveChannels() {
 		ArrayList<Integer> activatedChannels = new ArrayList<Integer>();
 		String[] arrayStrings;
@@ -161,7 +161,7 @@ public class Configuration implements Serializable {
 			arrayStrings = entire.split("\\*\\.\\*");
 			for (int i = 0; i < arrayStrings.length; i++) {
 				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
-					activatedChannels.add(i+1);
+					activatedChannels.add(i + 1);
 			}
 			return activatedChannels;
 		} else
@@ -178,13 +178,14 @@ public class Configuration implements Serializable {
 				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
 					activeChannels += Math.pow(2, i);
 			}
-			Log.d("BiopluxService", "activeChannels integer number: "+ activeChannels);
+			Log.d("BiopluxService", "activeChannels integer number: "
+					+ activeChannels);
 			return activeChannels;
 		} else
 			return 0;
 
 	}
-	
+
 	public int getNumberOfChannelsActivated() {
 		int numberOfChannels = 0;
 		if (this.activeChannels != null) {

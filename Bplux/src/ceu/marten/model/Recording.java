@@ -24,8 +24,8 @@ public class Recording implements Serializable {
 		// needed by OrmLite
 	}
 
-	public Recording(String initName, String initStartDate, String initDuration,
-			Configuration initConfig, String initDataId) {
+	public Recording(String initName, String initStartDate,
+			String initDuration, Configuration initConfig, String initDataId) {
 		super();
 		this.name = initName;
 		this.startDate = initStartDate;

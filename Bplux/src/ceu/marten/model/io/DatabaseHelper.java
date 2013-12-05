@@ -8,7 +8,7 @@ import android.util.Log;
 
 import ceu.marten.model.Configuration;
 import ceu.marten.model.Recording;
-import ceu.marten.ui.StoredRecordingsActivity;
+import ceu.marten.ui.RecordingsActivity;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
@@ -53,9 +53,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Recording.class, true);
 			onCreate(sqliteDatabase, connectionSource);
 		} catch (SQLException e) {
-			Log.e(TAG,
-					"Unable to upgrade database from version " + oldVer
-							+ " to new " + newVer, e);
+			Log.e(TAG, "Unable to upgrade database from version " + oldVer
+					+ " to new " + newVer, e);
 		}
 	}
 

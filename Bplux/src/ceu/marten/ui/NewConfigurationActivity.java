@@ -117,12 +117,14 @@ public class NewConfigurationActivity extends Activity {
 					frequencySeekbar.setProgress(FREQUENCY_MAX);
 					frequencyEditor.setText(String.valueOf(FREQUENCY_MAX));
 					newConfiguration.setFrequency(FREQUENCY_MAX);
-					displayErrorToast("max frequency is " + FREQUENCY_MAX + "Hz");
+					displayErrorToast("max frequency is " + FREQUENCY_MAX
+							+ "Hz");
 				} else {
 					frequencySeekbar.setProgress(0);
 					frequencyEditor.setText(String.valueOf(FREQUENCY_MIN));
 					newConfiguration.setFrequency(FREQUENCY_MIN);
-					displayErrorToast("min frequency is " + FREQUENCY_MIN + " Hz");
+					displayErrorToast("min frequency is " + FREQUENCY_MIN
+							+ " Hz");
 				}
 			}
 
@@ -365,7 +367,7 @@ public class NewConfigurationActivity extends Activity {
 
 		errorToast.show();
 	}
-	
+
 	private void displayInfoToast(String messageToDisplay) {
 		Toast infoToast = new Toast(getApplicationContext());
 
@@ -442,7 +444,7 @@ public class NewConfigurationActivity extends Activity {
 
 	private boolean validateFields() {
 		boolean validated = true;
-		String errorMessage= "";
+		String errorMessage = "";
 		// VALIDATE NAME FIELD
 		if (configurationName.getText().toString() == null
 				|| configurationName.getText().toString().compareTo("") == 0) {
@@ -455,7 +457,7 @@ public class NewConfigurationActivity extends Activity {
 		if (macAddress.getText().toString() == null
 				|| macAddress.getText().toString().compareTo("") == 0
 				|| !macAddress.getText().toString().matches(regex)
-				&& macAddress.getText().toString().compareTo("test") != 0){
+				&& macAddress.getText().toString().compareTo("test") != 0) {
 			errorMessage += (" *invalid mac address\n");
 			validated = false;
 		}
@@ -472,13 +474,12 @@ public class NewConfigurationActivity extends Activity {
 			errorMessage += (" *channels to display not selected\n");
 			validated = false;
 		}
-		
-		if(!validated){
-			errorMessage = errorMessage.substring(0, errorMessage.length()-1);
+
+		if (!validated) {
+			errorMessage = errorMessage.substring(0, errorMessage.length() - 1);
 			displayErrorToast(errorMessage);
 		}
-			
-		
+
 		return validated;
 	}
 

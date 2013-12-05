@@ -1,4 +1,3 @@
-
 package ceu.marten.model.io;
 
 import java.io.IOException;

@@ -1,5 +1,3 @@
-
-
 package ceu.marten.ui.adapters;
 
 import java.util.ArrayList;
@@ -94,7 +92,7 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 
 	@Override
 	public void onNothingSelected(AdapterView<?> spinner) {
-		
+
 	}
 
 }

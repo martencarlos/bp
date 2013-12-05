@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ceu.marten.ui.RecordingConfigsActivity"
+            android:name="ceu.marten.ui.ConfigurationsActivity"
             android:label="@string/settingsTitle"
             android:parentActivityName="ceu.marten.ui.HomeActivity" >
         </activity>
@@ -40,7 +40,7 @@
             android:parentActivityName="ceu.marten.ui.HomeActivity" >
         </activity>
         <activity
-            android:name="ceu.marten.ui.StoredRecordingsActivity"
+            android:name="ceu.marten.ui.RecordingsActivity"
             android:label="@string/title_activity_sessions" >
         </activity>
         <activity

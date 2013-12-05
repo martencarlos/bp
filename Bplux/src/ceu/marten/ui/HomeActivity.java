@@ -22,14 +22,13 @@ public class HomeActivity extends Activity {
 
 	/* BUTTON EVENTS */
 	public void onClickedStartRecording(View view) {
-		Intent intent = new Intent(this, RecordingConfigsActivity.class);
+		Intent intent = new Intent(this, ConfigurationsActivity.class);
 		startActivity(intent);
-		
-		
+
 	}
 
 	public void onClickedBrowseRecordings(View view) {
-		Intent intent = new Intent(this, StoredRecordingsActivity.class);
+		Intent intent = new Intent(this, RecordingsActivity.class);
 		startActivity(intent);
 	}
 }

@@ -21,37 +21,37 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Select a configuration"
+                android:text="Stored recordings"
                 android:textSize="25sp" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/sl_button"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_below="@id/header"
-            android:orientation="vertical" >
+            android:layout_weight="0.60"
+            android:orientation="vertical"
+            android:padding="10dip" >
+
+            <TextView
+                android:id="@+id/empty_list_recordings"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="45dip"
+                android:gravity="center"
+                android:text="There are no recordings"
+                android:textSize="20sp"
+                android:visibility="gone" />
 
             <ListView
-                android:id="@+id/lvConfigs"
+                android:id="@+id/lvSessions"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginBottom="36dp"
-                android:layout_marginTop="5dp"
-                android:layout_weight="0.44"
+                android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:headerDividersEnabled="true" >
             </ListView>
         </LinearLayout>
-
-        <Button
-                android:id="@+id/bttnAddConfig"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:background="@drawable/button_selector"
-                android:onClick="onClickedNewConfig"
-                android:text="add a new configuration" />
     </RelativeLayout>
 
 </ScrollView>

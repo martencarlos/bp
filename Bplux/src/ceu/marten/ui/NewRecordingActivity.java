@@ -104,7 +104,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_new_recording);
 		findViews();
-		
+
 		extras = getIntent().getExtras();
 		currentConfiguration = (Configuration) extras
 				.getSerializable("configSelected");
@@ -207,6 +207,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 
 	}
+
 	private void displayInfoToast(String messageToDisplay) {
 		Toast infoToast = new Toast(getApplicationContext());
 
@@ -297,11 +298,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();	
+		super.onDestroy();
 		try {
 			unbindOfService();
 		} catch (Throwable t) {
-			Log.e(TAG,"failed to unbind from service when activity is destroyed",t);
+			Log.e(TAG,
+					"failed to unbind from service when activity is destroyed",
+					t);
 		}
 	}
 

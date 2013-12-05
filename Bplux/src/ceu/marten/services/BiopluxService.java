@@ -149,14 +149,22 @@ public class BiopluxService extends Service {
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date date = new Date();
 		try {
-			OutputStreamWriter out = new OutputStreamWriter(openFileOutput(recordingName + ".txt", MODE_PRIVATE));
-			out.write(String.format("%-10s %-10s%n", "# Configuration name: ",configuration.getName()));
-			out.write(String.format("%-10s %-14s%n", "# Start date: ",dateFormat.format(date)));
-			out.write(String.format("%-10s %-4s%n", "# Frequency: ",configuration.getFrequency()+" Hz"));
-			out.write(String.format("%-10s %-10s%n", "# Number of bits: ",configuration.getNumberOfBits()+" bits"));
-			out.write(String.format("%-10s %-14s%n", "# Duration: ", duration+" seconds"));
-			out.write(String.format("%-10s %-14s%n%n", "# Active channels: ",configuration.getActiveChannelsAsString()));
-			out.write(String.format(formatFileCollectedData, "#num", "ch 1","ch 2", "ch 3", "ch 4", "ch 5", "ch 6", "ch 7", "ch 8"));
+			OutputStreamWriter out = new OutputStreamWriter(openFileOutput(
+					recordingName + ".txt", MODE_PRIVATE));
+			out.write(String.format("%-10s %-10s%n", "# Configuration name: ",
+					configuration.getName()));
+			out.write(String.format("%-10s %-14s%n", "# Start date: ",
+					dateFormat.format(date)));
+			out.write(String.format("%-10s %-4s%n", "# Frequency: ",
+					configuration.getFrequency() + " Hz"));
+			out.write(String.format("%-10s %-10s%n", "# Number of bits: ",
+					configuration.getNumberOfBits() + " bits"));
+			out.write(String.format("%-10s %-14s%n", "# Duration: ", duration
+					+ " seconds"));
+			out.write(String.format("%-10s %-14s%n%n", "# Active channels: ",
+					configuration.getActiveChannelsAsString()));
+			out.write(String.format(formatFileCollectedData, "#num", "ch 1",
+					"ch 2", "ch 3", "ch 4", "ch 5", "ch 6", "ch 7", "ch 8"));
 			out.flush();
 			out.close();
 
@@ -188,7 +196,7 @@ public class BiopluxService extends Service {
 		counter++;
 		int index = 0;
 		for (int i = 0; i < activeChannels.size(); i++) {
-			index = activeChannels.get(i)-1;
+			index = activeChannels.get(i) - 1;
 			frameTmp[index] = f.an_in[i];
 		}
 

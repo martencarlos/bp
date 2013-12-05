@@ -29,11 +29,11 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
-public class StoredRecordingsActivity extends
-		OrmLiteBaseActivity<DatabaseHelper> implements OnDismissCallback {
+public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
+		implements OnDismissCallback {
 
-	private static final String TAG = StoredRecordingsActivity.class.getName();
-	
+	private static final String TAG = RecordingsActivity.class.getName();
+
 	private ListView lvRecordings;
 	String recordingName;
 	private StoredRecordingsListAdapter baseAdapter;
@@ -43,40 +43,42 @@ public class StoredRecordingsActivity extends
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.ly_stored_recordings);
+		setContentView(R.layout.ly_recordings);
 		loadRecordings();
 		setupRecordingListView();
 	}
 
-
 	private void setupRecordingListView() {
-		
+
 		final OnItemClickListener shortPressListener = new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> AdapterView, View v,
 					int position, long id) {
-				recordingName = ((TextView) v.findViewById(R.id.dli_name)).getText().toString();
+				recordingName = ((TextView) v.findViewById(R.id.dli_name))
+						.getText().toString();
 				sendDataViaEmail();
 			}
 		};
 		lvRecordings = (ListView) findViewById(R.id.lvSessions);
 		lvRecordings.setOnItemClickListener(shortPressListener);
+		lvRecordings.setEmptyView(findViewById(R.id.empty_list_recordings));
 		baseAdapter = new StoredRecordingsListAdapter(this, recordingsArrayList);
 		setSwipeToDismissAdapter();
 
 	}
+
 	public void sendDataViaEmail() {
 
 		File root = Environment.getExternalStorageDirectory();
-		File F = new File(root+"/"+recordingName + ".zip");
+		File F = new File(root + "/" + recordingName + ".zip");
 		Uri U = Uri.fromFile(F);
 		Intent i = new Intent(Intent.ACTION_SEND);
 		i.setType("application/zip");
 		i.putExtra(Intent.EXTRA_STREAM, U);
 		startActivity(Intent.createChooser(i, "select email client"));
-		
+
 	}
-	
+
 	private void displayInfoToast(String messageToDisplay) {
 		Toast infoToast = new Toast(getApplicationContext());
 
@@ -88,7 +90,7 @@ public class StoredRecordingsActivity extends
 
 		infoToast.show();
 	}
-	
+
 	private void setSwipeToDismissAdapter() {
 		SwipeDismissAdapter swipeAdapter = new SwipeDismissAdapter(baseAdapter,
 				this);
@@ -106,7 +108,7 @@ public class StoredRecordingsActivity extends
 				dao = getHelper().getRecordingDao();
 				dao.delete(recordingsArrayList.get(position));
 			} catch (SQLException e) {
-				Log.e(TAG, "Exception removing recording from database ",e);
+				Log.e(TAG, "Exception removing recording from database ", e);
 			}
 			recordingsArrayList.remove(position);
 			deleteFile(recordingName + ".zip");
@@ -121,11 +123,11 @@ public class StoredRecordingsActivity extends
 			dao = getHelper().getRecordingDao();
 			QueryBuilder<Recording, Integer> builder = dao.queryBuilder();
 			builder.orderBy("startDate", false).limit(30L);
-			recordingsArrayList = (ArrayList<Recording>) dao.query(builder.prepare());
+			recordingsArrayList = (ArrayList<Recording>) dao.query(builder
+					.prepare());
 		} catch (SQLException e) {
-			Log.e(TAG, "exception loading recordings from database ",e);
+			Log.e(TAG, "exception loading recordings from database ", e);
 		}
 	}
-	
 
 }
