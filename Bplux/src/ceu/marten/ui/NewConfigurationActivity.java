@@ -156,8 +156,8 @@ public class NewConfigurationActivity extends Activity {
 		// ACTIVE CHANNELS BUILDER
 		activeChannelsBuilder = new AlertDialog.Builder(this);
 		activeChannelsBuilder
-				.setIcon(R.drawable.ic_launcher)
-				.setTitle("Select channels to activate")
+				.setIcon(R.drawable.select_dialog)
+				.setTitle("  Select channels to activate")
 				.setView(
 						getLayoutInflater().inflate(
 								R.layout.dialog_channels_listview, null));
@@ -184,10 +184,9 @@ public class NewConfigurationActivity extends Activity {
 						String si = "";
 						for (int i = 0; i < channelsActivated.length; i++) {
 							if (channelsActivated[i] != null)
-								si = si + "\n\t channel " + (i + 1)
-										+ " with sensor "
-										+ channelsActivated[i];
+								si+=(" "+String.valueOf(i+1)+",");
 						}
+						si = (si.substring(0,si.length()-1 ));
 						activeChannels.append(si);
 
 					}
@@ -243,8 +242,8 @@ public class NewConfigurationActivity extends Activity {
 
 		//BUILDER
 		channelsToDisplayBuilder = new AlertDialog.Builder(this);
-		channelsToDisplayBuilder.setIcon(R.drawable.ic_launcher);
-		channelsToDisplayBuilder.setTitle("Select channels to display");
+		channelsToDisplayBuilder.setIcon(R.drawable.select_dialog);
+		channelsToDisplayBuilder.setTitle("  Select channels to display");
 		channelsToDisplayBuilder.setView(getLayoutInflater().inflate(
 				R.layout.dialog_channels_listview, null));
 

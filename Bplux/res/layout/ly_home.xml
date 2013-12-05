@@ -53,7 +53,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/linearLayout1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
@@ -64,12 +63,21 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:onClick="onClickedStartRecording"
+				android:layout_marginLeft="40dip"
+				android:layout_marginRight="40dip"
+                android:background="@drawable/button_selector"
+                android:drawableRight="@drawable/start"
                 android:text="Start Recording" />
 
             <Button
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:onClick="onClickedBrowseRecordings"
+                android:layout_marginLeft="40dip"
+				android:layout_marginRight="40dip"
+				android:layout_marginTop="5dp"
+                android:background="@drawable/button_selector"
+                android:drawableRight="@drawable/start"
                 android:text="Browse Recordings" />
         </LinearLayout>
 

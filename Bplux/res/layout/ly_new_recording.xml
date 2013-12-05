@@ -18,11 +18,11 @@
             android:paddingTop="5dip" >
 
             <TextView
+                android:id="@+id/nr_txt_recordingName"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="New Recording"
-                android:textSize="30sp" />
+                android:textSize="25sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -82,29 +82,7 @@
                     android:text="Chronometer" />
             </RelativeLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="10dip"
-                android:paddingTop="5dip"
-                android:paddingRight="10dip" >
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="recording name: "
-                    android:textColor="#372c24" />
-
-                <TextView
-                    android:id="@+id/nr_txt_recordingName"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="name of the recording"
-                    android:textColor="@color/blue" />
-            </LinearLayout>
+            
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -169,7 +147,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:paddingLeft="10dip"
                 android:paddingTop="5dip"
                 android:paddingRight="10dip"  >
@@ -220,9 +198,9 @@
 
             <Button
                 android:id="@+id/nr_bttn_StartPause"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="40sp"
+                android:background="@drawable/button_selector"
                 android:layout_weight="1"
                 android:onClick="onClickedStartStop"
                 android:text="start recording" />

@@ -21,7 +21,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Recording configurations"
+                android:text="Select a configuration"
                 android:textSize="25sp" />
         </LinearLayout>
 
@@ -49,6 +49,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
+                android:background="@drawable/button_selector"
                 android:onClick="onClickedNewConfig"
                 android:text="add a new configuration" />
     </RelativeLayout>
