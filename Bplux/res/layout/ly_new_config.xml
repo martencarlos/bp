@@ -85,9 +85,9 @@
                 android:paddingLeft="10dip" >
 
                 <TextView
-                    android:layout_width="66dp"
+                    android:layout_width="68dp"
                     android:layout_height="45dip"
-                    android:text="frequency"
+                    android:text="Frequency"
                     android:textColor="#372c24" />
 
                 <SeekBar
@@ -136,7 +136,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:paddingTop="5dip"
-                    android:text="bits per signal"
+                    android:text="Bits per signal"
                     android:textColor="#372c24" />
 
                 <RadioGroup

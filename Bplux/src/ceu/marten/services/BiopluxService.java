@@ -257,7 +257,7 @@ public class BiopluxService extends Service {
 
 		// SET THE BASICS
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-				this).setSmallIcon(R.drawable.ic_launcher)
+				this).setSmallIcon(R.drawable.notification)
 				.setContentTitle("Device Connected")
 				.setContentText("service running, receiving data..");
 

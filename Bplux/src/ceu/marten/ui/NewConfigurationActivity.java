@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
@@ -40,6 +41,9 @@ public class NewConfigurationActivity extends Activity {
 	private SeekBar frequencySeekbar;
 	private EditText frequencyEditor, configurationName, macAddress;
 	private TextView activeChannels, channelsToDisplay;
+
+	String[] channelsActivated = null;
+	boolean[] channelsSelected = null;
 
 	Configuration newConfiguration;
 
@@ -167,7 +171,7 @@ public class NewConfigurationActivity extends Activity {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 
-						String[] channelsActivated = activeChannelsListAdapter
+						channelsActivated = activeChannelsListAdapter
 								.getChecked();
 
 						newConfiguration.setActiveChannels(channelsActivated);
@@ -184,24 +188,13 @@ public class NewConfigurationActivity extends Activity {
 						String si = "";
 						for (int i = 0; i < channelsActivated.length; i++) {
 							if (channelsActivated[i] != null)
-								si+=(" "+String.valueOf(i+1)+",");
+								si += (" " + String.valueOf(i + 1) + ",");
 						}
-						si = (si.substring(0,si.length()-1 ));
+						si = (si.substring(0, si.length() - 1));
 						activeChannels.append(si);
 
 					}
 
-					private boolean noChannelsActivated(String[] channelsActivated) {
-						int counter = 0;
-						for (int i = 0; i < channelsActivated.length; i++) {
-							if (channelsActivated[i] != null)
-								counter++;
-						}
-						if (counter == 0)
-							return true;
-						else
-							return false;
-					}
 				});
 		activeChannelsBuilder.setNegativeButton("cancel",
 				new DialogInterface.OnClickListener() {
@@ -222,6 +215,18 @@ public class NewConfigurationActivity extends Activity {
 		activeChannelsListView.setAdapter(activeChannelsListAdapter);
 	}
 
+	private boolean noChannelsActivated(String[] channelsActivated) {
+		int counter = 0;
+		for (int i = 0; i < channelsActivated.length; i++) {
+			if (channelsActivated[i] != null)
+				counter++;
+		}
+		if (counter == 0)
+			return true;
+		else
+			return false;
+	}
+
 	private void setupChannelsToDisplay() {
 
 		final ArrayList<String> channels = new ArrayList<String>();
@@ -229,7 +234,8 @@ public class NewConfigurationActivity extends Activity {
 
 		// FILL THE TWO ARRAYS
 		for (int i = 0; i < newConfiguration.getActiveChannelsWithNullFill().length; i++) {
-			if (newConfiguration.getActiveChannelsWithNullFill()[i].compareTo("null") != 0) {
+			if (newConfiguration.getActiveChannelsWithNullFill()[i]
+					.compareTo("null") != 0) {
 				channels.add("channel " + (i + 1));
 				sensors.add(newConfiguration.getActiveChannelsWithNullFill()[i]);
 			}
@@ -240,7 +246,7 @@ public class NewConfigurationActivity extends Activity {
 		AlertDialog.Builder channelsToDisplayBuilder;
 		AlertDialog channelsToDisplayDialog;
 
-		//BUILDER
+		// BUILDER
 		channelsToDisplayBuilder = new AlertDialog.Builder(this);
 		channelsToDisplayBuilder.setIcon(R.drawable.select_dialog);
 		channelsToDisplayBuilder.setTitle("  Select channels to display");
@@ -252,22 +258,25 @@ public class NewConfigurationActivity extends Activity {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						boolean[] channelsSelected = channelsToDisplayListAdapter.getChecked();
+						channelsSelected = channelsToDisplayListAdapter
+								.getChecked();
 						boolean[] channelsToDisplayArray = new boolean[8];
-						
+
 						if (numberOfChannelsSelected(channelsSelected) > 2)
-							displayToast("channels to display have to be less than 3");
-						else if (numberOfChannelsSelected(channelsSelected) == 0)
-							channelsToDisplay.setText("no channels were selected");
+							displayErrorToast("channels to display have to be less than 3");
 						else {
 							channelsToDisplay.setText("channels to display: ");
-							printChannelsToDisplay(channelsToDisplayArray,channelsSelected);
-							newConfiguration.setChannelsToDisplay(channelsToDisplayArray);
+							printChannelsToDisplay(channelsToDisplayArray,
+									channelsSelected);
+							newConfiguration
+									.setChannelsToDisplay(channelsToDisplayArray);
 						}
 
 					}
 
-					private void printChannelsToDisplay(boolean[] channelsToDisplayArray,boolean[] channelsSelected) {
+					private void printChannelsToDisplay(
+							boolean[] channelsToDisplayArray,
+							boolean[] channelsSelected) {
 						String si = "";
 						for (int i = 0; i < channelsSelected.length; i++) {
 							if (channelsSelected[i]) {
@@ -276,25 +285,15 @@ public class NewConfigurationActivity extends Activity {
 										.get(i).toString().length() - 1)) - 1);
 								channelsToDisplayArray[in] = true;
 
-								si = si + "\n\t"
-										+ channels.get(i).toString()
+								si = si + "\n\t" + channels.get(i).toString()
 										+ " with sensor "
 										+ sensors.get(i).toString();
 							}
 						}
 						channelsToDisplay.append(si);
-						
+
 					}
 
-					private int numberOfChannelsSelected(boolean[] channelsSelected) {
-						int counter = 0;
-						for (int i = 0; i < channelsSelected.length; i++) {
-							if (channelsSelected[i]) {
-								counter++;
-							}
-						}
-						return counter;
-					}
 				});
 		channelsToDisplayBuilder.setNegativeButton("cancel",
 				new DialogInterface.OnClickListener() {
@@ -305,11 +304,11 @@ public class NewConfigurationActivity extends Activity {
 					}
 				});
 
-		//CREATE DIALOG
+		// CREATE DIALOG
 		channelsToDisplayDialog = channelsToDisplayBuilder.create();
 		channelsToDisplayDialog.show();
 
-		//LIST VIEW CONFIGURATION
+		// LIST VIEW CONFIGURATION
 		ListView channelsToDisplayListView;
 		channelsToDisplayListView = (ListView) channelsToDisplayDialog
 				.findViewById(R.id.lv_channelsSelection);
@@ -317,6 +316,16 @@ public class NewConfigurationActivity extends Activity {
 		channelsToDisplayListView.setItemsCanFocus(false);
 		channelsToDisplayListView.setAdapter(channelsToDisplayListAdapter);
 
+	}
+
+	private int numberOfChannelsSelected(boolean[] channelsSelected) {
+		int counter = 0;
+		for (int i = 0; i < channelsSelected.length; i++) {
+			if (channelsSelected[i]) {
+				counter++;
+			}
+		}
+		return counter;
 	}
 
 	@Override
@@ -350,6 +359,18 @@ public class NewConfigurationActivity extends Activity {
 				Toast.LENGTH_SHORT).show();
 	}
 
+	private void displayErrorToast(String messageToDisplay) {
+		Toast errorToast = new Toast(getApplicationContext());
+
+		LayoutInflater inflater = getLayoutInflater();
+		View toastView = inflater.inflate(R.layout.toast_error, null);
+		errorToast.setView(toastView);
+		((TextView) toastView.findViewById(R.id.display_text))
+				.setText(messageToDisplay);
+
+		errorToast.show();
+	}
+
 	public void onClickedSubmit(View view) {
 
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -358,13 +379,14 @@ public class NewConfigurationActivity extends Activity {
 		newConfiguration.setCreateDate(dateFormat.format(date));
 		newConfiguration.setName(configurationName.getText().toString());
 		newConfiguration.setMacAddress(macAddress.getText().toString());
+		if (validateFields()) {
+			Intent returnIntent = new Intent();
+			returnIntent.putExtra("configuration", newConfiguration);
+			setResult(RESULT_OK, returnIntent);
+			finish();
 
-		Intent returnIntent = new Intent();
-		returnIntent.putExtra("configuration", newConfiguration);
-		setResult(RESULT_OK, returnIntent);
-		finish();
-
-		displayToast("configuration successfully created");
+			displayToast("configuration successfully created");
+		}
 
 	}
 
@@ -392,7 +414,8 @@ public class NewConfigurationActivity extends Activity {
 	}
 
 	public void onClickedChannelDisplayPickDialog(View view) {
-		String[] channelsActivated = newConfiguration.getActiveChannelsWithNullFill();
+		String[] channelsActivated = newConfiguration
+				.getActiveChannelsWithNullFill();
 		if (channelsActivated != null) {
 			int counter = 0;
 			for (int i = 0; i < channelsActivated.length; i++) {
@@ -404,13 +427,52 @@ public class NewConfigurationActivity extends Activity {
 			if (counter != 0)
 				setupChannelsToDisplay();
 			else
-				displayToast("please select active channels first");
+				displayErrorToast("please select active channels first");
 		} else
-			displayToast("please select active channels first");
+			displayErrorToast("please select active channels first");
 	}
-	
-	private class InitActivity extends AsyncTask<String, Void, String> {
+
+	private boolean validateFields() {
+		boolean validated = true;
+		String errorMessage= "";
+		// VALIDATE NAME FIELD
+		if (configurationName.getText().toString() == null
+				|| configurationName.getText().toString().compareTo("") == 0) {
+			errorMessage += (" *invalid configuration name\n");
+			validated = false;
+		}
+
+		String regex = "^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$";
+		// VALIDATE MAC FIELD
+		if (macAddress.getText().toString() == null
+				|| macAddress.getText().toString().compareTo("") == 0
+				|| !macAddress.getText().toString().matches(regex)
+				&& macAddress.getText().toString().compareTo("test") != 0){
+			errorMessage += (" *invalid mac address\n");
+			validated = false;
+		}
+
+		// VALIDATE ACTIVE CHANNELS
+		if (channelsActivated == null || noChannelsActivated(channelsActivated)) {
+			errorMessage += (" *active channels not selected \n");
+			validated = false;
+		}
+
+		// VALIDATE CHANNELS TO DISPLAY
+		if (channelsSelected == null
+				|| numberOfChannelsSelected(channelsSelected) == 0) {
+			errorMessage += (" *channels to display not selected\n");
+			validated = false;
+		}
+		errorMessage = errorMessage.substring(0, errorMessage.length()-1);
+		if(!validated)
+			displayErrorToast(errorMessage);
 		
+		return validated;
+	}
+
+	private class InitActivity extends AsyncTask<String, Void, String> {
+
 		@Override
 		protected String doInBackground(String... params) {
 			initializeVariables();
@@ -421,12 +483,12 @@ public class NewConfigurationActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(String result) {
-			
+
 		}
 
 		@Override
 		protected void onPreExecute() {
-			
+
 		}
 
 		@Override
