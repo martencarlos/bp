@@ -117,12 +117,12 @@ public class NewConfigurationActivity extends Activity {
 					frequencySeekbar.setProgress(FREQUENCY_MAX);
 					frequencyEditor.setText(String.valueOf(FREQUENCY_MAX));
 					newConfiguration.setFrequency(FREQUENCY_MAX);
-					displayToast("max frequency is " + FREQUENCY_MAX + "Hz");
+					displayErrorToast("max frequency is " + FREQUENCY_MAX + "Hz");
 				} else {
 					frequencySeekbar.setProgress(0);
 					frequencyEditor.setText(String.valueOf(FREQUENCY_MIN));
 					newConfiguration.setFrequency(FREQUENCY_MIN);
-					displayToast("min frequency is " + FREQUENCY_MIN + " Hz");
+					displayErrorToast("min frequency is " + FREQUENCY_MIN + " Hz");
 				}
 			}
 
@@ -354,11 +354,6 @@ public class NewConfigurationActivity extends Activity {
 				.getString("channelsToDisplay"));
 	}
 
-	private void displayToast(String messageToDisplay) {
-		Toast.makeText(getApplicationContext(), messageToDisplay,
-				Toast.LENGTH_SHORT).show();
-	}
-
 	private void displayErrorToast(String messageToDisplay) {
 		Toast errorToast = new Toast(getApplicationContext());
 
@@ -369,6 +364,18 @@ public class NewConfigurationActivity extends Activity {
 				.setText(messageToDisplay);
 
 		errorToast.show();
+	}
+	
+	private void displayInfoToast(String messageToDisplay) {
+		Toast infoToast = new Toast(getApplicationContext());
+
+		LayoutInflater inflater = getLayoutInflater();
+		View toastView = inflater.inflate(R.layout.toast_info, null);
+		infoToast.setView(toastView);
+		((TextView) toastView.findViewById(R.id.display_text))
+				.setText(messageToDisplay);
+
+		infoToast.show();
 	}
 
 	public void onClickedSubmit(View view) {
@@ -385,12 +392,13 @@ public class NewConfigurationActivity extends Activity {
 			setResult(RESULT_OK, returnIntent);
 			finish();
 
-			displayToast("configuration successfully created");
+			displayInfoToast("configuration successfully created");
 		}
 
 	}
 
 	public void onClickedCancel(View view) {
+		displayInfoToast("configuration canceled");
 		finish();
 	}
 
@@ -464,9 +472,12 @@ public class NewConfigurationActivity extends Activity {
 			errorMessage += (" *channels to display not selected\n");
 			validated = false;
 		}
-		errorMessage = errorMessage.substring(0, errorMessage.length()-1);
-		if(!validated)
+		
+		if(!validated){
+			errorMessage = errorMessage.substring(0, errorMessage.length()-1);
 			displayErrorToast(errorMessage);
+		}
+			
 		
 		return validated;
 	}

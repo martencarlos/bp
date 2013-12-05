@@ -19,6 +19,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -190,7 +191,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			startService(new Intent(NewRecordingActivity.this,
 					BiopluxService.class));
 			bindToService();
-			displayToast("recording started");
+			displayInfoToast("recording started");
 			uiStartStopbutton.setText("stop recording");
 			startChronometer();
 
@@ -200,11 +201,22 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			unbindOfService();
 			stopService(new Intent(NewRecordingActivity.this,
 					BiopluxService.class));
-			displayToast("recording stopped");
+			displayInfoToast("recording stopped");
 			uiStartStopbutton.setText("start recording");
 			saveRecording();
 		}
 
+	}
+	private void displayInfoToast(String messageToDisplay) {
+		Toast infoToast = new Toast(getApplicationContext());
+
+		LayoutInflater inflater = getLayoutInflater();
+		View toastView = inflater.inflate(R.layout.toast_info, null);
+		infoToast.setView(toastView);
+		((TextView) toastView.findViewById(R.id.display_text))
+				.setText(messageToDisplay);
+
+		infoToast.show();
 	}
 
 	private void startChronometer() {
@@ -250,11 +262,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			}
 		}
 		return false;
-	}
-
-	private void displayToast(String messageToDisplay) {
-		Toast.makeText(getApplicationContext(), messageToDisplay,
-				Toast.LENGTH_SHORT).show();
 	}
 
 	void bindToService() {
