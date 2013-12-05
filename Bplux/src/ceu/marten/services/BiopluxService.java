@@ -59,6 +59,8 @@ public class BiopluxService extends Service {
 	private Device connection;
 	private Device.Frame[] frames;
 	private int counter;
+	private short[] frameTmp;
+	private ArrayList<Integer> activeChannels;
 
 	final Messenger mMessenger = new Messenger(new IncomingHandler());
 
@@ -131,6 +133,7 @@ public class BiopluxService extends Service {
 	public IBinder onBind(Intent intent) {
 		getInfoFromActivity(intent);
 		connectToBiopluxDevice();
+		frameTmp = new short[8];
 		counter = 0;
 		timer.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
@@ -156,14 +159,10 @@ public class BiopluxService extends Service {
 			out.write(String.format("%-12s %-14s%n", "#start date: ",
 					dateFormat.format(date)));
 			out.write(String.format("%-10s %-14s%n", "#duration: ", duration));
-			out.write(String.format("%-12s %n %-14s%n", "#active channels: ",
+			out.write(String.format("%-12s %-14s%n%n", "#active channels: ",
 					configuration.getActiveChannelsAsString()));
-			out.write("#num ");
-			for(int i: configuration.getActiveChannels())
-				out.write("ch "+i+" ");
-			out.write("\n");
-			//out.write(String.format(formatFileCollectedData, "#num", "ch 1",
-			//		"ch 2", "ch 3", "ch 4", "ch 5", "ch 6", "ch 7", "ch 8"));
+			out.write(String.format(formatFileCollectedData, "#num", "ch 1",
+					"ch 2", "ch 3", "ch 4", "ch 5", "ch 6", "ch 7", "ch 8"));
 			out.flush();
 			out.close();
 
@@ -193,15 +192,21 @@ public class BiopluxService extends Service {
 
 	public void writeFramesToTmpFile(Frame f) {
 		counter++;
+		int index = 0;
+		for (int i = 0; i < activeChannels.size(); i++) {
+			index = activeChannels.get(i)-1;
+			frameTmp[index] = f.an_in[i];
+		}
+
 		try {
 			OutputStreamWriter out = new OutputStreamWriter(openFileOutput(
 					"tmp.txt", MODE_APPEND));
-			
+
 			out.write(String.format(formatFileCollectedData, counter,
-					String.valueOf(f.an_in[0]), String.valueOf(f.an_in[1]),
-					String.valueOf(f.an_in[2]), String.valueOf(f.an_in[3]),
-					String.valueOf(f.an_in[4]), String.valueOf(f.an_in[5]),
-					String.valueOf(f.an_in[6]), String.valueOf(f.an_in[7])));
+					String.valueOf(frameTmp[0]), String.valueOf(frameTmp[1]),
+					String.valueOf(frameTmp[2]), String.valueOf(frameTmp[3]),
+					String.valueOf(frameTmp[4]), String.valueOf(frameTmp[5]),
+					String.valueOf(frameTmp[6]), String.valueOf(frameTmp[7])));
 			out.flush();
 			out.close();
 		} catch (FileNotFoundException e) {
@@ -215,7 +220,7 @@ public class BiopluxService extends Service {
 		recordingName = intent.getStringExtra("recordingName").toString();
 		configuration = (Configuration) intent
 				.getSerializableExtra("configSelected");
-		
+		activeChannels = configuration.getActiveChannels();
 		boolean[] channelsToDisplayTmp;
 		channelsToDisplayTmp = configuration.getChannelsToDisplay();
 		for (int i = 0; i < channelsToDisplayTmp.length; i++)
@@ -230,7 +235,8 @@ public class BiopluxService extends Service {
 		try {
 			connection = Device.Create(configuration.getMacAddress());
 			// Device mac addr 00:07:80:4C:2A:FB
-			connection.BeginAcq(configuration.getFrequency(), configuration.getActiveChannelsAsInteger(),
+			connection.BeginAcq(configuration.getFrequency(),
+					configuration.getActiveChannelsAsInteger(),
 					configuration.getNumberOfBits());
 		} catch (BPException e) {
 			Log.e(TAG, "bioplux connection exception", e);
@@ -270,14 +276,14 @@ public class BiopluxService extends Service {
 		newRecordingIntent.putExtra("recordingName", recordingName);
 		newRecordingIntent.putExtra("configSelected", configuration);
 		/*
-		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-		stackBuilder.addParentStack(NewRecordingActivity.class);
-		stackBuilder.addNextIntent(newRecordingIntent);
-		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
-				PendingIntent.FLAG_UPDATE_CURRENT);
+		 * TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+		 * stackBuilder.addParentStack(NewRecordingActivity.class);
+		 * stackBuilder.addNextIntent(newRecordingIntent); PendingIntent
+		 * resultPendingIntent = stackBuilder.getPendingIntent(0,
+		 * PendingIntent.FLAG_UPDATE_CURRENT);
 		 */
-		PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, 
-                newRecordingIntent, 0);
+		PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0,
+				newRecordingIntent, 0);
 		mBuilder.setContentIntent(resultPendingIntent);
 
 		// mBuilder.setAutoCancel(true);
