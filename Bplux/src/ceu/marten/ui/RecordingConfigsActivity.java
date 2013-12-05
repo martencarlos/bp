@@ -48,7 +48,6 @@ public class RecordingConfigsActivity extends
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_recording_configs);
 
-		//@todo ¿esto no debería hacerse de modo asíncrono?
 		loadConfigurations();
 		setupRecordingNameDialog();
 		setupConfigurationsListView();
@@ -98,7 +97,7 @@ public class RecordingConfigsActivity extends
 				.setNegativeButton("cancel",
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
-								// hide dialog
+								displayInfoToast("Recording canceled");
 							}
 						});
 		recordingNameDialog = builder.create();

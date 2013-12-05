@@ -8,7 +8,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.zip.ZipEntry;
@@ -140,6 +143,8 @@ public class BiopluxService extends Service {
 
 	private void writeTextFile() {
 
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		Date date = new Date();
 		try {
 			OutputStreamWriter out = new OutputStreamWriter(openFileOutput(
 					recordingName + ".txt", MODE_PRIVATE));
@@ -149,7 +154,7 @@ public class BiopluxService extends Service {
 					configuration.getFrequency(), "nbits: ",
 					configuration.getNumberOfBits()));
 			out.write(String.format("%-12s %-14s%n", "#start date: ",
-					configuration.getCreateDate()));
+					dateFormat.format(date)));
 			out.write(String.format("%-10s %-14s%n", "#duration: ", duration));
 			out.write(String.format("%-12s %n %-14s%n", "#active channels: ",
 					configuration.getActiveChannelsAsString()));
