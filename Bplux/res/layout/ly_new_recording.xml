@@ -6,8 +6,8 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="#fff">
+        android:background="#fff"
+        android:orientation="vertical" >
 
         <LinearLayout
             android:id="@+id/nr_header"
@@ -31,8 +31,8 @@
             android:layout_height="220dip"
             android:layout_marginBottom="5dip"
             android:orientation="vertical"
-            android:paddingRight="10dip"
-            android:paddingLeft="10dip" >
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip" >
         </LinearLayout>
 
         <LinearLayout
@@ -47,7 +47,7 @@
                 android:paddingBottom="2dp"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:paddingTop="2dp"
+                android:layout_marginTop="10dip"
                 android:scaleType="fitXY"
                 android:src="?android:attr/listDivider" />
 
@@ -55,48 +55,40 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingLeft="10dip"
-                android:paddingTop="5dip"
-                android:paddingRight="10dip" >
-                
+                android:paddingLeft="20dip"
+                android:paddingRight="20dip"
+                android:paddingTop="5dip" >
+
                 <TextView
                     android:id="@+id/nr_txt_mac"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingTop="2dip"
                     android:layout_alignParentLeft="true"
+                    android:paddingTop="2dip"
                     android:textColor="@color/blue" />
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:text="recording details"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <Chronometer
                     android:id="@+id/nr_chronometer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:text="Chronometer" />
+                    android:drawableLeft="@drawable/chronometer"
+                    android:drawablePadding="5dip" />
             </RelativeLayout>
-
-            
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingLeft="10dip"
-                android:paddingTop="5dip"
-                android:paddingRight="10dip"  >
+                android:paddingLeft="20dip"
+                android:paddingRight="10dip"
+                android:paddingTop="15dip" >
 
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="configuration name: "
+                    android:text="Configuration name: "
                     android:textColor="#372c24" />
 
                 <TextView
@@ -104,22 +96,22 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="config name"
-                    android:textColor="@color/blue"/>
+                    android:textColor="@color/blue" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingLeft="10dip"
-                android:paddingTop="5dip"
-                android:paddingRight="10dip" >
+                android:paddingLeft="20dip"
+                android:paddingRight="10dip"
+                android:paddingTop="5dip" >
 
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="freq: "
+                    android:text="Frequency: "
                     android:textColor="#372c24" />
 
                 <TextView
@@ -127,13 +119,22 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="freq"
                     android:textColor="@color/blue" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="20dip"
+                android:paddingRight="10dip"
+                android:paddingTop="5dip" >
+
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="nbits: "
+                    android:text="Number of bits: "
                     android:textColor="#372c24" />
 
                 <TextView
@@ -141,22 +142,22 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="nbits"
                     android:textColor="@color/blue" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingLeft="10dip"
-                android:paddingTop="5dip"
-                android:paddingRight="10dip"  >
+                android:paddingLeft="20dip"
+                android:paddingRight="10dip"
+                android:paddingTop="5dip" >
 
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="active channels: "
+                    android:text="Active channels: "
                     android:textColor="#372c24" />
 
                 <TextView
@@ -164,8 +165,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="channels active"
-                    android:textColor="@color/blue"/>
+                    android:textColor="@color/blue" />
             </LinearLayout>
         </LinearLayout>
 
@@ -196,15 +196,16 @@
                 android:paddingBottom="5dip"
                 android:paddingTop="5dip" >
 
-            <Button
-                android:id="@+id/nr_bttn_StartPause"
-                android:layout_width="0dp"
-                android:layout_height="40sp"
-                android:background="@drawable/button_selector"
-                android:layout_weight="1"
-                android:onClick="onClickedStartStop"
-                android:text="start recording" />
+                <Button
+                    android:id="@+id/nr_bttn_StartPause"
+                    android:layout_width="0dp"
+                    android:layout_height="40sp"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_selector"
+                    android:onClick="onClickedStartStop"
+                    android:text="start recording" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
+
 </ScrollView>

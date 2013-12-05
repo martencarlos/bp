@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import ceu.marten.bplux.R;
 import ceu.marten.model.Configuration;
@@ -146,7 +147,19 @@ public class RecordingConfigsActivity extends
 			}
 			configurations.remove(position);
 		}
-		Toast.makeText(this, "config. removed ", Toast.LENGTH_SHORT).show();
+		displayInfoToast("Configuration removed");
+	}
+	
+	private void displayInfoToast(String messageToDisplay) {
+		Toast infoToast = new Toast(getApplicationContext());
+
+		LayoutInflater inflater = getLayoutInflater();
+		View toastView = inflater.inflate(R.layout.toast_info, null);
+		infoToast.setView(toastView);
+		((TextView) toastView.findViewById(R.id.display_text))
+				.setText(messageToDisplay);
+
+		infoToast.show();
 	}
 
 	public void saveConfiguration(Configuration config) {

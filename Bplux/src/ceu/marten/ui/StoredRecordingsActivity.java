@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.AbsListView;
@@ -76,6 +77,18 @@ public class StoredRecordingsActivity extends
 		
 	}
 	
+	private void displayInfoToast(String messageToDisplay) {
+		Toast infoToast = new Toast(getApplicationContext());
+
+		LayoutInflater inflater = getLayoutInflater();
+		View toastView = inflater.inflate(R.layout.toast_info, null);
+		infoToast.setView(toastView);
+		((TextView) toastView.findViewById(R.id.display_text))
+				.setText(messageToDisplay);
+
+		infoToast.show();
+	}
+	
 	private void setSwipeToDismissAdapter() {
 		SwipeDismissAdapter swipeAdapter = new SwipeDismissAdapter(baseAdapter,
 				this);
@@ -98,7 +111,7 @@ public class StoredRecordingsActivity extends
 			recordingsArrayList.remove(position);
 			deleteFile(recordingName + ".zip");
 		}
-		Toast.makeText(this, "recording removed ", Toast.LENGTH_SHORT).show();
+		displayInfoToast("Recording removed");
 	}
 
 	public void loadRecordings() {
