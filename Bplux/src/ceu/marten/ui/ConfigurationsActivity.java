@@ -120,7 +120,8 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 
 		configurationsListView = (ListView) findViewById(R.id.lvConfigs);
 		configurationsListView.setOnItemClickListener(shortPressListener);
-		configurationsListView.setEmptyView(findViewById(R.id.empty_list_configurations));
+		configurationsListView
+				.setEmptyView(findViewById(R.id.empty_list_configurations));
 
 		/** SETTING UP THE ADAPTER */
 		baseAdapter = new RecordingConfigListAdapter(this, configurations);

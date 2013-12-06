@@ -102,19 +102,28 @@ public class Configuration implements Serializable {
 		this.channelsToDisplay = sb.toString().getBytes();
 	}
 
-	public boolean[] getChannelsToDisplay() {
+	public ArrayList<Integer> getChannelsToDisplay() {
 		String entire = new String(this.channelsToDisplay);
 		String[] channelsToDisplay = entire.split("\\*\\.\\*");
-		int iterator = 0;
-		boolean[] result = new boolean[8];
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		int channelNumber = 1;
 		for (String s : channelsToDisplay) {
 			if (s.equalsIgnoreCase("true"))
-				result[iterator] = true;
-			else
-				result[iterator] = false;
-			iterator++;
+				result.add(channelNumber);
+			channelNumber++;
 		}
 		return result;
+	}
+
+	public int getNumberOfChannelsToDisplay() {
+		int numberOfChannelsToDisplay = 0;
+		String entire = new String(this.channelsToDisplay);
+		String[] channelsToDisplay = entire.split("\\*\\.\\*");
+		for (String s : channelsToDisplay) {
+			if (s.equalsIgnoreCase("true"))
+				numberOfChannelsToDisplay++;
+		}
+		return numberOfChannelsToDisplay;
 	}
 
 	public void setActiveChannels(String[] activeChannels) {

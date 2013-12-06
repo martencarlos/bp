@@ -43,8 +43,9 @@ public class BiopluxService extends Service {
 
 	public static final int MSG_REGISTER_CLIENT = 1;
 	public static final int MSG_UNREGISTER_CLIENT = 2;
-	public static final int MSG_RECORDING_DURATION = 0;
-	public static final int MSG_VALUE = 5;
+	public static final int MSG_RECORDING_DURATION = 3;
+	public static final int MSG_FIRST_DATA = 4;
+	public static final int MSG_SECOND_DATA = 5;
 
 	private String formatFileCollectedData = "%-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s%n";
 
@@ -54,11 +55,12 @@ public class BiopluxService extends Service {
 	private Configuration configuration;
 	private String recordingName;
 	private String duration;
-	private int channelToDisplay = 0;
+	private ArrayList<Integer> channelsToDisplay;
+	private int numberOfChannelsToDisplay;
 
 	private Device connection;
 	private Device.Frame[] frames;
-	private int counter;
+	private int frameCounter;
 	private short[] frameTmp;
 	private ArrayList<Integer> activeChannels;
 
@@ -134,7 +136,7 @@ public class BiopluxService extends Service {
 		getInfoFromActivity(intent);
 		connectToBiopluxDevice();
 		frameTmp = new short[8];
-		counter = 0;
+		frameCounter = 0;
 		timer.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
 				processFrames();
@@ -193,7 +195,7 @@ public class BiopluxService extends Service {
 	}
 
 	public void writeFramesToTmpFile(Frame f) {
-		counter++;
+		frameCounter++;
 		int index = 0;
 		for (int i = 0; i < activeChannels.size(); i++) {
 			index = activeChannels.get(i) - 1;
@@ -204,7 +206,7 @@ public class BiopluxService extends Service {
 			OutputStreamWriter out = new OutputStreamWriter(openFileOutput(
 					"tmp.txt", MODE_APPEND));
 
-			out.write(String.format(formatFileCollectedData, counter,
+			out.write(String.format(formatFileCollectedData, frameCounter,
 					String.valueOf(frameTmp[0]), String.valueOf(frameTmp[1]),
 					String.valueOf(frameTmp[2]), String.valueOf(frameTmp[3]),
 					String.valueOf(frameTmp[4]), String.valueOf(frameTmp[5]),
@@ -223,12 +225,8 @@ public class BiopluxService extends Service {
 		configuration = (Configuration) intent
 				.getSerializableExtra("configSelected");
 		activeChannels = configuration.getActiveChannels();
-		boolean[] channelsToDisplayTmp;
-		channelsToDisplayTmp = configuration.getChannelsToDisplay();
-		for (int i = 0; i < channelsToDisplayTmp.length; i++)
-			if (channelsToDisplayTmp[i]) {
-				channelToDisplay = (i + 1);
-			}
+		numberOfChannelsToDisplay = configuration.getNumberOfChannelsToDisplay();
+		channelsToDisplay = configuration.getChannelsToDisplay();
 	}
 
 	private void connectToBiopluxDevice() {
@@ -250,7 +248,9 @@ public class BiopluxService extends Service {
 		try {
 			getFrames(20);
 			for (Frame f : frames) {
-				sendMessageToUI(f.an_in[(channelToDisplay - 1)]);
+				sendFirstGraphData(f.an_in[(channelsToDisplay.get(0) - 1)]);
+				if(numberOfChannelsToDisplay==2)
+					sendSecondGraphData(f.an_in[(channelsToDisplay.get(1) - 1)]);
 				writeFramesToTmpFile(f);
 			}
 		} catch (Throwable t) {
@@ -295,11 +295,22 @@ public class BiopluxService extends Service {
 		notificationManager.notify(R.string.service_id, notification);
 	}
 
-	private void sendMessageToUI(int intvaluetosend) {
+	private void sendFirstGraphData(int intvaluetosend) {
 		for (int i = mClients.size() - 1; i >= 0; i--) {
 			try {
 				mClients.get(i).send(
-						Message.obtain(null, MSG_VALUE, intvaluetosend, 0));
+						Message.obtain(null, MSG_FIRST_DATA, intvaluetosend, 0));
+			} catch (RemoteException e) {
+				Log.e(TAG, "client is dead. Removing from clients list", e);
+				mClients.remove(i);
+			}
+		}
+	}
+	private void sendSecondGraphData(int intvaluetosend) {
+		for (int i = mClients.size() - 1; i >= 0; i--) {
+			try {
+				mClients.get(i).send(
+						Message.obtain(null, MSG_SECOND_DATA, intvaluetosend, 0));
 			} catch (RemoteException e) {
 				Log.e(TAG, "client is dead. Removing from clients list", e);
 				mClients.remove(i);

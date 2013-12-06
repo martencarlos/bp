@@ -9,7 +9,7 @@
         android:background="#fff"
         android:orientation="vertical" >
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/nr_header"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -21,10 +21,28 @@
                 android:id="@+id/nr_txt_recordingName"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/grey"
                 android:gravity="center"
+                android:textColor="@color/grey"
                 android:textSize="25sp" />
-        </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/nr_headerChronometer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="5dip"
+                android:layout_marginRight="15dip"
+                android:orientation="horizontal" >
+
+                <Chronometer
+                    android:id="@+id/nr_chronometer"
+                    android:layout_width="wrap_content"
+                    android:drawablePadding="5dip"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/grey"
+                    android:drawableLeft="@drawable/chronometer"/>
+            </LinearLayout>
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/nr_graph_data"
@@ -37,18 +55,18 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/nr_details"
+            android:id="@+id/nr_graph_details"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="220dip"
             android:orientation="vertical" >
 
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dip"
                 android:paddingBottom="2dp"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:layout_marginTop="10dip"
                 android:scaleType="fitXY"
                 android:src="?android:attr/listDivider" />
 
@@ -66,17 +84,9 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:paddingTop="2dip"
-                    android:textSize="16dip"
-                    android:textColor="@color/blue" />
+                    android:textColor="@color/blue"
+                    android:textSize="16dip" />
 
-                <Chronometer
-                    android:id="@+id/nr_chronometer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:textColor="@color/grey"
-                    android:drawableLeft="@drawable/chronometer"
-                    android:drawablePadding="5dip" />
             </RelativeLayout>
 
             <LinearLayout
@@ -91,17 +101,17 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="16dip"
                     android:text="Configuration name: "
-                    android:textColor="@color/grey" />
+                    android:textColor="@color/grey"
+                    android:textSize="16dip" />
 
                 <TextView
                     android:id="@+id/nr_txt_configName"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="16dip"
                     android:layout_weight="1"
-                    android:textColor="@color/blue" />
+                    android:textColor="@color/blue"
+                    android:textSize="16dip" />
             </LinearLayout>
 
             <LinearLayout
@@ -116,17 +126,17 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="16dip"
                     android:text="Frequency: "
-                    android:textColor="@color/grey" />
+                    android:textColor="@color/grey"
+                    android:textSize="16dip" />
 
                 <TextView
                     android:id="@+id/nr_txt_config_freq"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="16dip"
                     android:layout_weight="1"
-                    android:textColor="@color/blue" />
+                    android:textColor="@color/blue"
+                    android:textSize="16dip" />
             </LinearLayout>
 
             <LinearLayout
@@ -142,16 +152,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Number of bits: "
-                    android:textSize="16dip"
-                    android:textColor="@color/grey" />
+                    android:textColor="@color/grey"
+                    android:textSize="16dip" />
 
                 <TextView
                     android:id="@+id/nr_txt_config_nbits"
                     android:layout_width="fill_parent"
-                    android:textSize="16dip"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textColor="@color/blue" />
+                    android:textColor="@color/blue"
+                    android:textSize="16dip" />
             </LinearLayout>
 
             <LinearLayout
@@ -166,17 +176,17 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="16dip"
                     android:text="Active channels: "
-                    android:textColor="@color/grey" />
+                    android:textColor="@color/grey"
+                    android:textSize="16dip" />
 
                 <TextView
                     android:id="@+id/nr_txt_channels_active"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="16dip"
                     android:layout_weight="1"
-                    android:textColor="@color/blue" />
+                    android:textColor="@color/blue"
+                    android:textSize="16dip" />
             </LinearLayout>
         </LinearLayout>
 
@@ -214,8 +224,8 @@
                     android:layout_weight="1"
                     android:background="@drawable/button_selector"
                     android:onClick="onClickedStartStop"
-                    android:textColor="@color/grey"
-                    android:text="start recording" />
+                    android:text="start recording"
+                    android:textColor="@color/grey" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

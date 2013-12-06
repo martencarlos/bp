@@ -18,9 +18,11 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.Chronometer;
@@ -54,8 +56,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private Bundle extras;
 
 	private Messenger mService = null;
-	private static int dato = 0;
 	private static HRGraph graph;
+	private static HRGraph graphBottom;
 	private boolean isServiceBounded = false;
 	private final Messenger mActivity = new Messenger(new IncomingHandler());
 
@@ -63,9 +65,11 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case BiopluxService.MSG_VALUE:
-				dato = msg.arg1;
-				appendDataToGraph();
+			case BiopluxService.MSG_FIRST_DATA:
+				appendDataToGraphTop(msg.arg1);
+				break;
+			case BiopluxService.MSG_SECOND_DATA:
+				appendDataToGraphBottom(msg.arg1);
 				break;
 			default:
 				super.handleMessage(msg);
@@ -92,9 +96,14 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 	};
 
-	static void appendDataToGraph() {
+	static void appendDataToGraphTop(int value) {
 		graph.setxValue(graph.getxValue() + 1.0d);
-		graph.getSerie().appendData(new GraphViewData(graph.getxValue(), dato),
+		graph.getSerie().appendData(new GraphViewData(graph.getxValue(), value),
+				true, 200);// scroll to end, true
+	}
+	static void appendDataToGraphBottom(int value) {
+		graphBottom.setxValue(graphBottom.getxValue() + 1.0d);
+		graphBottom.getSerie().appendData(new GraphViewData(graphBottom.getxValue(), value),
 				true, 200);// scroll to end, true
 	}
 
@@ -109,25 +118,33 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		currentConfiguration = (Configuration) extras
 				.getSerializable("configSelected");
 		recordingName = extras.getString("recordingName").toString();
+		graph = new HRGraph(this);
 
 		if (isServiceRunning()) {
 			bindToService();
 			uiStartStopbutton.setText("stop recording");
 		}
 
-		uiRecordingName.setText(recordingName);
-		uiConfigurationName.setText(currentConfiguration.getName());
-		uiFrequency.setText(String.valueOf(currentConfiguration.getFrequency())
-				+ " Hz");
-		uiNumberOfBits.setText(String.valueOf(currentConfiguration
-				.getNumberOfBits()) + " bits");
-		uiMacAddress.setText(currentConfiguration.getMacAddress());
-		uiActiveChannels.setText(currentConfiguration
-				.getActiveChannelsAsString());
-
-		graph = new HRGraph(this);
+		// SET INTERFACE COMPONENTS
 		uiGraph.addView(graph.getGraphView());
+		uiRecordingName.setText(recordingName);
 
+		if (currentConfiguration.getNumberOfChannelsToDisplay() == 2) {
+			graphBottom = new HRGraph(this);
+			ViewGroup la = (ViewGroup) findViewById(R.id.nr_graph_details);
+			la.removeAllViews();
+			la.setPadding(20, 0, 20, 0);
+			la.addView(graphBottom.getGraphView());
+		} else {
+			uiConfigurationName.setText(currentConfiguration.getName());
+			uiFrequency.setText(String.valueOf(currentConfiguration
+					.getFrequency()) + " Hz");
+			uiNumberOfBits.setText(String.valueOf(currentConfiguration
+					.getNumberOfBits()) + " bits");
+			uiMacAddress.setText(currentConfiguration.getMacAddress());
+			uiActiveChannels.setText(currentConfiguration
+					.getActiveChannelsAsString());
+		}
 	}
 
 	@Override
