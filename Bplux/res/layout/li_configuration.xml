@@ -10,8 +10,8 @@
         android:id="@+id/dli_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#040404"
-        android:textSize="16sp"
+        android:textColor="@color/grey"
+        android:textSize="17sp"
         android:layout_marginLeft="10dip"
         android:textStyle="bold"
         android:typeface="sans" />
@@ -22,6 +22,7 @@
         android:layout_below="@id/dli_name"
         android:layout_marginRight="30dip"
         android:paddingLeft="10dip"
+        android:paddingTop="5dip"
         android:orientation="horizontal" >
 
         <TextView
@@ -30,8 +31,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="1dip"
             android:layout_weight="2"
-            android:textColor="#343434"
-            android:textSize="12sp" />
+            android:textColor="@color/grey"
+            android:textSize="13sp" />
        
         <TextView
             android:id="@+id/dli_nbits"
@@ -39,8 +40,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="1dip"
             android:layout_weight="2"
-            android:textColor="#343434"
-            android:textSize="12sp" />
+            android:textColor="@color/grey"
+            android:textSize="13sp" />
         
         <TextView
             android:id="@+id/dli_mac"
@@ -48,8 +49,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="1dip"
             android:layout_weight="2"
-            android:textColor="#343434"
-            android:textSize="12sp" />
+            android:textColor="@color/grey"
+            android:textSize="13sp" />
         
         <TextView
             android:id="@+id/dli_active_channels"
@@ -58,8 +59,8 @@
             android:layout_marginTop="1dip"
             android:layout_weight="1"
             android:lines="1"
-            android:textColor="#343434"
-            android:textSize="12sp" />
+            android:textColor="@color/grey"
+            android:textSize="13sp" />
     </LinearLayout>
 
     <TextView
@@ -70,7 +71,8 @@
         android:layout_alignTop="@id/dli_name"
         android:layout_marginRight="40dip"
         android:gravity="right"
-        android:textSize="12sp"
+        android:textSize="13sp"
+        android:textColor="#5F9FDF"
         android:textStyle="bold" />
 
     <ImageView

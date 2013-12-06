@@ -38,6 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
+                android:textColor="@color/grey"
                 android:text="@string/wl_title"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -48,6 +49,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="15dp"
+                android:textColor="@color/grey"
                 android:text="@string/wl_description"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </LinearLayout>
@@ -55,7 +57,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="45dp"
             android:layout_below="@id/lyTitle"
             android:orientation="vertical" >
 
@@ -63,21 +65,28 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:onClick="onClickedStartRecording"
-				android:layout_marginLeft="40dip"
-				android:layout_marginRight="40dip"
+				android:layout_marginLeft="30dip"
+				android:layout_marginRight="30dip"
+				android:paddingRight="50dip"
+                android:paddingLeft="30dip"
                 android:background="@drawable/button_selector"
-                android:drawableRight="@drawable/start"
+                android:drawableEnd="@drawable/start"
+                android:textColor="@color/grey"
+                
                 android:text="Start Recording" />
 
             <Button
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:onClick="onClickedBrowseRecordings"
-                android:layout_marginLeft="40dip"
-				android:layout_marginRight="40dip"
-				android:layout_marginTop="5dp"
+                android:layout_marginLeft="30dip"
+				android:layout_marginRight="30dip"
+				android:paddingRight="50dip"
+                android:paddingLeft="30dip"
+				android:layout_marginTop="10dp"
                 android:background="@drawable/button_selector"
-                android:drawableRight="@drawable/start"
+                android:drawableEnd="@drawable/browse"
+                android:textColor="@color/grey"
                 android:text="Browse Recordings" />
         </LinearLayout>
 
@@ -88,7 +97,8 @@
             android:layout_alignParentBottom="true"
             android:gravity="center"
             android:text="@string/footer"
-            android:textColor="#025f7c"
+            android:textColor="@color/grey"
+            android:background="@layout/header_gradient"
             android:textSize="@dimen/footerTxtSize" />
     </RelativeLayout>
 

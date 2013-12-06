@@ -28,7 +28,7 @@ public class RecordingConfigListAdapter extends ArrayAdapter<Configuration> {
 		ViewGroup rowView = (ViewGroup) convertView;
 		if (rowView == null) {
 			rowView = (ViewGroup) LayoutInflater.from(context).inflate(
-					R.layout.li_config, parent, false);
+					R.layout.li_configuration, parent, false);
 		}
 
 		TextView name = (TextView) rowView.findViewById(R.id.dli_name);

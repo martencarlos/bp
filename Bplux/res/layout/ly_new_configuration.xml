@@ -22,6 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="new configuration"
+                android:textColor="@color/grey"
                 android:textSize="25sp" />
         </LinearLayout>
 
@@ -46,14 +47,16 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="Configuration name"
-                    android:textColor="#372c24" />
+                    android:textColor="@color/grey"
+                    android:textSize="16sp" />
 
                 <EditText
                     android:id="@+id/dev_name"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:textColor="@color/grey" />
             </LinearLayout>
 
             <LinearLayout
@@ -67,7 +70,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="MAC address"
-                    android:textColor="#372c24" />
+                    android:textColor="@color/grey"
+                    android:textSize="16sp" />
 
                 <EditText
                     android:id="@+id/nc_mac_address"
@@ -75,53 +79,62 @@
                     android:layout_height="wrap_content"
                     android:inputType="text"
                     android:singleLine="true"
-                    android:text="test" />
+                    android:text="test"
+                    android:textColor="@color/grey" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="10dip" >
+                android:orientation="vertical"
+                android:paddingLeft="10dip"
+                android:paddingTop="10dip" >
 
                 <TextView
-                    android:layout_width="68dp"
-                    android:layout_height="45dip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Frequency"
-                    android:textColor="#372c24" />
+                    android:textColor="@color/grey"
+                    android:textSize="16sp" />
 
-                <SeekBar
-                    android:id="@+id/freq_seekbar"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.55"
-                    android:max="964"
-                    android:paddingTop="5dip"
-                    android:progress="464" />
+                    android:orientation="horizontal"
+                     >
 
-                <EditText
-                    android:id="@+id/freq_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@null"
-                    android:imeOptions="actionDone"
-                    android:inputType="number"
-                    android:lines="1"
-                    android:nextFocusForward="@+id/radioBttn8"
-                    android:paddingRight="5dip"
-                    android:paddingTop="10dip"
-                    android:text="500"
-                    android:textColor="#025f7c"
-                    android:textSize="15sp" />
+                    <SeekBar
+                        android:id="@+id/freq_seekbar"
+                        android:layout_width="300dip"
+                        android:layout_height="wrap_content"
+                        android:max="964"
+                        android:paddingTop="5dip"
+                        android:progress="464" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingRight="10dip"
-                    android:paddingTop="10dip"
-                    android:text="Hz"
-                    android:textColor="#025f7c"
-                    android:textSize="15sp" />
+                    <EditText
+                        android:id="@+id/freq_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:imeOptions="actionDone"
+                        android:inputType="number"
+                        android:lines="1"
+                        android:nextFocusForward="@+id/radioBttn8"
+                        android:paddingRight="5dip"
+                        android:paddingTop="10dip"
+                        android:text="500"
+                        android:textColor="#025f7c"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="5dip"
+                        android:paddingTop="10dip"
+                        android:text="Hz"
+                        android:textColor="#025f7c"
+                        android:textSize="15sp" />
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -137,7 +150,8 @@
                     android:layout_weight="1"
                     android:paddingTop="5dip"
                     android:text="Bits per signal"
-                    android:textColor="#372c24" />
+                    android:textColor="@color/grey"
+                    android:textSize="16sp" />
 
                 <RadioGroup
                     android:layout_width="fill_parent"
@@ -150,6 +164,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
+                        android:textColor="@color/grey"
                         android:onClick="onRadioButtonClicked"
                         android:text="8" />
 
@@ -157,6 +172,7 @@
                         android:id="@+id/radioBttn12"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/grey"
                         android:onClick="onRadioButtonClicked"
                         android:text="12" />
                 </RadioGroup>
@@ -174,7 +190,8 @@
                     android:layout_height="wrap_content"
                     android:paddingTop="5dip"
                     android:text="Select active channels"
-                    android:textColor="#372c24" />
+                    android:textColor="@color/grey"
+                    android:textSize="16sp" />
 
                 <Button
                     android:layout_width="wrap_content"
@@ -184,7 +201,8 @@
                     android:drawableRight="@drawable/select"
                     android:onClick="onClickedChannelPickDialog"
                     android:paddingLeft="10dip"
-                    android:text="select" />
+                    android:text="select"
+                    android:textColor="@color/grey" />
             </LinearLayout>
 
             <LinearLayout
@@ -213,7 +231,8 @@
                     android:layout_height="wrap_content"
                     android:paddingTop="5dip"
                     android:text="Select channels to display "
-                    android:textColor="#372c24" />
+                    android:textColor="@color/grey"
+                    android:textSize="16sp" />
 
                 <Button
                     android:layout_width="wrap_content"
@@ -223,7 +242,8 @@
                     android:drawableRight="@drawable/select"
                     android:onClick="onClickedChannelDisplayPickDialog"
                     android:paddingLeft="10dip"
-                    android:text="select" />
+                    android:text="select"
+                    android:textColor="@color/grey" />
             </LinearLayout>
 
             <LinearLayout
@@ -275,7 +295,8 @@
                         android:layout_weight="1"
                         android:background="@drawable/button_selector"
                         android:onClick="onClickedCancel"
-                        android:text="cancel" />
+                        android:text="cancel"
+                        android:textColor="@color/grey" />
 
                     <Button
                         android:id="@+id/btnRegister"
@@ -284,7 +305,8 @@
                         android:layout_weight="1"
                         android:background="@drawable/button_selector"
                         android:onClick="onClickedSubmit"
-                        android:text="submit" />
+                        android:text="submit"
+                        android:textColor="@color/grey" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
