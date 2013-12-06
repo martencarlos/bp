@@ -178,39 +178,23 @@
                 </RadioGroup>
             </LinearLayout>
 
-            <LinearLayout
+            
+			<LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dip"
-                android:orientation="horizontal"
-                android:paddingLeft="10dip" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="5dip"
-                    android:text="Select active channels"
-                    android:textColor="@color/grey"
-                    android:textSize="16sp" />
-
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dip"
+                android:layout_marginBottom="15dip"
+                android:orientation="vertical" >
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="35sp"
-                    android:layout_marginLeft="52dip"
                     android:background="@drawable/button_selector"
                     android:drawableRight="@drawable/select"
                     android:onClick="onClickedChannelPickDialog"
                     android:paddingLeft="10dip"
-                    android:text="select"
+                    android:text="Select active channels"
                     android:textColor="@color/grey" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:orientation="horizontal" >
-
                 <TextView
                     android:id="@+id/nc_txt_active_channels"
                     android:layout_width="wrap_content"
@@ -223,35 +207,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dip"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:paddingLeft="10dip" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="5dip"
-                    android:text="Select channels to display "
-                    android:textColor="@color/grey"
-                    android:textSize="16sp" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="35sp"
-                    android:layout_marginLeft="25dip"
                     android:background="@drawable/button_selector"
                     android:drawableRight="@drawable/select"
-                    android:onClick="onClickedChannelDisplayPickDialog"
                     android:paddingLeft="10dip"
-                    android:text="select"
+                    android:onClick="onClickedChannelDisplayPickDialog"
+                    android:text="Select channels to display"
                     android:textColor="@color/grey" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:orientation="vertical" >
-
                 <TextView
                     android:id="@+id/nc_txt_channels_to_show"
                     android:layout_width="wrap_content"
@@ -259,7 +226,7 @@
                     android:paddingTop="5dip"
                     android:textColor="@color/blue" />
             </LinearLayout>
-
+            
             <LinearLayout
                 android:id="@+id/nr_buttons"
                 android:layout_width="fill_parent"
