@@ -1,0 +1,116 @@
+<resources>
+
+    <string name="app_name">"Bplux"</string>
+    <string name="divider_image_content">"divisor"</string>
+    
+    <!-- ACTIVITIES LABELS -->
+    <string name="home_label">"Bioplux"</string>
+    <string name="configurations_label">"Configuraciones"</string>
+    <string name="recordings_label">"Grabaciones"</string>
+    <string name="new_configurations_label">"Nuevas Configuraciones"</string>
+    <string name="new_recordings_label">"Nueva grabación"</string>
+    
+    
+    <!-- LAYOUTS -->
+    <!-- HOME ACTIVITY -->
+    <string name="ha_title">"Bienvenido a Bioplux"</string>
+    <string name="ha_description">"Plux es un sistema innovador para el deporte, la medicina y la investigación que a través de sensores de bioseñales obtiene información de los músculos, que obtendrán mejores resultados en el trabajo físico."</string>
+    <string name="ha_button1">"Iniciar grabación"</string>
+    <string name="ha_button2">"Examine Grabaciones"</string>
+    
+    <!-- CONFIGURATIONS ACTIVITY -->
+    <string name="ca_header_title">"Seleccione una configuración"</string>
+    <string name="ca_button">"Añadir una nueva configuración"</string>
+    <string name="ca_empty_list">"No hay configuraciones \ n Para añadir una, pulse el botón de abajo"</string>
+    
+    <string name="ca_configuration_removed">"Configuración eliminada"</string>
+    
+    <!-- RECORDINGS ACTIVITY -->
+    <string name="ra_header_title">"Grabaciones almacenadas"</string>
+    <string name="ra_empty_list">"No hay grabaciones"</string>
+    
+    <string name="ra_recording_removed">"Grabación eliminada"</string>
+    <string name="ra_duration">"Duración "</string>
+    
+    <!-- NEW CONFIGURATION ACTIVITY -->
+    <string name="nc_header_title">"Nueva configuración"</string>
+    <string name="nc_configuration_name">"Nombre de la Configuracion"</string>
+    <string name="nc_mac_address">"dirección MAC"</string>
+    <string name="nc_mac_address_hint">"00: B0: D0: 86: BB: F7"</string>
+    <string name="nc_frequency">"Frecuencia"</string>
+    <string name="nc_frequency_number">"500"</string>
+    <string name="nc_frequency_metric">"Hz"</string>
+    <string name="nc_bits">"Bits por señal"</string>
+    <string name="nc_bits_eight">"8"</string>
+    <string name="nc_bits_twelve">"12"</string>
+    <string name="nc_button_active_channels">"Seleccione los canales a activar"</string>
+    <string name="nc_button_channels_to_display">"Seleccione los canales para mostrar"</string>
+    <string name="nc_button_cancel">"Cancelar"</string>
+    <string name="nc_button_submit">"Guardar"</string>
+    
+    <string name="nc_channels_to_activate">"canales a activar:  "</string>
+    <string name="nc_channels_to_display">"canales a mostrar:  "</string>
+    <string name="nc_error_channels_to_display">"canales a mostrar tienen que ser menos de 3"</string>
+    <string name="nc_error_max_frequency">"la frecuencia máxima es "</string>
+    <string name="nc_error_min_frequency">"la frecuencia mínima es "</string>
+    <string name="nc_error_button_channels_to_display">"Por favor, seleccione los canales activos primero"</string>
+    <string name="nc_error_message_name">"El nombre de la configuración no es válido"</string>
+    <string name="nc_error_message_mac">"Dirección MAC inválida."</string>
+    <string name="nc_error_message_active_channels">"canales activos no seleccionados"</string>
+    <string name="nc_error_message_channels_to_display">"seleccione canales a mostrar"</string>
+    <string name="nc_info_created">"Configuración creada"</string>
+    <string name="nc_info_canceled">"Configuración cancelada"</string>
+    <string name="nc_dialog_title_channels_to_display">"  Seleccione los canales a mostrar"</string>
+    <string name="nc_dialog_title_channels_to_activate">"  Seleccione los canales a activar"</string>
+    <string name="nc_dialog_positive_button">"Aceptar"</string>
+    <string name="nc_dialog_negative_button">"Cancelar"</string>
+    <string name="nc_dialog_with_sensor">" con sensor "</string>
+    <string name="nc_dialog_channel">"Canal  "</string>
+    <string name="nc_active_channels_list_adapter_comparation">"electrocardiograma"</string>
+    
+    
+    
+    <!-- NEW RECORDING ACTIVITY -->
+    <string name="nr_configuration_name">"Nombre de la configuracion "</string>
+    <string name="nr_frequency">"Frecuencia: "</string>
+    <string name="nr_bits">"Número de bits: "</string>
+    <string name="nr_active_channels">"Canales activos: "</string>
+    <string name="nr_button_start">"Inicie la grabación"</string>
+    
+    <string name="nr_button_stop">"Pare la grabación"</string>
+    <string name="nr_info_started">"Grabación comenzó"</string>
+    <string name="nr_info_stopped">"La grabación se detuvo"</string>
+    
+    
+    
+    
+    <!-- ATTRIBUTES -->
+    <!-- CHANNELS LIST -->
+    <string name="channel1">"canal 1"</string>
+    <string name="channel2">"canal 2"</string>
+    <string name="channel3">"canal 3"</string>
+    <string name="channel4">"canal 4"</string>
+    <string name="channel5">"canal 5"</string>
+    <string name="channel6">"canal 6"</string>
+    <string name="channel7">"canal 7"</string>
+    <string name="channel8">"canal 8"</string>
+    
+     <!-- SENSORS LIST -->
+    <string-array name="sensors">
+        <item>"electrocardiograma"</item>
+        <item>"electromiograma"</item>
+        <item>"conductividad dérmica"</item>
+        <item>"Respiración"</item>
+        <item>"Temperatura"</item>
+        <item>"fuerza escalonada"</item>
+        <item>"acelerómetro de tres ejes"</item>
+        <item>"Presión arterial"</item>
+    </string-array>
+
+    <!-- FOOTER -->
+    <string name="footer">"créditos: Abraham Otero, Carlos marta, CEU"</string>
+
+    <!-- IDs -->
+ 	<string name="service_id">"este servicio de identificación único"</string> 
+ 	
+</resources>
