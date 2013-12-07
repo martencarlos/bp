@@ -7,11 +7,9 @@
         android:id="@+id/dialog_txt_new_recording_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="recording 1"
-        android:text="recording 1"
+        android:hint="@string/dn_hint"
+        android:textColorHint="@color/light_grey"
         android:ems="10" >
-
         <requestFocus />
     </EditText>
-
 </LinearLayout>

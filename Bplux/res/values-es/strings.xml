@@ -21,7 +21,9 @@
     <!-- CONFIGURATIONS ACTIVITY -->
     <string name="ca_header_title">"Seleccione una configuración"</string>
     <string name="ca_button">"Añadir una nueva configuración"</string>
-    <string name="ca_empty_list">"No hay configuraciones \ n Para añadir una, pulse el botón de abajo"</string>
+    <string name="ca_info_recording_canceled">Grabación cancelada</string>
+    <string name="ca_dialog_title">Nombre de nueva grabación</string>
+    <string name="ca_empty_list">"No hay configuraciones \n Para añadir una, pulse el botón de abajo"</string>
     
     <string name="ca_configuration_removed">"Configuración eliminada"</string>
     
@@ -31,6 +33,9 @@
     
     <string name="ra_recording_removed">"Grabación eliminada"</string>
     <string name="ra_duration">"Duración "</string>
+    <string name="ra_dialog_email">Selecciona cliente mail</string>
+    
+    
     
     <!-- NEW CONFIGURATION ACTIVITY -->
     <string name="nc_header_title">"Nueva configuración"</string>
@@ -81,7 +86,8 @@
     <string name="nr_info_started">"Grabación comenzó"</string>
     <string name="nr_info_stopped">"La grabación se detuvo"</string>
     
-    
+    <!-- DIALOG NAME -->
+    <string name="dn_hint">Grabación 1</string>
     
     
     <!-- ATTRIBUTES -->

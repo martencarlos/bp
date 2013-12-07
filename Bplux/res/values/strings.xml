@@ -22,6 +22,8 @@
     <!-- CONFIGURATIONS ACTIVITY -->
     <string name="ca_header_title">Select a configuration</string>
     <string name="ca_button">Add a new configuration</string>
+    <string name="ca_info_recording_canceled">Recording canceled</string>
+    <string name="ca_dialog_title">New recording name</string>
     <string name="ca_empty_list">There are no configurations\nTo add one, press the button below</string>
     
     <string name="ca_configuration_removed">Configuration removed</string>
@@ -32,6 +34,7 @@
     
     <string name="ra_recording_removed">Recording removed</string>
     <string name="ra_duration">Duration </string>
+    <string name="ra_dialog_email">Select email client</string>
     
     <!-- NEW CONFIGURATION ACTIVITY -->
     <string name="nc_header_title">New configuration</string>
@@ -82,7 +85,8 @@
     <string name="nr_info_started">Recording started</string>
     <string name="nr_info_stopped">Recording stopped</string>
     
-    
+    <!-- DIALOG NAME -->
+    <string name="dn_hint">Recording 1</string>
     
     
     <!-- ATTRIBUTES -->

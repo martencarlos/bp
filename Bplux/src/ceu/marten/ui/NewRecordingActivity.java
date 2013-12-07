@@ -97,12 +97,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	static void appendDataToGraphTop(int value) {
 		graph.setxValue(graph.getxValue() + 1.0d);
 		graph.getSerie().appendData(new GraphViewData(graph.getxValue(), value),
-				true, 200);// scroll to end, true
+				true, 500);// scroll to end, true
 	}
 	static void appendDataToGraphBottom(int value) {
 		graphBottom.setxValue(graphBottom.getxValue() + 1.0d);
 		graphBottom.getSerie().appendData(new GraphViewData(graphBottom.getxValue(), value),
-				true, 200);// scroll to end, true
+				true, 500);// scroll to end, true
 	}
 
 	@Override
@@ -124,12 +124,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 
 		// SET INTERFACE COMPONENTS
-		graph = new HRGraph(this, "channel "+currentConfiguration.getChannelsToDisplay().get(0).toString());
+		graph = new HRGraph(this, getString(R.string.nc_dialog_channel)+currentConfiguration.getChannelsToDisplay().get(0).toString());
 		uiGraph.addView(graph.getGraphView());
 		uiRecordingName.setText(recordingName);
 
 		if (currentConfiguration.getNumberOfChannelsToDisplay() == 2) {
-			graphBottom = new HRGraph(this,"channel "+currentConfiguration.getChannelsToDisplay().get(1).toString());
+			graphBottom = new HRGraph(this,getString(R.string.nc_dialog_channel)+currentConfiguration.getChannelsToDisplay().get(1).toString());
 			ViewGroup la = (ViewGroup) findViewById(R.id.nr_graph_details);
 			la.removeAllViews();
 			la.setPadding(20, 0, 20, 0);

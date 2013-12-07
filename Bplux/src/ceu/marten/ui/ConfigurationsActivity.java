@@ -75,8 +75,8 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		LayoutInflater inflater = this.getLayoutInflater();
 
 		builder.setView(inflater.inflate(R.layout.dialog_recording_name, null))
-				.setTitle("New recording name")
-				.setPositiveButton("accept",
+				.setTitle(getString(R.string.ca_dialog_title))
+				.setPositiveButton(getString(R.string.nc_dialog_positive_button),
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int id) {
@@ -96,10 +96,10 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 								startActivity(intent);
 							}
 						})
-				.setNegativeButton("cancel",
+				.setNegativeButton(getString(R.string.nc_dialog_negative_button),
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
-								displayInfoToast("Recording canceled");
+								displayInfoToast(getString(R.string.ca_info_recording_canceled));
 							}
 						});
 		recordingNameDialog = builder.create();

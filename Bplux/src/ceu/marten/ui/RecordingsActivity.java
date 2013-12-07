@@ -75,7 +75,7 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		Intent i = new Intent(Intent.ACTION_SEND);
 		i.setType("application/zip");
 		i.putExtra(Intent.EXTRA_STREAM, U);
-		startActivity(Intent.createChooser(i, "select email client"));
+		startActivity(Intent.createChooser(i, getString(R.string.ra_dialog_email)));
 
 	}
 

@@ -80,6 +80,7 @@
                     android:inputType="text"
                     android:singleLine="true"
                     android:hint="@string/nc_mac_address_hint"
+                    android:textColorHint="@color/light_grey"
                     android:textColor="@color/grey" />
             </LinearLayout>
 
