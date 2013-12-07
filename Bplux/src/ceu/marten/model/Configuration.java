@@ -131,7 +131,7 @@ public class Configuration implements Serializable {
 		for (int i = 0; i < activeChannels.length; i++) {
 			sb.append(activeChannels[i]);
 			if (i != activeChannels.length - 1) {
-				sb.append("*.*"); // concatenate by this splitter
+				sb.append("*.*");
 			}
 		}
 		this.activeChannels = sb.toString().getBytes();
@@ -213,6 +213,6 @@ public class Configuration implements Serializable {
 	@Override
 	public String toString() {
 		return "name " + name + "; " + "freq " + frequency + "; " + "nBits "
-				+ numberOfBits + "; " + "\n Active channels ";// +activeChannelsToString()+"\n";
+				+ numberOfBits + "; " + "\n Active channels ";
 	}
 }

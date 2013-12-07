@@ -22,7 +22,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="ceu.marten.ui.HomeActivity"
-            android:label="@string/app_name" >
+            android:label="@string/home_label" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -30,26 +30,22 @@
         </activity>
         <activity
             android:name="ceu.marten.ui.ConfigurationsActivity"
-            android:label="settingsTitle"
+            android:label="@string/configurations_label"
             android:parentActivityName="ceu.marten.ui.HomeActivity" >
         </activity>
         <activity
             android:name="ceu.marten.ui.NewConfigurationActivity"
-            android:label="graphtitle"
+            android:label="@string/new_configurations_label"
             
             android:parentActivityName="ceu.marten.ui.HomeActivity" >
         </activity>
         <activity
             android:name="ceu.marten.ui.RecordingsActivity"
-            android:label="activity_sessions" >
+            android:label="@string/recordings_label" >
         </activity>
         <activity
             android:name="ceu.marten.ui.NewRecordingActivity"
-            android:label="activity_new_session" >
-        </activity>
-        <activity
-            android:name="ceu.marten.ui.RecordingViewActivity"
-            android:label="activity_recordings_view" >
+            android:label="@string/new_recordings_label" >
         </activity>
 		<service android:name="ceu.marten.services.BiopluxService"/>    
     </application>

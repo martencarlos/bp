@@ -120,7 +120,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 		if (isServiceRunning()) {
 			bindToService();
-			uiStartStopbutton.setText("stop recording");
+			uiStartStopbutton.setText(getString(R.string.nr_button_stop));
 		}
 
 		// SET INTERFACE COMPONENTS
@@ -197,6 +197,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 					mService.send(msg);
 
 				} catch (RemoteException e) {
+					Log.d(TAG, "Error sending duration to service",e);
 				}
 			}
 		}
@@ -207,8 +208,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			startService(new Intent(NewRecordingActivity.this,
 					BiopluxService.class));
 			bindToService();
-			displayInfoToast("recording started");
-			uiStartStopbutton.setText("stop recording");
+			displayInfoToast(getString(R.string.nr_info_started));
+			uiStartStopbutton.setText(getString(R.string.nr_button_stop));
 			startChronometer();
 
 		} else {
@@ -217,8 +218,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			unbindOfService();
 			stopService(new Intent(NewRecordingActivity.this,
 					BiopluxService.class));
-			displayInfoToast("recording stopped");
-			uiStartStopbutton.setText("start recording");
+			displayInfoToast(getString(R.string.nr_info_stopped));
+			uiStartStopbutton.setText(getString(R.string.nr_button_start));
 			saveRecording();
 		}
 

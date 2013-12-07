@@ -152,7 +152,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 			}
 			configurations.remove(position);
 		}
-		displayInfoToast("Configuration removed");
+		displayInfoToast(getString(R.string.ca_configuration_removed));
 	}
 
 	private void displayInfoToast(String messageToDisplay) {

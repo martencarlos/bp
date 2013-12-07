@@ -46,7 +46,7 @@ public class RecordingConfigListAdapter extends ArrayAdapter<Configuration> {
 		mac.setText(dev.getMacAddress());
 		bits.setText(String.valueOf(dev.getNumberOfBits()) + " bits");
 		date.setText(dev.getCreateDate());
-		activeChannels.setText("channels active: ");
+		activeChannels.setText(context.getString(R.string.nr_active_channels));
 
 		for (int i : dev.getActiveChannels())
 			activeChannels.append(" " + String.valueOf(i) + ",");

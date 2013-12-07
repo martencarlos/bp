@@ -113,7 +113,7 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 			recordingsArrayList.remove(position);
 			deleteFile(recordingName + ".zip");
 		}
-		displayInfoToast("Recording removed");
+		displayInfoToast(getString(R.string.ra_recording_removed));
 	}
 
 	public void loadRecordings() {

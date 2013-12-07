@@ -43,6 +43,7 @@ public class NewConfigurationActivity extends Activity {
 
 	String[] channelsActivated = null;
 	boolean[] channelsSelected = null;
+	String errorMessageChannelsToDisplayNumber= null;
 
 	Configuration newConfiguration;
 
@@ -116,13 +117,13 @@ public class NewConfigurationActivity extends Activity {
 					frequencySeekbar.setProgress(FREQUENCY_MAX);
 					frequencyEditor.setText(String.valueOf(FREQUENCY_MAX));
 					newConfiguration.setFrequency(FREQUENCY_MAX);
-					displayErrorToast("max frequency is " + FREQUENCY_MAX
+					displayErrorToast(getString(R.string.nc_error_max_frequency) + FREQUENCY_MAX
 							+ "Hz");
 				} else {
 					frequencySeekbar.setProgress(0);
 					frequencyEditor.setText(String.valueOf(FREQUENCY_MIN));
 					newConfiguration.setFrequency(FREQUENCY_MIN);
-					displayErrorToast("min frequency is " + FREQUENCY_MIN
+					displayErrorToast(getString(R.string.nc_error_min_frequency) + FREQUENCY_MIN
 							+ " Hz");
 				}
 			}
@@ -162,12 +163,12 @@ public class NewConfigurationActivity extends Activity {
 		activeChannelsBuilder = new AlertDialog.Builder(this);
 		activeChannelsBuilder
 				.setIcon(R.drawable.select_dialog)
-				.setTitle("  Select channels to activate")
+				.setTitle(getString(R.string.nc_dialog_title_channels_to_activate))
 				.setView(
 						getLayoutInflater().inflate(
 								R.layout.dialog_channels_listview, null));
 
-		activeChannelsBuilder.setPositiveButton("accept",
+		activeChannelsBuilder.setPositiveButton(getString(R.string.nc_dialog_positive_button),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -177,15 +178,13 @@ public class NewConfigurationActivity extends Activity {
 
 						newConfiguration.setActiveChannels(channelsActivated);
 
-						if (noChannelsActivated(channelsActivated))
-							activeChannels.setText("no channels selected");
-						else
+						if (!noChannelsActivated(channelsActivated))
 							printActivatedChannels(channelsActivated);
 					}
 
 					private void printActivatedChannels(
 							String[] channelsActivated) {
-						activeChannels.setText("channels to activate: ");
+						activeChannels.setText(getString(R.string.nc_channels_to_activate));
 						String si = "";
 						for (int i = 0; i < channelsActivated.length; i++) {
 							if (channelsActivated[i] != null)
@@ -197,7 +196,7 @@ public class NewConfigurationActivity extends Activity {
 					}
 
 				});
-		activeChannelsBuilder.setNegativeButton("cancel",
+		activeChannelsBuilder.setNegativeButton(getString(R.string.nc_dialog_negative_button),
 				new DialogInterface.OnClickListener() {
 
 					@Override
@@ -237,7 +236,7 @@ public class NewConfigurationActivity extends Activity {
 		for (int i = 0; i < newConfiguration.getActiveChannelsWithNullFill().length; i++) {
 			if (newConfiguration.getActiveChannelsWithNullFill()[i]
 					.compareTo("null") != 0) {
-				channels.add("channel " + (i + 1));
+				channels.add(getString(R.string.nc_dialog_channel) + (i + 1));
 				sensors.add(newConfiguration.getActiveChannelsWithNullFill()[i]);
 			}
 		}
@@ -250,11 +249,11 @@ public class NewConfigurationActivity extends Activity {
 		// BUILDER
 		channelsToDisplayBuilder = new AlertDialog.Builder(this);
 		channelsToDisplayBuilder.setIcon(R.drawable.select_dialog);
-		channelsToDisplayBuilder.setTitle("  Select channels to display");
+		channelsToDisplayBuilder.setTitle(getString(R.string.nc_dialog_title_channels_to_display));
 		channelsToDisplayBuilder.setView(getLayoutInflater().inflate(
 				R.layout.dialog_channels_listview, null));
 
-		channelsToDisplayBuilder.setPositiveButton("accept",
+		channelsToDisplayBuilder.setPositiveButton(getString(R.string.nc_dialog_positive_button),
 				new DialogInterface.OnClickListener() {
 
 					@Override
@@ -264,9 +263,9 @@ public class NewConfigurationActivity extends Activity {
 						boolean[] channelsToDisplayArray = new boolean[8];
 
 						if (numberOfChannelsSelected(channelsSelected) > 2)
-							displayErrorToast("channels to display have to be less than 3");
+							displayErrorToast(errorMessageChannelsToDisplayNumber);
 						else {
-							channelsToDisplay.setText("channels to display: ");
+							channelsToDisplay.setText(R.string.nc_channels_to_display);
 							printChannelsToDisplay(channelsToDisplayArray,
 									channelsSelected);
 							newConfiguration
@@ -287,7 +286,7 @@ public class NewConfigurationActivity extends Activity {
 								channelsToDisplayArray[in] = true;
 
 								si = si + "\n\t" + channels.get(i).toString()
-										+ " with sensor "
+										+ getString(R.string.nc_dialog_with_sensor)
 										+ sensors.get(i).toString();
 							}
 						}
@@ -296,7 +295,7 @@ public class NewConfigurationActivity extends Activity {
 					}
 
 				});
-		channelsToDisplayBuilder.setNegativeButton("cancel",
+		channelsToDisplayBuilder.setNegativeButton(getString(R.string.nc_dialog_negative_button),
 				new DialogInterface.OnClickListener() {
 
 					@Override
@@ -393,13 +392,13 @@ public class NewConfigurationActivity extends Activity {
 			setResult(RESULT_OK, returnIntent);
 			finish();
 
-			displayInfoToast("configuration successfully created");
+			displayInfoToast(getString(R.string.nc_info_created));
 		}
 
 	}
 
 	public void onClickedCancel(View view) {
-		displayInfoToast("configuration canceled");
+		displayInfoToast(getString(R.string.nc_info_canceled));
 		finish();
 	}
 
@@ -436,9 +435,9 @@ public class NewConfigurationActivity extends Activity {
 			if (counter != 0)
 				setupChannelsToDisplay();
 			else
-				displayErrorToast("please select active channels first");
+				displayErrorToast(getString(R.string.nc_error_button_channels_to_display));
 		} else
-			displayErrorToast("please select active channels first");
+			displayErrorToast(getString(R.string.nc_error_button_channels_to_display));
 	}
 
 	private boolean validateFields() {
@@ -447,7 +446,7 @@ public class NewConfigurationActivity extends Activity {
 		// VALIDATE NAME FIELD
 		if (configurationName.getText().toString() == null
 				|| configurationName.getText().toString().compareTo("") == 0) {
-			errorMessage += (" *invalid configuration name\n");
+			errorMessage += (" *"+getString(R.string.nc_error_message_name)+"\n");
 			validated = false;
 		}
 
@@ -457,20 +456,20 @@ public class NewConfigurationActivity extends Activity {
 				|| macAddress.getText().toString().compareTo("") == 0
 				|| !macAddress.getText().toString().matches(regex)
 				&& macAddress.getText().toString().compareTo("test") != 0) {
-			errorMessage += (" *invalid mac address\n");
+			errorMessage += (" *"+getString(R.string.nc_error_message_mac)+"\n");
 			validated = false;
 		}
 
 		// VALIDATE ACTIVE CHANNELS
 		if (channelsActivated == null || noChannelsActivated(channelsActivated)) {
-			errorMessage += (" *active channels not selected \n");
+			errorMessage += (" *"+getString(R.string.nc_error_message_active_channels)+"\n");
 			validated = false;
 		}
 
 		// VALIDATE CHANNELS TO DISPLAY
 		if (channelsSelected == null
 				|| numberOfChannelsSelected(channelsSelected) == 0) {
-			errorMessage += (" *channels to display not selected\n");
+			errorMessage += (" *"+getString(R.string.nc_error_message_channels_to_display)+"\n");
 			validated = false;
 		}
 
@@ -488,6 +487,7 @@ public class NewConfigurationActivity extends Activity {
 		protected String doInBackground(String... params) {
 			initializeVariables();
 			findViews();
+			errorMessageChannelsToDisplayNumber = getString(R.string.nc_error_channels_to_display);
 			initializeFrequencyComponents();
 			return "execuded";
 		}
