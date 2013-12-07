@@ -2,7 +2,6 @@ package ceu.marten.ui;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.app.ActivityManager;
@@ -247,13 +246,14 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		chronometer.stop();
 		Date elapsedMiliseconds = new Date(SystemClock.elapsedRealtime()
 				- chronometer.getBase());
-		DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+		//DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+		DateFormat formatter = DateFormat.getTimeInstance();
 		duration = formatter.format(elapsedMiliseconds);
 		isChronometerRunning = false;
 	}
 
 	public void saveRecording() {
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		Date date = new Date();
 
 		Recording recording = new Recording();

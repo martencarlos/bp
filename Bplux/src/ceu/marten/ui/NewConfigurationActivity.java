@@ -1,7 +1,6 @@
 package ceu.marten.ui;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -382,7 +381,7 @@ public class NewConfigurationActivity extends Activity {
 
 	public void onClickedSubmit(View view) {
 
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		Date date = new Date();
 
 		newConfiguration.setCreateDate(dateFormat.format(date));

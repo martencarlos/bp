@@ -9,7 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
@@ -148,7 +147,7 @@ public class BiopluxService extends Service {
 
 	private void writeTextFile() {
 
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		Date date = new Date();
 		try {
 			OutputStreamWriter out = new OutputStreamWriter(openFileOutput(
