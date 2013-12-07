@@ -49,12 +49,12 @@ public class BiopluxService extends Service {
 
 	private String formatFileCollectedData = "%-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s%n";
 
-	ArrayList<Messenger> mClients = new ArrayList<Messenger>();
+	static ArrayList<Messenger> mClients = new ArrayList<Messenger>();
 	private NotificationManager notificationManager;
 	private Timer timer = new Timer();
 	private Configuration configuration;
 	private String recordingName;
-	private String duration;
+	private static String duration;
 	private ArrayList<Integer> channelsToDisplay;
 	private int numberOfChannelsToDisplay;
 
@@ -66,7 +66,7 @@ public class BiopluxService extends Service {
 
 	final Messenger mMessenger = new Messenger(new IncomingHandler());
 
-	class IncomingHandler extends Handler { // Handler of incoming messages from
+	static class IncomingHandler extends Handler { // Handler of incoming messages from
 											// clients.
 		@Override
 		public void handleMessage(Message msg) {

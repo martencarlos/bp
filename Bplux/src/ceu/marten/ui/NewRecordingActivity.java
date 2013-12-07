@@ -18,7 +18,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -118,7 +117,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		currentConfiguration = (Configuration) extras
 				.getSerializable("configSelected");
 		recordingName = extras.getString("recordingName").toString();
-		graph = new HRGraph(this);
+		
 
 		if (isServiceRunning()) {
 			bindToService();
@@ -126,11 +125,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 
 		// SET INTERFACE COMPONENTS
+		graph = new HRGraph(this, "channel "+currentConfiguration.getChannelsToDisplay().get(0).toString());
 		uiGraph.addView(graph.getGraphView());
 		uiRecordingName.setText(recordingName);
 
 		if (currentConfiguration.getNumberOfChannelsToDisplay() == 2) {
-			graphBottom = new HRGraph(this);
+			graphBottom = new HRGraph(this,"channel "+currentConfiguration.getChannelsToDisplay().get(1).toString());
 			ViewGroup la = (ViewGroup) findViewById(R.id.nr_graph_details);
 			la.removeAllViews();
 			la.setPadding(20, 0, 20, 0);

@@ -61,6 +61,7 @@
             android:orientation="vertical" >
 
             <ImageView
+                android:contentDescription="@string/divider_image_content"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dip"
@@ -85,7 +86,7 @@
                     android:layout_alignParentLeft="true"
                     android:paddingTop="2dip"
                     android:textColor="@color/blue"
-                    android:textSize="16dip" />
+                    android:textSize="@dimen/recording_text_size"/>
 
             </RelativeLayout>
 
@@ -101,9 +102,9 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Configuration name: "
+                    android:text="@string/nr_configuration_name"
                     android:textColor="@color/grey"
-                    android:textSize="16dip" />
+                    android:textSize="@dimen/recording_text_size" />
 
                 <TextView
                     android:id="@+id/nr_txt_configName"
@@ -111,7 +112,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textColor="@color/blue"
-                    android:textSize="16dip" />
+                    android:textSize="@dimen/recording_text_size" />
             </LinearLayout>
 
             <LinearLayout
@@ -126,9 +127,9 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Frequency: "
+                    android:text="@string/nr_frequency"
                     android:textColor="@color/grey"
-                    android:textSize="16dip" />
+                    android:textSize="@dimen/recording_text_size" />
 
                 <TextView
                     android:id="@+id/nr_txt_config_freq"
@@ -136,7 +137,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textColor="@color/blue"
-                    android:textSize="16dip" />
+                    android:textSize="@dimen/recording_text_size" />
             </LinearLayout>
 
             <LinearLayout
@@ -151,9 +152,9 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Number of bits: "
+                    android:text="@string/nr_bits"
                     android:textColor="@color/grey"
-                    android:textSize="16dip" />
+                    android:textSize="@dimen/recording_text_size" />
 
                 <TextView
                     android:id="@+id/nr_txt_config_nbits"
@@ -161,7 +162,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textColor="@color/blue"
-                    android:textSize="16dip" />
+                    android:textSize="@dimen/recording_text_size" />
             </LinearLayout>
 
             <LinearLayout
@@ -176,9 +177,9 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Active channels: "
+                    android:text="@string/nr_active_channels"
                     android:textColor="@color/grey"
-                    android:textSize="16dip" />
+                    android:textSize="@dimen/recording_text_size" />
 
                 <TextView
                     android:id="@+id/nr_txt_channels_active"
@@ -186,7 +187,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textColor="@color/blue"
-                    android:textSize="16dip" />
+                    android:textSize="@dimen/recording_text_size" />
             </LinearLayout>
         </LinearLayout>
 
@@ -200,6 +201,7 @@
             android:paddingTop="5dip" >
 
             <ImageView
+               	android:contentDescription="@string/divider_image_content"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="2dp"
@@ -224,7 +226,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/button_selector"
                     android:onClick="onClickedStartStop"
-                    android:text="start recording"
+                    android:text="@string/nr_button"
                     android:textColor="@color/grey" />
             </LinearLayout>
         </LinearLayout>

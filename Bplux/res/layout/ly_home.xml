@@ -18,10 +18,10 @@
             android:paddingTop="5dip" >
 
             <ImageView
+                android:contentDescription="@string/divider_image_content"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:contentDescription="@string/imageDesc"
                 android:src="@drawable/pluxlogo" />
         </LinearLayout>
 
@@ -39,7 +39,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
                 android:textColor="@color/grey"
-                android:text="@string/wl_title"
+                android:text="@string/ha_title"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
@@ -50,7 +50,7 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="15dp"
                 android:textColor="@color/grey"
-                android:text="@string/wl_description"
+                android:text="@string/ha_description"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </LinearLayout>
 
@@ -72,7 +72,7 @@
                 android:background="@drawable/button_selector"
                 android:drawableEnd="@drawable/start"
                 android:textColor="@color/grey"
-                android:text="Start Recording" />
+                android:text="@string/ha_button1" />
 
             <Button
                 android:layout_width="fill_parent"
@@ -86,7 +86,7 @@
                 android:background="@drawable/button_selector"
                 android:drawableEnd="@drawable/browse"
                 android:textColor="@color/grey"
-                android:text="Browse Recordings" />
+                android:text="@string/ha_button2"/>
         </LinearLayout>
 
         <TextView

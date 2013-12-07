@@ -19,18 +19,17 @@ public class HRGraph {
 	private double xValue;
 	private GraphView graphView;
 
-	public HRGraph(android.content.Context context) {
+	public HRGraph(android.content.Context context, String title) {
 		// STYLE
 		style = new GraphViewSeriesStyle(Color.rgb(23, 118, 8), 2); // green and
 																	// thickness
 																	// 2
-
 		// INIT SERIE DATA
 		serie = new GraphViewSeries("BPM", style, new GraphViewData[] {
 				new GraphViewData(1.0, 60.0), new GraphViewData(1.5, 100) });
 
 		// INIT GRAPHVIEW
-		graphView = new LineGraphView(context, "");// title
+		graphView = new LineGraphView(context, title);
 
 		// ADD SERIES TO GRAPHVIEW and SET SCROLLABLE
 		graphView.addSeries(serie);

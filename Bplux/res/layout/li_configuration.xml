@@ -20,52 +20,46 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/dli_name"
         android:layout_marginRight="30dip"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:paddingLeft="10dip"
         android:paddingTop="5dip" >
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/dli_freq"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:layout_marginTop="1dip"
+            android:layout_weight="2"
+            android:textColor="@color/grey"
+            android:textSize="13sp" />
 
-            <TextView
-                android:id="@+id/dli_freq"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dip"
-                android:layout_weight="2"
-                android:textColor="@color/grey"
-                android:textSize="13sp" />
+        <TextView
+            android:id="@+id/dli_nbits"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dip"
+            android:layout_weight="2"
+            android:textColor="@color/grey"
+            android:textSize="13sp" />
 
-            <TextView
-                android:id="@+id/dli_nbits"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dip"
-                android:layout_weight="2"
-                android:textColor="@color/grey"
-                android:textSize="13sp" />
+        <TextView
+            android:id="@+id/dli_mac"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dip"
+            android:layout_weight="2"
+            android:textColor="@color/grey"
+            android:textSize="13sp" />
 
-            <TextView
-                android:id="@+id/dli_mac"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dip"
-                android:layout_weight="2"
-                android:textColor="@color/grey"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/dli_active_channels"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dip"
-                android:layout_weight="1"
-                android:lines="1"
-                android:textColor="@color/grey"
-                android:textSize="13sp" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/dli_active_channels"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dip"
+            android:layout_weight="1"
+            android:lines="1"
+            android:textColor="@color/grey"
+            android:textSize="13sp" />
     </LinearLayout>
 
     <TextView
@@ -85,6 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:contentDescription="@string/divider_image_content"
         android:src="@drawable/right_arrow" />
 
 </RelativeLayout>

@@ -6,5 +6,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="titleTextSize">24dp</dimen>
     <dimen name="footerTxtSize">10sp</dimen>
+    
+    <!-- NEW RECORDING ACTIVITY -->
+    <dimen name="recording_text_size">16sp</dimen>
 
 </resources>

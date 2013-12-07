@@ -2,11 +2,49 @@
 <resources>
 
     <string name="app_name">Bplux</string>
-    <string name="settingsTitle">new device</string>
-    <string name="menu_settings">Settings</string>
-    <string name="action_settings">Settings</string>
-    <string name="graphtitle">HR graph</string>
+    <string name="divider_image_content">divider</string>
     
+    <!-- LAYOUTS -->
+    <!-- HOME ACTIVITY -->
+    <string name="ha_title">Welcome to Bioplux</string>
+    <string name="ha_description">Plux is an innovative system for sports, medicine and research that through biosignal sensors you can obtain information from the muscles, which will get better results in physical work.</string>
+    <string name="ha_button1">Start Recording</string>
+    <string name="ha_button2">Browse Recordings</string>
+    
+    <!-- CONFIGURATIONS ACTIVITY -->
+    <string name="ca_header_title">Select a configuration</string>
+    <string name="ca_button">Add a new configuration</string>
+    <string name="ca_empty_list">There are no configurations\nTo add one, press the button below</string>
+    
+    <!-- RECORDINGS ACTIVITY -->
+    <string name="ra_header_title">Stored recordings</string>
+    <string name="ra_empty_list">There are no recordings</string>
+    
+    <!-- NEW CONFIGURATION ACTIVITY -->
+    <string name="nc_header_title">New configuration</string>
+    <string name="nc_configuration_name">Configuration name</string>
+    <string name="nc_mac_address">MAC address</string>
+    <string name="nc_mac_address_hint">00:B0:D0:86:BB:F7</string>
+    <string name="nc_frequency">Frequency</string>
+    <string name="nc_frequency_number">500</string>
+    <string name="nc_frequency_metric">Hz</string>
+    <string name="nc_bits">Bits per signal</string>
+    <string name="nc_bits_eight">8</string>
+    <string name="nc_bits_twelve">12</string>
+    <string name="nc_button_active_channels">Select active channels</string>
+    <string name="nc_button_channels_to_display">Select channels to display</string>
+    <string name="nc_button_cancel">Cancel</string>
+    <string name="nc_button_submit">Submit</string>
+    
+    <!-- NEW RECORDING ACTIVITY -->
+    <string name="nr_configuration_name">Configuration name: </string>
+    <string name="nr_frequency">Frequency: </string>
+    <string name="nr_bits">Number of bits: </string>
+    <string name="nr_active_channels">Active channels: </string>
+    <string name="nr_button">Start recording</string>
+    
+    <!-- ATTRIBUTES -->
+    <!-- CHANNELS LIST -->
     <string name="channel1">channel 1</string>
     <string name="channel2">channel 2</string>
     <string name="channel3">channel 3</string>
@@ -15,23 +53,8 @@
     <string name="channel6">channel 6</string>
     <string name="channel7">channel 7</string>
     <string name="channel8">channel 8</string>
-
-    <string-array name="itemsList">
-        <item>show settings  ></item>
-        <item>show HRG     ></item>
-    </string-array>
-
-    <string name="HRGraphTitle">Heart Rate Graph</string>
-    <string name="imageDesc">header</string>
-
-    <!-- Settings spinner -->
-
-    <string name="prompt">choose a channel</string>
-
-   
-
-    <string name="footer">credits: Abraham Otero, Carlos Marten, CEU</string>
-
+    
+     <!-- SENSORS LIST -->
     <string-array name="sensors">
         <item>electrocardiogram</item>
         <item >electromiogram</item>
@@ -43,17 +66,10 @@
         <item >blood pressure</item>
     </string-array>
 
-    <string name="title_activity_device_details">DeviceDetailsActivity</string>
-    <string name="taptoundo">Tap to undo</string>
-    <string name="itemdeleted">Item deleted</string>
-    <string name="title_activity_test">TestActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_sessions">SessionsActivity</string>
-    <string name="title_activity_new_session">NewSessionActivity</string>
-    <string name="title_activity_recordings_view">RecordingsView</string>
+    <!-- FOOTER -->
+    <string name="footer">credits: Abraham Otero, Carlos Marten, CEU</string>
 
-
-    <string name="service_id">this service unique id</string> 
+    <!-- IDs -->
+ 	<string name="service_id">this service unique id</string> 
+ 	
 </resources>

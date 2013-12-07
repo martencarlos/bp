@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/grey"
-            android:text="Select a configuration"
+            android:text="@string/ca_header_title"
             android:textSize="25sp" />
     </LinearLayout>
 
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="There are no configurations\nTo add one, press the button below"
+            android:text="@string/ca_empty_list"
             android:layout_marginBottom="45dip"
             android:textSize="20sp"
             android:textColor="@color/light_grey"
@@ -64,6 +64,6 @@
         android:paddingRight="60dip"
         android:textColor="@color/grey"
         android:onClick="onClickedNewConfig"
-        android:text="Add a new configuration" />
+        android:text="@string/ca_button" />
 
 </RelativeLayout>

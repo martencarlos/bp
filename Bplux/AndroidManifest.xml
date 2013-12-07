@@ -30,26 +30,26 @@
         </activity>
         <activity
             android:name="ceu.marten.ui.ConfigurationsActivity"
-            android:label="@string/settingsTitle"
+            android:label="settingsTitle"
             android:parentActivityName="ceu.marten.ui.HomeActivity" >
         </activity>
         <activity
             android:name="ceu.marten.ui.NewConfigurationActivity"
-            android:label="@string/graphtitle"
+            android:label="graphtitle"
             
             android:parentActivityName="ceu.marten.ui.HomeActivity" >
         </activity>
         <activity
             android:name="ceu.marten.ui.RecordingsActivity"
-            android:label="@string/title_activity_sessions" >
+            android:label="activity_sessions" >
         </activity>
         <activity
             android:name="ceu.marten.ui.NewRecordingActivity"
-            android:label="@string/title_activity_new_session" >
+            android:label="activity_new_session" >
         </activity>
         <activity
             android:name="ceu.marten.ui.RecordingViewActivity"
-            android:label="@string/title_activity_recordings_view" >
+            android:label="activity_recordings_view" >
         </activity>
 		<service android:name="ceu.marten.services.BiopluxService"/>    
     </application>

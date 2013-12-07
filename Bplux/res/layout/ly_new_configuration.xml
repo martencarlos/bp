@@ -21,7 +21,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="new configuration"
+                android:text="@string/nc_header_title"
                 android:textColor="@color/grey"
                 android:textSize="25sp" />
         </LinearLayout>
@@ -46,7 +46,7 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="Configuration name"
+                    android:text="@string/nc_configuration_name"
                     android:textColor="@color/grey"
                     android:textSize="16sp" />
 
@@ -69,7 +69,7 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="MAC address"
+                    android:text="@string/nc_mac_address"
                     android:textColor="@color/grey"
                     android:textSize="16sp" />
 
@@ -79,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="text"
                     android:singleLine="true"
-                    android:text="test"
+                    android:hint="@string/nc_mac_address_hint"
                     android:textColor="@color/grey" />
             </LinearLayout>
 
@@ -93,7 +93,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Frequency"
+                    android:text="@string/nc_frequency"
                     android:textColor="@color/grey"
                     android:textSize="16sp" />
 
@@ -122,7 +122,7 @@
                         android:nextFocusForward="@+id/radioBttn8"
                         android:paddingRight="5dip"
                         android:paddingTop="10dip"
-                        android:text="500"
+                        android:text="@string/nc_frequency_number"
                         android:textColor="#025f7c"
                         android:textSize="15sp" />
 
@@ -131,7 +131,7 @@
                         android:layout_height="wrap_content"
                         android:paddingRight="5dip"
                         android:paddingTop="10dip"
-                        android:text="Hz"
+                        android:text="@string/nc_frequency_metric"
                         android:textColor="#025f7c"
                         android:textSize="15sp" />
                 </LinearLayout>
@@ -149,7 +149,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:paddingTop="5dip"
-                    android:text="Bits per signal"
+                    android:text="@string/nc_bits"
                     android:textColor="@color/grey"
                     android:textSize="16sp" />
 
@@ -166,7 +166,7 @@
                         android:checked="true"
                         android:textColor="@color/grey"
                         android:onClick="onRadioButtonClicked"
-                        android:text="8" />
+                        android:text="@string/nc_bits_eight" />
 
                     <RadioButton
                         android:id="@+id/radioBttn12"
@@ -174,7 +174,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/grey"
                         android:onClick="onRadioButtonClicked"
-                        android:text="12" />
+                        android:text="@string/nc_bits_twelve" />
                 </RadioGroup>
             </LinearLayout>
 
@@ -193,7 +193,7 @@
                     android:drawableRight="@drawable/select"
                     android:onClick="onClickedChannelPickDialog"
                     android:paddingLeft="10dip"
-                    android:text="Select active channels"
+                    android:text="@string/nc_button_active_channels"
                     android:textColor="@color/grey" />
                 <TextView
                     android:id="@+id/nc_txt_active_channels"
@@ -217,7 +217,7 @@
                     android:drawableRight="@drawable/select"
                     android:paddingLeft="10dip"
                     android:onClick="onClickedChannelDisplayPickDialog"
-                    android:text="Select channels to display"
+                    android:text="@string/nc_button_channels_to_display"
                     android:textColor="@color/grey" />
                 <TextView
                     android:id="@+id/nc_txt_channels_to_show"
@@ -237,6 +237,7 @@
                 android:paddingTop="5dip" >
 
                 <ImageView
+                    android:contentDescription="@string/divider_image_content"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:paddingBottom="2dp"
@@ -262,7 +263,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/button_selector"
                         android:onClick="onClickedCancel"
-                        android:text="cancel"
+                        android:text="@string/nc_button_cancel"
                         android:textColor="@color/grey" />
 
                     <Button
@@ -272,7 +273,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/button_selector"
                         android:onClick="onClickedSubmit"
-                        android:text="submit"
+                        android:text="@string/nc_button_submit"
                         android:textColor="@color/grey" />
                 </LinearLayout>
             </LinearLayout>

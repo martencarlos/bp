@@ -5,10 +5,8 @@ import java.sql.SQLException;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-
 import ceu.marten.model.Configuration;
 import ceu.marten.model.Recording;
-import ceu.marten.ui.RecordingsActivity;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
