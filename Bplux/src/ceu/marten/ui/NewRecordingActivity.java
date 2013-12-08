@@ -50,11 +50,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private Configuration currentConfiguration;
 	private String recordingName;
-	String duration;
+	private String duration;
 	private Bundle extras;
 
 	private Messenger mService = null;
 	private static HRGraph graph;
+	private static double xCounter;
 	private static HRGraph graphBottom;
 	private boolean isServiceBounded = false;
 	private final Messenger mActivity = new Messenger(new IncomingHandler());
@@ -95,12 +96,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	};
 
 	static void appendDataToGraphTop(int value) {
-		graph.setxValue(graph.getxValue() + 1.0d);
+		graph.setxValue(xCounter ++);
 		graph.getSerie().appendData(new GraphViewData(graph.getxValue(), value),
 				true, 500);// scroll to end, true
 	}
 	static void appendDataToGraphBottom(int value) {
-		graphBottom.setxValue(graphBottom.getxValue() + 1.0d);
+		graphBottom.setxValue(xCounter ++);
 		graphBottom.getSerie().appendData(new GraphViewData(graphBottom.getxValue(), value),
 				true, 500);// scroll to end, true
 	}
@@ -116,7 +117,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		currentConfiguration = (Configuration) extras
 				.getSerializable("configSelected");
 		recordingName = extras.getString("recordingName").toString();
-		
+		xCounter = 0;
 
 		if (isServiceRunning()) {
 			bindToService();
@@ -148,8 +149,11 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
-		if (isChronometerRunning)
+		if (isChronometerRunning){
 			extras.putLong("chronometerBase", chronometer.getBase());
+			extras.putDouble("xcounter", xCounter);
+		}
+			
 		else
 			extras.putLong("chronometerBase", 0);
 		Log.d(TAG, "guardo instancia");
@@ -163,6 +167,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			chronometer.setBase(savedInstanceState.getLong("chronometerBase"));
 			chronometer.start();
 			isChronometerRunning = true;
+			xCounter = savedInstanceState.getDouble("xcounter");
 		}
 		currentConfiguration = (Configuration) savedInstanceState
 				.getSerializable("configSelected");
