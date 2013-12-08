@@ -80,11 +80,15 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int id) {
-								EditText et = (EditText) recordingNameDialog
-										.findViewById(R.id.dialog_txt_new_recording_name);
-								String newRecordingName = et.getText()
-										.toString();
-
+								String newRecordingName = ((EditText) recordingNameDialog
+										.findViewById(R.id.dialog_txt_new_recording_name)).getText().toString();
+								
+								if (newRecordingName == null
+										|| newRecordingName.compareTo("") == 0) {
+									displayErrorToast(" *"+getString(R.string.ca_dialog_error_name)+"\n");
+								}else{
+									
+								
 								Intent intent = new Intent(classContext,
 										NewRecordingActivity.class);
 								intent.putExtra("recordingName",
@@ -94,6 +98,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 										configurations
 												.get(currentConfigurationsPosition));
 								startActivity(intent);
+								}
 							}
 						})
 				.setNegativeButton(getString(R.string.nc_dialog_negative_button),
@@ -165,6 +170,18 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 				.setText(messageToDisplay);
 
 		infoToast.show();
+	}
+	
+	private void displayErrorToast(String messageToDisplay) {
+		Toast errorToast = new Toast(getApplicationContext());
+
+		LayoutInflater inflater = getLayoutInflater();
+		View toastView = inflater.inflate(R.layout.toast_error, null);
+		errorToast.setView(toastView);
+		((TextView) toastView.findViewById(R.id.display_text))
+				.setText(messageToDisplay);
+
+		errorToast.show();
 	}
 
 	public void saveConfiguration(Configuration config) {

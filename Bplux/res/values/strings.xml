@@ -27,6 +27,7 @@
     <string name="ca_empty_list">There are no configurations\nTo add one, press the button below</string>
     
     <string name="ca_configuration_removed">Configuration removed</string>
+    <string name="ca_dialog_error_name">Invalid recording name</string>
     
     <!-- RECORDINGS ACTIVITY -->
     <string name="ra_header_title">Stored recordings</string>
