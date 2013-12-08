@@ -32,7 +32,6 @@
     <!-- RECORDINGS ACTIVITY -->
     <string name="ra_header_title">Stored recordings</string>
     <string name="ra_empty_list">There are no recordings</string>
-    
     <string name="ra_recording_removed">Recording removed</string>
     <string name="ra_duration">Duration </string>
     <string name="ra_dialog_email">Select email client</string>
@@ -73,8 +72,6 @@
     <string name="nc_dialog_channel">channel </string>
     <string name="nc_active_channels_list_adapter_comparation">electrocardiogram</string>
     
-    
-    
     <!-- NEW RECORDING ACTIVITY -->
     <string name="nr_configuration_name">Configuration name: </string>
     <string name="nr_frequency">Frequency: </string>
@@ -85,6 +82,14 @@
     <string name="nr_button_stop">Stop recording</string>
     <string name="nr_info_started">Recording started</string>
     <string name="nr_info_stopped">Recording stopped</string>
+    
+    <!-- BIOPLUX SERVICE -->
+    <string name="bs_header_name">Configuration name: </string>
+    <string name="bs_header_date">Start date: </string>
+    <string name="bs_header_frequency">Frequency: </string>
+    <string name="bs_header_bits">Number of bits: </string>
+    <string name="bs_header_duration">Duration: </string>
+    <string name="bs_header_active_channels">Active channels: </string>
     
     <!-- DIALOG NAME -->
     <string name="dn_hint">Recording 1</string>

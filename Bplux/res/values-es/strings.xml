@@ -10,7 +10,6 @@
     <string name="new_configurations_label">"Nuevas Configuraciones"</string>
     <string name="new_recordings_label">"Nueva grabación"</string>
     
-    
     <!-- LAYOUTS -->
     <!-- HOME ACTIVITY -->
     <string name="ha_title">"Bienvenido a Bioplux"</string>
@@ -34,9 +33,7 @@
     
     <string name="ra_recording_removed">"Grabación eliminada"</string>
     <string name="ra_duration">"Duración "</string>
-    <string name="ra_dialog_email">Selecciona cliente mail</string>
-    
-    
+    <string name="ra_dialog_email">Seleccione cliente mail</string>
     
     <!-- NEW CONFIGURATION ACTIVITY -->
     <string name="nc_header_title">"Nueva configuración"</string>
@@ -74,8 +71,6 @@
     <string name="nc_dialog_channel">"Canal  "</string>
     <string name="nc_active_channels_list_adapter_comparation">"electrocardiograma"</string>
     
-    
-    
     <!-- NEW RECORDING ACTIVITY -->
     <string name="nr_configuration_name">"Nombre de la configuracion "</string>
     <string name="nr_frequency">"Frecuencia: "</string>
@@ -86,6 +81,15 @@
     <string name="nr_button_stop">"Parar grabación"</string>
     <string name="nr_info_started">"Grabación ha comenzado"</string>
     <string name="nr_info_stopped">"Grabación guardada"</string>
+    
+     <!-- BIOPLUX SERVICE -->
+    <string name="bs_header_name">Nombre de configuración: </string>
+    <string name="bs_header_date">Fecha y hora de inicio: </string>
+    <string name="bs_header_frequency">Frecuencia: </string>
+    <string name="bs_header_bits">Número de bits: </string>
+    <string name="bs_header_duration">Duración: </string>
+    <string name="bs_header_active_channels">Canales activos: </string>
+    
     
     <!-- DIALOG NAME -->
     <string name="dn_hint">Grabación 1</string>

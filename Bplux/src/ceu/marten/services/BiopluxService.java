@@ -86,16 +86,17 @@ public class BiopluxService extends Service {
 	}
 
 	private void compressFile() {
+		BufferedInputStream origin = null;
+		ZipOutputStream out = null;
 		try {
-
 			String zipFileName = recordingName + ".zip";
 			String file = recordingName + ".txt";
 			File root = Environment.getExternalStorageDirectory();
 			int BUFFER = 500;
-			BufferedInputStream origin = null;
+			
 			FileOutputStream dest = new FileOutputStream(root + "/"
 					+ zipFileName);
-			ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(
+			out = new ZipOutputStream(new BufferedOutputStream(
 					dest));
 			byte data[] = new byte[BUFFER];
 
@@ -110,13 +111,19 @@ public class BiopluxService extends Service {
 			while ((count = origin.read(data, 0, BUFFER)) != -1) {
 				out.write(data, 0, count);
 			}
-			origin.close();
-			out.close();
-
 			deleteFile(recordingName + ".txt");
 
 		} catch (Exception e) {
 			Log.e(TAG, "exception while zipping", e);
+		}
+		finally{
+			try {
+				origin.close();
+				out.close();
+			} catch (IOException e) {
+				Log.e(TAG, "Exception while closing streams", e);
+			}
+			
 		}
 	}
 
@@ -147,22 +154,25 @@ public class BiopluxService extends Service {
 
 	private void writeTextFile() {
 
-		DateFormat dateFormat = DateFormat.getDateTimeInstance();
+		DateFormat dateFormat = DateFormat.getDateTimeInstance();		
 		Date date = new Date();
+		OutputStreamWriter out = null;
+		BufferedInputStream origin = null;
+		BufferedOutputStream dest = null;
 		try {
-			OutputStreamWriter out = new OutputStreamWriter(openFileOutput(
+			out = new OutputStreamWriter(openFileOutput(
 					recordingName + ".txt", MODE_PRIVATE));
-			out.write(String.format("%-10s %-10s%n", "# Configuration name: ",
+			out.write(String.format("%-10s %-10s%n", "# "+getString(R.string.bs_header_name),
 					configuration.getName()));
-			out.write(String.format("%-10s %-14s%n", "# Start date: ",
+			out.write(String.format("%-10s %-14s%n", "# "+getString(R.string.bs_header_date),
 					dateFormat.format(date)));
-			out.write(String.format("%-10s %-4s%n", "# Frequency: ",
+			out.write(String.format("%-10s %-4s%n", "# "+getString(R.string.bs_header_frequency),
 					configuration.getFrequency() + " Hz"));
-			out.write(String.format("%-10s %-10s%n", "# Number of bits: ",
+			out.write(String.format("%-10s %-10s%n", "# "+getString(R.string.bs_header_bits),
 					configuration.getNumberOfBits() + " bits"));
-			out.write(String.format("%-10s %-14s%n", "# Duration: ", duration
+			out.write(String.format("%-10s %-14s%n", "# "+getString(R.string.bs_header_duration), duration
 					+ " seconds"));
-			out.write(String.format("%-10s %-14s%n%n", "# Active channels: ",
+			out.write(String.format("%-10s %-14s%n%n", "# "+getString(R.string.bs_header_active_channels),
 					configuration.getActiveChannelsAsString()));
 			out.write(String.format(formatFileCollectedData, "#num", "ch 1",
 					"ch 2", "ch 3", "ch 4", "ch 5", "ch 6", "ch 7", "ch 8"));
@@ -172,24 +182,32 @@ public class BiopluxService extends Service {
 			// APPEND DATA
 			FileOutputStream outBytes = new FileOutputStream(getFilesDir()
 					+ "/" + recordingName + ".txt", true);
-			BufferedOutputStream dest = new BufferedOutputStream(outBytes);
+			dest = new BufferedOutputStream(outBytes);
 			FileInputStream fi = new FileInputStream(getFilesDir() + "/"
 					+ "tmp.txt");
-			BufferedInputStream origin = new BufferedInputStream(fi, 1000);
+			 
+			origin = new BufferedInputStream(fi, 1000);
 			int count;
 			byte data[] = new byte[1000];
 			while ((count = origin.read(data, 0, 1000)) != -1) {
 				dest.write(data, 0, count);
 			}
-			origin.close();
-			dest.close();
-
-			deleteFile("tmp.txt");
 
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "file to write header on, not found", e);
 		} catch (IOException e) {
 			Log.e(TAG, "write header stream exception", e);
+		}
+		finally{
+			try {
+				out.close();
+				origin.close();
+				dest.close();
+				deleteFile("tmp.txt");
+			} catch (IOException e) {
+				Log.e(TAG, "closing streams exception", e);
+			}
+			
 		}
 	}
 
@@ -247,6 +265,7 @@ public class BiopluxService extends Service {
 		try {
 			getFrames(20);
 			for (Frame f : frames) {
+				//TODO sacar esto
 				sendFirstGraphData(f.an_in[(channelsToDisplay.get(0) - 1)]);
 				if(numberOfChannelsToDisplay==2)
 					sendSecondGraphData(f.an_in[(channelsToDisplay.get(1) - 1)]);
