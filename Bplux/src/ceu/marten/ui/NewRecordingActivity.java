@@ -47,7 +47,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			uiFrequency, uiActiveChannels, uiMacAddress;
 	private LinearLayout uiGraph;
 	private Button uiStartStopbutton;
-	private Chronometer chronometer;
+	private static Chronometer chronometer;
 	private boolean isChronometerRunning = false;
 
 	private Configuration currentConfiguration;
@@ -57,7 +57,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private Messenger mService = null;
 	private static HRGraph graph;
-	private static double xCounter;
+	private static double lastXValue;
 	private static HRGraph graphBottom;
 	private boolean isServiceBounded = false;
 	private final Messenger mActivity = new Messenger(new IncomingHandler());
@@ -98,12 +98,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	};
 
 	static void appendDataToGraphTop(int value) {
-		graph.setxValue(xCounter ++);
+		graph.setxValue(lastXValue ++);
 		graph.getSerie().appendData(new GraphViewData(graph.getxValue(), value),
 				true, 500);// scroll to end, true
 	}
 	static void appendDataToGraphBottom(int value) {
-		graphBottom.setxValue(xCounter ++);
+		graphBottom.setxValue(lastXValue ++);
 		graphBottom.getSerie().appendData(new GraphViewData(graphBottom.getxValue(), value),
 				true, 500);// scroll to end, true
 	}
@@ -119,7 +119,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		currentConfiguration = (Configuration) extras
 				.getSerializable("configSelected");
 		recordingName = extras.getString("recordingName").toString();
-		xCounter = 0;
+		lastXValue = 0;
 
 		if (isServiceRunning()) {
 			bindToService();
@@ -127,12 +127,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 
 		// SET INTERFACE COMPONENTS
-		graph = new HRGraph(this, getString(R.string.nc_dialog_channel)+currentConfiguration.getChannelsToDisplay().get(0).toString());
+		graph = new HRGraph(this, getString(R.string.nc_dialog_channel)+" "+currentConfiguration.getChannelsToDisplay().get(0).toString());
 		uiGraph.addView(graph.getGraphView());
 		uiRecordingName.setText(recordingName);
 
 		if (currentConfiguration.getNumberOfChannelsToDisplay() == 2) {
-			graphBottom = new HRGraph(this,getString(R.string.nc_dialog_channel)+currentConfiguration.getChannelsToDisplay().get(1).toString());
+			graphBottom = new HRGraph(this,getString(R.string.nc_dialog_channel)+" "+currentConfiguration.getChannelsToDisplay().get(1).toString());
 			ViewGroup la = (ViewGroup) findViewById(R.id.nr_graph_details);
 			la.removeAllViews();
 			la.setPadding(20, 0, 20, 0);
@@ -153,7 +153,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
 		if (isChronometerRunning){
 			extras.putLong("chronometerBase", chronometer.getBase());
-			extras.putDouble("xcounter", xCounter);
+			extras.putDouble("xcounter", lastXValue);
 		}
 			
 		else
@@ -169,7 +169,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			chronometer.setBase(savedInstanceState.getLong("chronometerBase"));
 			chronometer.start();
 			isChronometerRunning = true;
-			xCounter = savedInstanceState.getDouble("xcounter");
+			lastXValue = savedInstanceState.getDouble("xcounter");
 		}
 		currentConfiguration = (Configuration) savedInstanceState
 				.getSerializable("configSelected");

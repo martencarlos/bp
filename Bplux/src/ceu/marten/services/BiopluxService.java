@@ -264,13 +264,14 @@ public class BiopluxService extends Service {
 	private void processFrames() {
 		
 			getFrames(20);
-			for (Frame f : frames) 
+			for (Frame f : frames) {
 				writeFramesToTmpFile(f);
-			
+				sendFirstGraphData(f.an_in[(channelsToDisplay.get(0) - 1)]);
+				if(numberOfChannelsToDisplay==2)
+						sendSecondGraphData(f.an_in[(channelsToDisplay.get(1) - 1)]);
+			}
 		try {
-			sendFirstGraphData(frames[0].an_in[(channelsToDisplay.get(0) - 1)]);
-			if(numberOfChannelsToDisplay==2)
-					sendSecondGraphData(frames[0].an_in[(channelsToDisplay.get(1) - 1)]);	
+				
 		} catch (Throwable t) {
 			Log.e(TAG, "error processing frames", t);
 		}
