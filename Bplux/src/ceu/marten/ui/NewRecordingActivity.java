@@ -2,7 +2,9 @@ package ceu.marten.ui;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
@@ -252,8 +254,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		chronometer.stop();
 		Date elapsedMiliseconds = new Date(SystemClock.elapsedRealtime()
 				- chronometer.getBase());
-		//DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
-		DateFormat formatter = DateFormat.getTimeInstance();
+		DateFormat formatter = new SimpleDateFormat("HH:mm:ss",Locale.UK);
 		duration = formatter.format(elapsedMiliseconds);
 		isChronometerRunning = false;
 	}

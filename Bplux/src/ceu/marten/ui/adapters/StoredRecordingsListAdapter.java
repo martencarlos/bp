@@ -38,7 +38,7 @@ public class StoredRecordingsListAdapter extends ArrayAdapter<Recording> {
 		Recording recording = getItem(position);
 		name.setText(recording.getName());
 		date.setText(recording.getSavedDate());
-		duration.setText(context.getString(R.string.ra_duration) + recording.getDuration());
+		duration.setText(context.getString(R.string.ra_duration)+" "+ recording.getDuration());
 
 		return rowView;
 	}

@@ -49,8 +49,9 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		setContentView(R.layout.ly_configurations);
 
 		loadConfigurations();
-		setupRecordingNameDialog();
 		setupConfigurationsListView();
+		setupRecordingNameDialog();
+		
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

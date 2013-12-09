@@ -45,7 +45,9 @@
         </activity>
         <activity
             android:name="ceu.marten.ui.NewRecordingActivity"
-            android:label="@string/new_recordings_label" >
+            android:label="@string/new_recordings_label"
+            android:launchMode="singleInstance" >
+            
         </activity>
 		<service android:name="ceu.marten.services.BiopluxService"/>    
     </application>
