@@ -22,7 +22,7 @@ import android.widget.Toast;
 import ceu.marten.bplux.R;
 import ceu.marten.model.Configuration;
 import ceu.marten.model.io.DatabaseHelper;
-import ceu.marten.ui.adapters.RecordingConfigListAdapter;
+import ceu.marten.ui.adapters.ConfigurationsListAdapter;
 
 import com.haarman.listviewanimations.itemmanipulation.OnDismissCallback;
 import com.haarman.listviewanimations.itemmanipulation.SwipeDismissAdapter;
@@ -37,7 +37,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 
 	private AlertDialog recordingNameDialog;
 	private ListView configurationsListView;
-	private RecordingConfigListAdapter baseAdapter;
+	private ConfigurationsListAdapter baseAdapter;
 	private ArrayList<Configuration> configurations = null;
 	private Context classContext = this;
 	private int currentConfigurationsPosition = 0;
@@ -130,7 +130,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 				.setEmptyView(findViewById(R.id.empty_list_configurations));
 
 		/** SETTING UP THE ADAPTER */
-		baseAdapter = new RecordingConfigListAdapter(this, configurations);
+		baseAdapter = new ConfigurationsListAdapter(this, configurations);
 		setSwipeToDismissAdapter();
 
 	}

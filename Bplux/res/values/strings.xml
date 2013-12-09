@@ -29,6 +29,10 @@
     <string name="ca_configuration_removed">Configuration removed</string>
     <string name="ca_dialog_error_name">Invalid recording name</string>
     
+    <!-- CONFIGURATION LIST ADAPTER -->
+    <string name="cl_active">Active</string>
+    <string name="cl_display">Display</string>
+    
     <!-- RECORDINGS ACTIVITY -->
     <string name="ra_header_title">Stored recordings</string>
     <string name="ra_empty_list">There are no recordings</string>

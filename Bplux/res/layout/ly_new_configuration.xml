@@ -56,7 +56,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="text"
                     android:singleLine="true"
-                    android:maxLength="12"
+                    android:maxLength="16"
                     android:textColor="@color/grey" />
             </LinearLayout>
 

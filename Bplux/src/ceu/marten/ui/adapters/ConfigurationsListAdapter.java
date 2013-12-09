@@ -12,11 +12,11 @@ import ceu.marten.model.Configuration;
 
 import com.haarman.listviewanimations.ArrayAdapter;
 
-public class RecordingConfigListAdapter extends ArrayAdapter<Configuration> {
+public class ConfigurationsListAdapter extends ArrayAdapter<Configuration> {
 
 	private final Context context;
 
-	public RecordingConfigListAdapter(Context context,
+	public ConfigurationsListAdapter(Context context,
 			ArrayList<Configuration> loadedDevices) {
 		super(loadedDevices);
 		this.context = context;
@@ -38,20 +38,22 @@ public class RecordingConfigListAdapter extends ArrayAdapter<Configuration> {
 		TextView date = (TextView) rowView.findViewById(R.id.dli_date);
 		TextView activeChannels = (TextView) rowView
 				.findViewById(R.id.dli_active_channels);
+		TextView channelsToDisplay = (TextView) rowView
+				.findViewById(R.id.dli_channels_to_display);
 
-		Configuration dev = getItem(position);
+		Configuration configuration = getItem(position);
 
-		name.setText(dev.getName());
-		frequency.setText(String.valueOf(dev.getFrequency()) + " Hz");
-		mac.setText(dev.getMacAddress());
-		bits.setText(String.valueOf(dev.getNumberOfBits()) + " bits");
-		date.setText(dev.getCreateDate());
-		activeChannels.setText(context.getString(R.string.nr_active_channels));
-
-		for (int i : dev.getActiveChannels())
-			activeChannels.append(" " + String.valueOf(i) + ",");
-		activeChannels.setText(activeChannels.getText().toString()
-				.substring(0, activeChannels.getText().length() - 1));
+		name.setText(configuration.getName());
+		frequency.setText(String.valueOf(configuration.getFrequency()) + " Hz");
+		mac.setText(configuration.getMacAddress());
+		bits.setText(String.valueOf(configuration.getNumberOfBits()) + " bits");
+		date.setText(configuration.getCreateDate());
+		activeChannels.setText(context.getString(R.string.cl_active)
+				+ " " + configuration.getActiveChannels().toString());
+		channelsToDisplay.setText(context.getString(R.string.cl_display)
+				+ " "
+				+ configuration.getChannelsToDisplay().toString());
+		
 		return rowView;
 	}
 

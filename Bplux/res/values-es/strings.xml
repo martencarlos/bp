@@ -27,6 +27,10 @@
     <string name="ca_configuration_removed">"Configuración eliminada"</string>
     <string name="ca_dialog_error_name">Nombre de grabación inválido</string>
     
+    <!-- CONFIGURATION LIST ADAPTER -->
+    <string name="cl_active">Activos</string>
+    <string name="cl_display">A mostrar</string>
+    
     <!-- RECORDINGS ACTIVITY -->
     <string name="ra_header_title">"Grabaciones almacenadas"</string>
     <string name="ra_empty_list">"No hay grabaciones"</string>

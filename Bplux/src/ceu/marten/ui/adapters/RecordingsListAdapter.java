@@ -12,11 +12,11 @@ import ceu.marten.model.Recording;
 
 import com.haarman.listviewanimations.ArrayAdapter;
 
-public class StoredRecordingsListAdapter extends ArrayAdapter<Recording> {
+public class RecordingsListAdapter extends ArrayAdapter<Recording> {
 
 	private final Context context;
 
-	public StoredRecordingsListAdapter(Context context,
+	public RecordingsListAdapter(Context context,
 			ArrayList<Recording> recordings) {
 		super(recordings);
 		this.context = context;

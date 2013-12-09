@@ -21,7 +21,7 @@ import android.widget.Toast;
 import ceu.marten.bplux.R;
 import ceu.marten.model.Recording;
 import ceu.marten.model.io.DatabaseHelper;
-import ceu.marten.ui.adapters.StoredRecordingsListAdapter;
+import ceu.marten.ui.adapters.RecordingsListAdapter;
 
 import com.haarman.listviewanimations.itemmanipulation.OnDismissCallback;
 import com.haarman.listviewanimations.itemmanipulation.SwipeDismissAdapter;
@@ -36,7 +36,7 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 
 	private ListView lvRecordings;
 	String recordingName;
-	private StoredRecordingsListAdapter baseAdapter;
+	private RecordingsListAdapter baseAdapter;
 	private ArrayList<Recording> recordingsArrayList = null;
 
 	@Override
@@ -62,7 +62,7 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		lvRecordings = (ListView) findViewById(R.id.lvSessions);
 		lvRecordings.setOnItemClickListener(shortPressListener);
 		lvRecordings.setEmptyView(findViewById(R.id.empty_list_recordings));
-		baseAdapter = new StoredRecordingsListAdapter(this, recordingsArrayList);
+		baseAdapter = new RecordingsListAdapter(this, recordingsArrayList);
 		setSwipeToDismissAdapter();
 
 	}
