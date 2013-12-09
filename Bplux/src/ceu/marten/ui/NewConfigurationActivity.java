@@ -398,10 +398,18 @@ public class NewConfigurationActivity extends Activity {
 		}
 
 	}
+	
+	@Override
+	public void onBackPressed() {
+	    super.onBackPressed();
+	    overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
+	    displayInfoToast(getString(R.string.nc_info_canceled));
+	}
 
 	public void onClickedCancel(View view) {
-		displayInfoToast(getString(R.string.nc_info_canceled));
 		finish();
+		overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
+		displayInfoToast(getString(R.string.nc_info_canceled));
 	}
 
 	public void onRadioButtonClicked(View radioButtonView) {

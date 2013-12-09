@@ -18,13 +18,13 @@ public class HomeActivity extends Activity {
 
 	/* BUTTON EVENTS */
 	public void onClickedStartRecording(View view) {
-		Intent intent = new Intent(this, ConfigurationsActivity.class);
-		startActivity(intent);
+		startActivity(new Intent(this, ConfigurationsActivity.class));
+		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
 	}
 
 	public void onClickedBrowseRecordings(View view) {
-		Intent intent = new Intent(this, RecordingsActivity.class);
-		startActivity(intent);
+		startActivity(new Intent(this, RecordingsActivity.class));
+		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 	}
 }

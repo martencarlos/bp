@@ -47,6 +47,12 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		loadRecordings();
 		setupRecordingListView();
 	}
+	
+	@Override
+	public void onBackPressed() {
+	    super.onBackPressed();
+	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+	}
 
 	private void setupRecordingListView() {
 

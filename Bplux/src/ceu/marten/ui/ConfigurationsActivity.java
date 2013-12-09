@@ -53,6 +53,12 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		setupRecordingNameDialog();
 		
 	}
+	
+	@Override
+	public void onBackPressed() {
+	    super.onBackPressed();
+	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right );
+	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 1) {
@@ -214,6 +220,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	public void onClickedNewConfig(View v) {
 		Intent intent = new Intent(this, NewConfigurationActivity.class);
 		startActivityForResult(intent, 1);
+		overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_top);
 	}
 
 }
