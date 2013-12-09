@@ -51,7 +51,7 @@
     <string name="nc_bits_eight">"8"</string>
     <string name="nc_bits_twelve">"12"</string>
     <string name="nc_button_active_channels">"Seleccione los canales a activar"</string>
-    <string name="nc_button_channels_to_display">"Seleccione los canales para mostrar"</string>
+    <string name="nc_button_channels_to_display">"Seleccione los canales a mostrar"</string>
     <string name="nc_button_cancel">"Cancelar"</string>
     <string name="nc_button_submit">"Guardar"</string>
     

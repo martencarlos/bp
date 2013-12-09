@@ -110,6 +110,7 @@
                     android:id="@+id/nr_txt_configName"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="5dip"
                     android:layout_weight="1"
                     android:textColor="@color/blue"
                     android:textSize="@dimen/recording_text_size" />
@@ -135,6 +136,7 @@
                     android:id="@+id/nr_txt_config_freq"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="5dip"
                     android:layout_weight="1"
                     android:textColor="@color/blue"
                     android:textSize="@dimen/recording_text_size" />
@@ -160,6 +162,7 @@
                     android:id="@+id/nr_txt_config_nbits"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="5dip"
                     android:layout_weight="1"
                     android:textColor="@color/blue"
                     android:textSize="@dimen/recording_text_size" />
@@ -185,6 +188,7 @@
                     android:id="@+id/nr_txt_channels_active"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="5dip"
                     android:layout_weight="1"
                     android:textColor="@color/blue"
                     android:textSize="@dimen/recording_text_size" />

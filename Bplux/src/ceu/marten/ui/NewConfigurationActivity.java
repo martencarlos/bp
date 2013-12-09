@@ -9,6 +9,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -54,6 +55,13 @@ public class NewConfigurationActivity extends Activity {
 		setContentView(R.layout.ly_new_configuration);
 
 		new InitActivity().execute("");
+	}
+
+	@Override
+	public void onBackPressed() {
+	    super.onBackPressed();
+	    overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
+	    displayInfoToast(getString(R.string.nc_info_canceled));
 	}
 
 	private void initializeVariables() {
@@ -186,6 +194,8 @@ public class NewConfigurationActivity extends Activity {
 
 					private void printActivatedChannels(
 							String[] channelsActivated) {
+						activeChannels.setError(null);
+						activeChannels.setTextColor(getResources().getColor(R.color.blue));
 						activeChannels.setText(getString(R.string.nc_channels_to_activate));
 						String si = "";
 						for (int i = 0; i < channelsActivated.length; i++) {
@@ -266,7 +276,9 @@ public class NewConfigurationActivity extends Activity {
 
 						if (numberOfChannelsSelected(channelsSelected) > 2)
 							displayErrorToast(errorMessageChannelsToDisplayNumber);
-						else {
+						else if (numberOfChannelsSelected(channelsSelected) != 0){
+							channelsToDisplay.setError(null);
+							channelsToDisplay.setTextColor(getResources().getColor(R.color.blue));
 							channelsToDisplay.setText(R.string.nc_channels_to_display);
 							printChannelsToDisplay(channelsToDisplayArray,
 									channelsSelected);
@@ -384,6 +396,7 @@ public class NewConfigurationActivity extends Activity {
 
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		Date date = new Date();
+		
 
 		newConfiguration.setCreateDate(dateFormat.format(date));
 		newConfiguration.setName(configurationName.getText().toString());
@@ -393,19 +406,12 @@ public class NewConfigurationActivity extends Activity {
 			returnIntent.putExtra("configuration", newConfiguration);
 			setResult(RESULT_OK, returnIntent);
 			finish();
-
+			overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
 			displayInfoToast(getString(R.string.nc_info_created));
 		}
 
 	}
 	
-	@Override
-	public void onBackPressed() {
-	    super.onBackPressed();
-	    overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
-	    displayInfoToast(getString(R.string.nc_info_canceled));
-	}
-
 	public void onClickedCancel(View view) {
 		finish();
 		overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
@@ -452,11 +458,12 @@ public class NewConfigurationActivity extends Activity {
 
 	private boolean validateFields() {
 		boolean validated = true;
-		String errorMessage = "";
 		// VALIDATE NAME FIELD
 		if (configurationName.getText().toString() == null
 				|| configurationName.getText().toString().compareTo("") == 0) {
-			errorMessage += (" *"+getString(R.string.nc_error_message_name)+"\n");
+			//errorMessage += (" *"+getString(R.string.nc_error_message_name)+"\n");
+			configurationName.setError(getString(R.string.nc_error_message_name));
+			configurationName.requestFocus();
 			validated = false;
 		}
 
@@ -466,28 +473,28 @@ public class NewConfigurationActivity extends Activity {
 				|| macAddress.getText().toString().compareTo("") == 0
 				|| !macAddress.getText().toString().matches(regex)
 				&& macAddress.getText().toString().compareTo("test") != 0) {
-			errorMessage += (" *"+getString(R.string.nc_error_message_mac)+"\n");
+			macAddress.setError(getString(R.string.nc_error_message_mac));
+			if(validated)
+				macAddress.requestFocus();
 			validated = false;
 		}
 
 		// VALIDATE ACTIVE CHANNELS
 		if (channelsActivated == null || noChannelsActivated(channelsActivated)) {
-			errorMessage += (" *"+getString(R.string.nc_error_message_active_channels)+"\n");
+			activeChannels.setError("");
+			activeChannels.setTextColor(Color.RED);
+			activeChannels.setText(getString(R.string.nc_error_message_active_channels)+"  ");
 			validated = false;
 		}
 
 		// VALIDATE CHANNELS TO DISPLAY
 		if (channelsSelected == null
 				|| numberOfChannelsSelected(channelsSelected) == 0) {
-			errorMessage += (" *"+getString(R.string.nc_error_message_channels_to_display)+"\n");
+			channelsToDisplay.setError("");
+			channelsToDisplay.setTextColor(Color.RED);
+			channelsToDisplay.setText(getString(R.string.nc_error_message_channels_to_display)+"  ");
 			validated = false;
 		}
-
-		if (!validated) {
-			errorMessage = errorMessage.substring(0, errorMessage.length() - 1);
-			displayErrorToast(errorMessage);
-		}
-
 		return validated;
 	}
 
