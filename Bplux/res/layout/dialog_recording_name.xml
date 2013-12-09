@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/dn_hint"
         android:textColorHint="@color/light_grey"
+        android:maxLength="12"
         android:ems="10" >
         <requestFocus />
     </EditText>

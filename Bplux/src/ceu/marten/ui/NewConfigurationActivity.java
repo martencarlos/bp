@@ -97,8 +97,10 @@ public class NewConfigurationActivity extends Activity {
 				boolean handled = false;
 
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
-					int newFrequency = Integer.parseInt(currentView.getText()
-							.toString());
+					String frequencyString = currentView.getText().toString();
+					if(frequencyString.compareTo("")==0)
+						frequencyString="0";
+					int newFrequency = Integer.parseInt(frequencyString);
 
 					setFrequency(newFrequency);
 					closeKeyboardAndClearFocus();
