@@ -248,7 +248,7 @@ public class NewConfigurationActivity extends Activity {
 		for (int i = 0; i < newConfiguration.getActiveChannelsWithNullFill().length; i++) {
 			if (newConfiguration.getActiveChannelsWithNullFill()[i]
 					.compareTo("null") != 0) {
-				channels.add(getString(R.string.nc_dialog_channel) + (i + 1));
+				channels.add(getString(R.string.nc_dialog_channel) +" "+ (i + 1));
 				sensors.add(newConfiguration.getActiveChannelsWithNullFill()[i]);
 			}
 		}
@@ -299,9 +299,9 @@ public class NewConfigurationActivity extends Activity {
 										.get(i).toString().length() - 1)) - 1);
 								channelsToDisplayArray[in] = true;
 
-								si = si + "\n\t" + channels.get(i).toString()
+								si = si + "\n\t" + channels.get(i).toString()+" "
 										+ getString(R.string.nc_dialog_with_sensor)
-										+ sensors.get(i).toString();
+										+" "+sensors.get(i).toString();
 							}
 						}
 						channelsToDisplay.append(si);

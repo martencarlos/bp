@@ -36,6 +36,7 @@
     <!-- RECORDINGS ACTIVITY -->
     <string name="ra_header_title">Stored recordings</string>
     <string name="ra_empty_list">There are no recordings</string>
+    
     <string name="ra_recording_removed">Recording removed</string>
     <string name="ra_duration">Duration </string>
     <string name="ra_dialog_email">Select email client</string>
@@ -51,21 +52,21 @@
     <string name="nc_bits">Bits per signal</string>
     <string name="nc_bits_eight">8</string>
     <string name="nc_bits_twelve">12</string>
-    <string name="nc_button_active_channels">Select active channels</string>
+    <string name="nc_button_active_channels">Select channels to activate</string>
     <string name="nc_button_channels_to_display">Select channels to display</string>
     <string name="nc_button_cancel">Cancel</string>
     <string name="nc_button_submit">Submit</string>
     
-    <string name="nc_channels_to_activate">channels to activate: </string>
-    <string name="nc_channels_to_display">channels to display: </string>
-    <string name="nc_error_channels_to_display">channels to display have to be less than 3</string>
-    <string name="nc_error_max_frequency">max frequency is </string>
-    <string name="nc_error_min_frequency">min frequency is </string>
-    <string name="nc_error_button_channels_to_display">please select active channels first</string>
-    <string name="nc_error_message_name">invalid configuration name</string>
-    <string name="nc_error_message_mac">invalid mac address</string>
-    <string name="nc_error_message_active_channels">active channels not selected</string>
-    <string name="nc_error_message_channels_to_display">channels to display not selected</string>
+    <string name="nc_channels_to_activate">Channels to activate: </string>
+    <string name="nc_channels_to_display">Channels to display: </string>
+    <string name="nc_error_channels_to_display">Channels to display have to be less than 3</string>
+    <string name="nc_error_max_frequency">Max frequency is </string>
+    <string name="nc_error_min_frequency">Min frequency is </string>
+    <string name="nc_error_button_channels_to_display">Please select channels to activate first</string>
+    <string name="nc_error_message_name">Invalid configuration name</string>
+    <string name="nc_error_message_mac">Invalid mac address</string>
+    <string name="nc_error_message_active_channels">Channels to activate not selected</string>
+    <string name="nc_error_message_channels_to_display">Channels to display not selected</string>
     <string name="nc_info_created">Configuration created</string>
     <string name="nc_info_canceled">Configuration canceled</string>
     <string name="nc_dialog_title_channels_to_display">  Select channels to display</string>
@@ -73,7 +74,7 @@
     <string name="nc_dialog_positive_button">Accept</string>
     <string name="nc_dialog_negative_button">Cancel</string>
     <string name="nc_dialog_with_sensor"> with sensor </string>
-    <string name="nc_dialog_channel">channel </string>
+    <string name="nc_dialog_channel">Channel </string>
     <string name="nc_active_channels_list_adapter_comparation">electrocardiogram</string>
     
     <!-- NEW RECORDING ACTIVITY -->
