@@ -74,9 +74,10 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	}
 
 	public void sendDataViaEmail() {
-
+		
 		File root = Environment.getExternalStorageDirectory();
-		File F = new File(root + "/" + recordingName + ".zip");
+		String appDirectory="/Bioplux/";
+		File F = new File(root + appDirectory + recordingName + ".zip");
 		Uri U = Uri.fromFile(F);
 		Intent i = new Intent(Intent.ACTION_SEND);
 		i.setType("application/zip");
@@ -116,8 +117,13 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 			} catch (SQLException e) {
 				Log.e(TAG, "Exception removing recording from database ", e);
 			}
+			
+			File root = Environment.getExternalStorageDirectory();
+			recordingName = recordingsArrayList.get(position).getName();
+			String appDirectory="/Bioplux/";
+			File file = new File(root + appDirectory + recordingName + ".zip");
+			file.delete();
 			recordingsArrayList.remove(position);
-			deleteFile(recordingName + ".zip");
 		}
 		displayInfoToast(getString(R.string.ra_recording_removed));
 	}

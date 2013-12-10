@@ -91,11 +91,13 @@ public class BiopluxService extends Service {
 		try {
 			String zipFileName = recordingName + ".zip";
 			String file = recordingName + ".txt";
-			File root = Environment.getExternalStorageDirectory();
+			String appDirectory=Environment.getExternalStorageDirectory().toString()+"/Bioplux/";
+			File root = new File(appDirectory);
+			root.mkdirs();
 			int BUFFER = 500;
 			
-			FileOutputStream dest = new FileOutputStream(root + "/"
-					+ zipFileName);
+			FileOutputStream dest = new FileOutputStream(root +"/"+ zipFileName);
+					
 			out = new ZipOutputStream(new BufferedOutputStream(
 					dest));
 			byte data[] = new byte[BUFFER];
