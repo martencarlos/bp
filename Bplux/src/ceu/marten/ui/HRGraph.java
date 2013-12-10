@@ -1,10 +1,13 @@
 package ceu.marten.ui;
 
+import java.text.DecimalFormat;
+
 import android.graphics.Color;
 import android.util.DisplayMetrics;
 
 import ceu.marten.bplux.R;
 
+import com.jjoe64.graphview.CustomLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphView.GraphViewData;
 import com.jjoe64.graphview.GraphViewSeries;
@@ -22,6 +25,8 @@ public class HRGraph{
 	private GraphViewSeriesStyle style;
 	private double xValue;
 	private GraphView graphView;
+	private double currentValue;
+	private DecimalFormat df = new DecimalFormat("#.##");
 
 	public HRGraph(android.content.Context context, String title) {
 		// STYLE
@@ -30,7 +35,7 @@ public class HRGraph{
 		
 		// INIT SERIE DATA
 		serie = new GraphViewSeries("BPM", style, new GraphViewData[] {
-				new GraphViewData(1.0, 60.0), new GraphViewData(1.5, 100) });
+				new GraphViewData(1.0, 125), new GraphViewData(1.5, 10) });
 		// INIT GRAPHVIEW
 		graphView = new LineGraphView(context, title);
 
@@ -39,6 +44,24 @@ public class HRGraph{
 		// graphView.setScrollable(true);
 		graphView.setViewPort(2, 150);
 		graphView.setScalable(true);
+		graphView.setCustomLabelFormatter(new CustomLabelFormatter() {  
+			   @Override  
+			   public String formatLabel(double value, boolean isValueX) {  
+			      if (isValueX) {  
+			         if(value>1000){
+			        	 currentValue=value/1000;
+			        	 if(currentValue>60)
+			        		 return String.valueOf((int)Math.floor(currentValue/60))+","+(int)(currentValue%60);
+			        	 else
+			        		 return String.valueOf(df.format(currentValue));
+			         }
+			        	 
+			      }  
+			      return null; // let graphview generate Y-axis label for us  
+			   }  
+			}); 
+		
+		
 		GraphViewStyle gvs= new GraphViewStyle();
 		gvs.setNumHorizontalLabels(5);
 		gvs.setHorizontalLabelsColor(context.getResources().getColor(R.color.grey));
@@ -62,7 +85,7 @@ public class HRGraph{
 		// Current X value
 		xValue = 2d;
 	}
-
+	
 	public GraphView getGraphView() {
 		return graphView;
 	}

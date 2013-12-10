@@ -2,6 +2,7 @@ package ceu.marten.services;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -62,8 +63,9 @@ public class BiopluxService extends Service {
 	private int frameCounter;
 	private short[] frameTmp;
 	private ArrayList<Integer> activeChannels;
-
-	final Messenger mMessenger = new Messenger(new IncomingHandler());
+	private OutputStreamWriter outStreamWriter;
+	private BufferedWriter bufferedWriter;
+	private final Messenger mMessenger = new Messenger(new IncomingHandler());
 
 	static class IncomingHandler extends Handler { // Handler of incoming messages from
 											// clients.
@@ -145,13 +147,63 @@ public class BiopluxService extends Service {
 		connectToBiopluxDevice();
 		frameTmp = new short[8];
 		frameCounter = 0;
-		timer.scheduleAtFixedRate(new TimerTask() {
+		
+		try {
+			outStreamWriter = new OutputStreamWriter(openFileOutput(
+					"tmp.txt", MODE_APPEND));
+		} catch (FileNotFoundException e) {
+			Log.e(TAG, "file to write frames on, not found", e);
+		}
+		bufferedWriter = new BufferedWriter(outStreamWriter);
+		timer.schedule(new TimerTask() {
 			public void run() {
 				processFrames();
 			}
-		}, 0, 100L);
+		}, 0, 10L);
+		
 		showNotification(intent);
 		return mMessenger.getBinder();
+	}
+
+	private void processFrames() {
+			getFrames(20);
+			for (Frame f : frames) {
+				writeFramesToTmpFile(f);
+			}
+		try {
+			sendFirstGraphData(frames[0].an_in[(channelsToDisplay.get(0) - 1)]);
+			if(numberOfChannelsToDisplay==2)
+					sendSecondGraphData(frames[0].an_in[(channelsToDisplay.get(1) - 1)]);
+				
+		} catch (Throwable t) {
+			Log.e(TAG, "error processing frames", t);
+		}
+	}
+
+	public void writeFramesToTmpFile(Frame f) {
+		frameCounter++;
+		int index = 0;
+		for (int i = 0; i < activeChannels.size(); i++) {
+			index = activeChannels.get(i) - 1;
+			frameTmp[index] = f.an_in[i];
+		}
+		try {
+			bufferedWriter.write(String.format(formatFileCollectedData, frameCounter,
+					String.valueOf(frameTmp[0]), String.valueOf(frameTmp[1]),
+					String.valueOf(frameTmp[2]), String.valueOf(frameTmp[3]),
+					String.valueOf(frameTmp[4]), String.valueOf(frameTmp[5]),
+					String.valueOf(frameTmp[6]), String.valueOf(frameTmp[7])));
+		} catch (IOException e) {
+			Log.e(TAG, "Exception while writing frame row", e);
+		}
+	}
+
+	private void getFrames(int nFrames) {
+		try {
+			connection.GetFrames(nFrames, frames);
+		} catch (BPException e) {
+			Log.e(TAG, "exception getting frames", e);
+		}
 	}
 
 	private void writeTextFile() {
@@ -213,32 +265,6 @@ public class BiopluxService extends Service {
 		}
 	}
 
-	public void writeFramesToTmpFile(Frame f) {
-		frameCounter++;
-		int index = 0;
-		for (int i = 0; i < activeChannels.size(); i++) {
-			index = activeChannels.get(i) - 1;
-			frameTmp[index] = f.an_in[i];
-		}
-
-		try {
-			OutputStreamWriter out = new OutputStreamWriter(openFileOutput(
-					"tmp.txt", MODE_APPEND));
-
-			out.write(String.format(formatFileCollectedData, frameCounter,
-					String.valueOf(frameTmp[0]), String.valueOf(frameTmp[1]),
-					String.valueOf(frameTmp[2]), String.valueOf(frameTmp[3]),
-					String.valueOf(frameTmp[4]), String.valueOf(frameTmp[5]),
-					String.valueOf(frameTmp[6]), String.valueOf(frameTmp[7])));
-			out.flush();
-			out.close();
-		} catch (FileNotFoundException e) {
-			Log.e(TAG, "file to write frames on, not found", e);
-		} catch (IOException e) {
-			Log.e(TAG, "write frames stream exception", e);
-		}
-	}
-
 	private void getInfoFromActivity(Intent intent) {
 		recordingName = intent.getStringExtra("recordingName").toString();
 		configuration = (Configuration) intent
@@ -261,30 +287,6 @@ public class BiopluxService extends Service {
 			Log.e(TAG, "bioplux connection exception", e);
 		}
 
-	}
-
-	private void processFrames() {
-		
-			getFrames(20);
-			for (Frame f : frames) {
-				writeFramesToTmpFile(f);
-				sendFirstGraphData(f.an_in[(channelsToDisplay.get(0) - 1)]);
-				if(numberOfChannelsToDisplay==2)
-						sendSecondGraphData(f.an_in[(channelsToDisplay.get(1) - 1)]);
-			}
-		try {
-				
-		} catch (Throwable t) {
-			Log.e(TAG, "error processing frames", t);
-		}
-	}
-
-	private void getFrames(int nFrames) {
-		try {
-			connection.GetFrames(nFrames, frames);
-		} catch (BPException e) {
-			Log.e(TAG, "exception getting frames", e);
-		}
 	}
 
 	private void showNotification(Intent parentIntent) {
@@ -349,10 +351,18 @@ public class BiopluxService extends Service {
 		super.onDestroy();
 		if (timer != null)
 			timer.cancel();
+			
 		try {
 			Thread.sleep(100);// for sync with main thread
 		} catch (InterruptedException e) {
 			Log.e(TAG, "interrupted sleep of thread", e);
+		}
+		try {
+			bufferedWriter.flush();
+			bufferedWriter.close();
+			outStreamWriter.close();
+		} catch (IOException e1) {
+			Log.e(TAG, "Exception while closing StreamWriter", e1);
 		}
 		try {
 			connection.EndAcq();

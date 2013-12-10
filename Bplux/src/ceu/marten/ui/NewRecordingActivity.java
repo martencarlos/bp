@@ -50,7 +50,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static Chronometer chronometer;
 	private boolean isChronometerRunning = false;
 
-	private Configuration currentConfiguration;
+	private static Configuration currentConfiguration;
 	private String recordingName;
 	private String duration;
 	private Bundle extras;
@@ -98,7 +98,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	};
 
 	static void appendDataToGraphTop(int value) {
-		graph.setxValue(lastXValue ++);
+		graph.setxValue(20000d/currentConfiguration.getFrequency()*lastXValue++);//in miliseconds
 		graph.getSerie().appendData(new GraphViewData(graph.getxValue(), value),
 				true, 500);// scroll to end, true
 	}
