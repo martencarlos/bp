@@ -1,10 +1,11 @@
 package ceu.marten.ui;
 
-import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import android.graphics.Color;
 import android.util.DisplayMetrics;
-
 import ceu.marten.bplux.R;
 
 import com.jjoe64.graphview.CustomLabelFormatter;
@@ -25,8 +26,8 @@ public class HRGraph{
 	private GraphViewSeriesStyle style;
 	private double xValue;
 	private GraphView graphView;
-	private double currentValue;
-	private DecimalFormat df = new DecimalFormat("#.##");
+	private Date currentValue;
+	private SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss",Locale.UK);
 
 	public HRGraph(android.content.Context context, String title) {
 		// STYLE
@@ -48,14 +49,8 @@ public class HRGraph{
 			   @Override  
 			   public String formatLabel(double value, boolean isValueX) {  
 			      if (isValueX) {  
-			         if(value>1000){
-			        	 currentValue=value/1000;
-			        	 if(currentValue>60)
-			        		 return String.valueOf((int)Math.floor(currentValue/60))+","+(int)(currentValue%60);
-			        	 else
-			        		 return String.valueOf(df.format(currentValue));
-			         }
-			        	 
+			    	  currentValue = new Date((long)value);
+			    	  return df.format(currentValue);
 			      }  
 			      return null; // let graphview generate Y-axis label for us  
 			   }  
@@ -63,7 +58,7 @@ public class HRGraph{
 		
 		
 		GraphViewStyle gvs= new GraphViewStyle();
-		gvs.setNumHorizontalLabels(5);
+		gvs.setNumHorizontalLabels(4);
 		gvs.setHorizontalLabelsColor(context.getResources().getColor(R.color.grey));
 		gvs.setVerticalLabelsColor(context.getResources().getColor(R.color.grey));
 		switch (context.getResources().getDisplayMetrics().densityDpi) {

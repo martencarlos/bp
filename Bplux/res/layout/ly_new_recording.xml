@@ -14,7 +14,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@layout/header_gradient"
-            android:paddingBottom="5dip"
+            android:paddingBottom="2dip"
             android:paddingTop="5dip" >
 
             <TextView
@@ -22,7 +22,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textColor="@color/grey"
+                android:textColor="@android:color/white"
                 android:textSize="25sp" />
 
             <LinearLayout
@@ -39,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:drawablePadding="5dip"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/grey"
+                    android:textColor="@android:color/white"
                     android:drawableLeft="@drawable/chronometer"/>
             </LinearLayout>
         </RelativeLayout>
@@ -201,7 +201,6 @@
             android:layout_height="fill_parent"
             android:gravity="bottom"
             android:orientation="vertical"
-            android:paddingBottom="5dip"
             android:paddingTop="5dip" >
 
             <ImageView
@@ -220,18 +219,18 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingBottom="5dip"
+                android:paddingBottom="2dp"
                 android:paddingTop="5dip" >
 
                 <Button
                     android:id="@+id/nr_bttn_StartPause"
                     android:layout_width="0dp"
-                    android:layout_height="40sp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@drawable/button_selector"
                     android:onClick="onClickedStartStop"
                     android:text="@string/nr_button_start"
-                    android:textColor="@color/grey" />
+                    android:textColor="@android:color/white" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

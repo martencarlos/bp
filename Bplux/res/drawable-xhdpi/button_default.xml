@@ -3,16 +3,13 @@
     android:shape="rectangle" >
 
     <corners
-        android:bottomLeftRadius="8dip"
-        android:bottomRightRadius="8dip"
-        android:topLeftRadius="8dip"
-        android:topRightRadius="8dip" />
+        android:bottomLeftRadius="4dip"
+        android:bottomRightRadius="4dip"
+        android:topLeftRadius="4dip"
+        android:topRightRadius="4dip" />
     
-    <gradient
-    android:startColor="#EDF3FC"
-    android:endColor="#F5F8FC"
-    android:gradientRadius="326"
-    android:type="radial"/>
+    <solid
+        android:color="#5E95BD" />
     
     <stroke android:width="1px"
         android:color="#7299B6" />

@@ -80,9 +80,10 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		LayoutInflater inflater = this.getLayoutInflater();
-
-		builder.setView(inflater.inflate(R.layout.dialog_recording_name, null))
-				.setTitle(getString(R.string.ca_dialog_title))
+		
+		View customTitleView = inflater.inflate(R.layout.dialog_recording_name_title, null);
+		builder.setView(inflater.inflate(R.layout.dialog_recording_name_content, null))
+				.setCustomTitle(customTitleView)
 				.setPositiveButton(getString(R.string.nc_dialog_positive_button),
 						new DialogInterface.OnClickListener() {
 							@Override

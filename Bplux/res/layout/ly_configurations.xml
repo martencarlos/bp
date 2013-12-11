@@ -3,8 +3,8 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:background="#fff"
-    android:paddingBottom="5dip" >
-
+    android:paddingBottom="2dip" >
+    
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="fill_parent"
@@ -13,15 +13,15 @@
         android:gravity="center_horizontal"
         android:paddingBottom="5dip"
         android:paddingTop="5dip" >
-
+      
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/grey"
+            android:textColor="@android:color/white"
             android:text="@string/ca_header_title"
             android:textSize="25sp" />
     </LinearLayout>
-
+  
     <LinearLayout
         android:id="@+id/sl_button"
         android:layout_width="fill_parent"
@@ -62,7 +62,7 @@
         android:drawableEnd="@drawable/new_configuration"
         android:paddingLeft="20dip"
         android:paddingRight="60dip"
-        android:textColor="@color/grey"
+        android:textColor="@android:color/white"
         android:onClick="onClickedNewConfig"
         android:text="@string/ca_button" />
 

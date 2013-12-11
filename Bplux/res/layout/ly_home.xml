@@ -13,7 +13,7 @@
             android:id="@+id/lyHeader"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@layout/header_gradient"
+            android:background="@layout/home_header_gradient"
             android:paddingBottom="5dip"
             android:paddingTop="5dip" >
 
@@ -73,7 +73,7 @@
                 android:maxLines="1"
                 android:background="@drawable/button_selector"
                 android:drawableEnd="@drawable/start"
-                android:textColor="@color/grey"
+                android:textColor="@android:color/white"
                 android:text="@string/ha_button1" />
 
             <Button
@@ -88,20 +88,11 @@
 				android:layout_marginTop="10dp"
                 android:background="@drawable/button_selector"
                 android:drawableEnd="@drawable/browse"
-                android:textColor="@color/grey"
+                android:textColor="@android:color/white"
                 android:text="@string/ha_button2"/>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/footer"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:gravity="center"
-            android:text="@string/footer"
-            android:textColor="@color/grey"
-            android:background="@layout/header_gradient"
-            android:textSize="@dimen/footerTxtSize" />
+        
     </RelativeLayout>
 
 </ScrollView>

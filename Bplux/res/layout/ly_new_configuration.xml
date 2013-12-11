@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/nc_header_title"
-                android:textColor="@color/grey"
+                android:textColor="@android:color/white"
                 android:textSize="25sp" />
         </LinearLayout>
 
@@ -199,7 +199,7 @@
                     android:onClick="onClickedChannelPickDialog"
                     android:paddingLeft="10dip"
                     android:text="@string/nc_button_active_channels"
-                    android:textColor="@color/grey" />
+                    android:textColor="@android:color/white" />
                 <TextView
                     android:id="@+id/nc_txt_active_channels"
                     android:layout_width="wrap_content"
@@ -223,7 +223,7 @@
                     android:paddingLeft="10dip"
                     android:onClick="onClickedChannelDisplayPickDialog"
                     android:text="@string/nc_button_channels_to_display"
-                    android:textColor="@color/grey" />
+                    android:textColor="@android:color/white" />
                 <TextView
                     android:id="@+id/nc_txt_channels_to_show"
                     android:layout_width="wrap_content"
@@ -238,7 +238,7 @@
                 android:layout_height="fill_parent"
                 android:gravity="bottom"
                 android:orientation="vertical"
-                android:paddingBottom="5dip"
+                android:paddingBottom="2dip"
                 android:paddingTop="5dip" >
 
                 <ImageView
@@ -258,28 +258,30 @@
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
                     android:orientation="horizontal"
-                    android:padding="5dip" >
+                    android:paddingTop="5dip"
+                    android:paddingLeft="5dip"
+                    android:paddingRight="5dip" >
 
                     <Button
                         android:id="@+id/sl_bttnCancel"
                         android:layout_width="fill_parent"
-                        android:layout_height="40sp"
+                        android:layout_height="wrap_content"
                         android:layout_marginRight="5dip"
                         android:layout_weight="1"
                         android:background="@drawable/button_selector"
                         android:onClick="onClickedCancel"
                         android:text="@string/nc_button_cancel"
-                        android:textColor="@color/grey" />
+                        android:textColor="@android:color/white" />
 
                     <Button
                         android:id="@+id/btnRegister"
                         android:layout_width="fill_parent"
-                        android:layout_height="40sp"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@drawable/button_selector"
                         android:onClick="onClickedSubmit"
                         android:text="@string/nc_button_submit"
-                        android:textColor="@color/grey" />
+                        android:textColor="@android:color/white" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
