@@ -1,6 +1,6 @@
 package ceu.marten.ui.adapters;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -20,10 +20,10 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 		OnCheckedChangeListener, OnItemSelectedListener {
 
 	private final Context context;
-	private ArrayList<String> strings;
+	private List<String> strings;
 	private String[] sensorsChecked = null;
 
-	public ActiveChannelsListAdapter(Context context, ArrayList<String> strings) {
+	public ActiveChannelsListAdapter(Context context, List<String> strings) {
 		super(context, 0, 0, strings);
 		this.context = context;
 		this.strings = strings;

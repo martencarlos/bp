@@ -2,7 +2,9 @@ package ceu.marten.ui;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -151,19 +153,11 @@ public class NewConfigurationActivity extends Activity {
 
 	private void setupActiveChannelsDialog() {
 
-		// INIT CHANNELS ARRAY
-		final ArrayList<String> channels = new ArrayList<String>();
-		channels.add(getResources().getString(R.string.channel1));
-		channels.add(getResources().getString(R.string.channel2));
-		channels.add(getResources().getString(R.string.channel3));
-		channels.add(getResources().getString(R.string.channel4));
-		channels.add(getResources().getString(R.string.channel5));
-		channels.add(getResources().getString(R.string.channel6));
-		channels.add(getResources().getString(R.string.channel7));
-		channels.add(getResources().getString(R.string.channel8));
+		String[] myResArray = getResources().getStringArray(R.array.channels);
+		List<String> myResArrayList = Arrays.asList(myResArray);
 
 		final ActiveChannelsListAdapter activeChannelsListAdapter = new ActiveChannelsListAdapter(
-				this, channels);
+				this, myResArrayList);
 
 		AlertDialog.Builder activeChannelsBuilder;
 		AlertDialog activeChannelsDialog;

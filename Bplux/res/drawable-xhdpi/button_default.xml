@@ -7,11 +7,14 @@
         android:bottomRightRadius="8dip"
         android:topLeftRadius="8dip"
         android:topRightRadius="8dip" />
-
+    
     <gradient
-        android:endColor="#cfe1edFF"
-        android:gradientRadius="326"
-        android:startColor="#7faacaFF"
-        android:type="radial" />
+    android:startColor="#EDF3FC"
+    android:endColor="#F5F8FC"
+    android:gradientRadius="326"
+    android:type="radial"/>
+    
+    <stroke android:width="1px"
+        android:color="#7299B6" />
 
 </shape>

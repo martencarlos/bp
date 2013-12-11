@@ -101,14 +101,16 @@
     
     <!-- ATTRIBUTES -->
     <!-- CHANNELS LIST -->
-    <string name="channel1">"canal 1"</string>
-    <string name="channel2">"canal 2"</string>
-    <string name="channel3">"canal 3"</string>
-    <string name="channel4">"canal 4"</string>
-    <string name="channel5">"canal 5"</string>
-    <string name="channel6">"canal 6"</string>
-    <string name="channel7">"canal 7"</string>
-    <string name="channel8">"canal 8"</string>
+    <string-array name="channels">
+        <item> canal 1</item>
+        <item >canal 2</item>
+        <item >canal 3</item>
+        <item >canal 4</item>
+        <item >canal 5</item>
+        <item >canal 6</item>
+        <item >canal 7</item>
+        <item >canal 8</item>
+    </string-array>
     
      <!-- SENSORS LIST -->
     <string-array name="sensors">
