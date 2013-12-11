@@ -98,14 +98,22 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	};
 
 	static void appendDataToGraphTop(int value) {
-		graph.setxValue(20000d/currentConfiguration.getFrequency()*lastXValue++);//in miliseconds
-		graph.getSerie().appendData(new GraphViewData(graph.getxValue(), value),
-				true, 500);// scroll to end, true
+		graph.setxValue(20000d / currentConfiguration.getFrequency()
+				* lastXValue++);// in miliseconds
+		graph.getSerie().appendData(
+				new GraphViewData(graph.getxValue(), value), true, 500);// scroll
+																		// to
+																		// end,
+																		// true
 	}
+
 	static void appendDataToGraphBottom(int value) {
-		graphBottom.setxValue(lastXValue ++);
-		graphBottom.getSerie().appendData(new GraphViewData(graphBottom.getxValue(), value),
-				true, 500);// scroll to end, true
+		graphBottom.setxValue(lastXValue++);
+		graphBottom.getSerie().appendData(
+				new GraphViewData(graphBottom.getxValue(), value), true, 500);// scroll
+																				// to
+																				// end,
+																				// true
 	}
 
 	@Override
@@ -127,12 +135,17 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 
 		// SET INTERFACE COMPONENTS
-		graph = new HRGraph(this, getString(R.string.nc_dialog_channel)+" "+currentConfiguration.getChannelsToDisplay().get(0).toString());
+		graph = new HRGraph(this, getString(R.string.nc_dialog_channel) + " "
+				+ currentConfiguration.getChannelsToDisplay().get(0).toString());
 		uiGraph.addView(graph.getGraphView());
 		uiRecordingName.setText(recordingName);
 
 		if (currentConfiguration.getNumberOfChannelsToDisplay() == 2) {
-			graphBottom = new HRGraph(this,getString(R.string.nc_dialog_channel)+" "+currentConfiguration.getChannelsToDisplay().get(1).toString());
+			graphBottom = new HRGraph(this,
+					getString(R.string.nc_dialog_channel)
+							+ " "
+							+ currentConfiguration.getChannelsToDisplay()
+									.get(1).toString());
 			ViewGroup la = (ViewGroup) findViewById(R.id.nr_graph_details);
 			la.removeAllViews();
 			la.setPadding(20, 0, 20, 0);
@@ -151,14 +164,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
-		if (isChronometerRunning){
+		if (isChronometerRunning) {
 			extras.putLong("chronometerBase", chronometer.getBase());
 			extras.putDouble("xcounter", lastXValue);
 		}
-			
+
 		else
 			extras.putLong("chronometerBase", 0);
-		Log.d(TAG, "guardo instancia");
 		savedInstanceState.putAll(extras);
 		super.onSaveInstanceState(savedInstanceState);
 	}
@@ -204,7 +216,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 					mService.send(msg);
 
 				} catch (RemoteException e) {
-					Log.d(TAG, "Error sending duration to service",e);
+					Log.e(TAG, "Error sending duration to service", e);
 				}
 			}
 		}
@@ -220,16 +232,25 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			startChronometer();
 
 		} else {
+			SaveRecoridngRunnable myRunnable = new SaveRecoridngRunnable();
+			Thread saveRecordingThread = new Thread(myRunnable);
+			saveRecordingThread.start();
+
+			displayInfoToast(getString(R.string.nr_info_stopped));
+			uiStartStopbutton.setText(getString(R.string.nr_button_start));
+		}
+
+	}
+
+	class SaveRecoridngRunnable implements Runnable {
+		public void run() {
 			stopChronometer();
 			sendRecordingDuration();
+			saveRecording();
 			unbindOfService();
 			stopService(new Intent(NewRecordingActivity.this,
 					BiopluxService.class));
-			displayInfoToast(getString(R.string.nr_info_stopped));
-			uiStartStopbutton.setText(getString(R.string.nr_button_start));
-			saveRecording();
 		}
-
 	}
 
 	private void displayInfoToast(String messageToDisplay) {
@@ -254,7 +275,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		chronometer.stop();
 		Date elapsedMiliseconds = new Date(SystemClock.elapsedRealtime()
 				- chronometer.getBase());
-		DateFormat formatter = new SimpleDateFormat("HH:mm:ss",Locale.UK);
+		DateFormat formatter = new SimpleDateFormat("HH:mm:ss", Locale.UK);
 		duration = formatter.format(elapsedMiliseconds);
 		isChronometerRunning = false;
 	}
