@@ -44,7 +44,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static final String TAG = NewRecordingActivity.class.getName();
 
 	private TextView uiRecordingName, uiConfigurationName, uiNumberOfBits,
-			uiFrequency, uiActiveChannels, uiMacAddress;
+			uiReceptionFrequency,uiSamplingFrequency, uiActiveChannels, uiMacAddress;
 	private LinearLayout uiGraph;
 	private Button uiStartStopbutton;
 	private static Chronometer chronometer;
@@ -98,14 +98,14 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	};
 
 	static void appendDataToGraphTop(int value) {
-		graph.setxValue(80000d / currentConfiguration.getFrequency()
+		graph.setxValue(80000d / currentConfiguration.getReceptionFrequency()
 				* lastXValue++);// in miliseconds
 		graph.getSerie().appendData(
 				new GraphViewData(graph.getxValue(), value), true, 600);
 	}
 
 	static void appendDataToGraphBottom(int value) {
-		graphBottom.setxValue(80000d / currentConfiguration.getFrequency()
+		graphBottom.setxValue(80000d / currentConfiguration.getReceptionFrequency()
 				* lastXValue++);
 		graphBottom.getSerie().appendData(
 				new GraphViewData(graphBottom.getxValue(), value), true, 600);
@@ -147,8 +147,10 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			la.addView(graphBottom.getGraphView());
 		} else {
 			uiConfigurationName.setText(currentConfiguration.getName());
-			uiFrequency.setText(String.valueOf(currentConfiguration
-					.getFrequency()) + " Hz");
+			uiReceptionFrequency.setText(String.valueOf(currentConfiguration
+					.getReceptionFrequency()) + " Hz");
+			uiSamplingFrequency.setText(String.valueOf(currentConfiguration
+					.getSamplingFrequency()) + " Hz");
 			uiNumberOfBits.setText(String.valueOf(currentConfiguration
 					.getNumberOfBits()) + " bits");
 			uiMacAddress.setText(currentConfiguration.getMacAddress());
@@ -200,7 +202,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		uiRecordingName = (TextView) findViewById(R.id.nr_txt_recordingName);
 		uiConfigurationName = (TextView) findViewById(R.id.nr_txt_configName);
 		uiNumberOfBits = (TextView) findViewById(R.id.nr_txt_config_nbits);
-		uiFrequency = (TextView) findViewById(R.id.nr_txt_config_freq);
+		uiReceptionFrequency = (TextView) findViewById(R.id.nr_reception_freq);
+		uiSamplingFrequency = (TextView) findViewById(R.id.nr_sampling_freq);
 		uiActiveChannels = (TextView) findViewById(R.id.nr_txt_channels_active);
 		uiMacAddress = (TextView) findViewById(R.id.nr_txt_mac);
 		chronometer = (Chronometer) findViewById(R.id.nr_chronometer);

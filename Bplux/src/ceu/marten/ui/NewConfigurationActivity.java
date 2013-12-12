@@ -35,13 +35,17 @@ import ceu.marten.ui.adapters.ChannelsToDisplayListAdapter;
 
 public class NewConfigurationActivity extends Activity {
 
-	private static final int FREQUENCY_MAX = 1000;
-	private static final int FREQUENCY_MIN = 36;
-	private static final int DEFAULT_FREQUENCY = 500;
+	private static final int RECEPTION_FREQ_MAX = 1000;
+	private static final int RECEPTION_FREQ_MIN = 36;
+	private static final int DEFAULT_RECEPTION_FREQ = 500;
+	private static final int SAMPLING_FREQ_MAX = 100;
+	private static final int SAMPLING_FREQ_MIN = 1;
+	private static final int DEFAULT_SAMPLING_FREQ = 50;
 	private static final int DEFAULT_NUMBER_OF_BITS = 8;
 
-	private SeekBar frequencySeekbar;
-	private EditText frequencyEditor, configurationName, macAddress;
+	private SeekBar receptionfreqSeekbar;
+	private SeekBar samplingfreqSeekbar;
+	private EditText configurationName, macAddress, receptionFreqEditor, samplingFreqEditor;
 	private TextView activeChannels, channelsToDisplay;
 
 	String[] channelsActivated = null;
@@ -68,29 +72,32 @@ public class NewConfigurationActivity extends Activity {
 
 	private void initializeVariables() {
 		newConfiguration = new Configuration();
-		newConfiguration.setFrequency(DEFAULT_FREQUENCY);
+		newConfiguration.setReceptionFrequency(DEFAULT_RECEPTION_FREQ);
+		newConfiguration.setSamplingFrequency(DEFAULT_SAMPLING_FREQ);
 		newConfiguration.setNumberOfBits(DEFAULT_NUMBER_OF_BITS);
 	}
 
 	private void findViews() {
-		frequencySeekbar = (SeekBar) findViewById(R.id.freq_seekbar);
-		frequencyEditor = (EditText) findViewById(R.id.freq_view);
+		receptionfreqSeekbar = (SeekBar) findViewById(R.id.nc_reception_seekbar);
+		samplingfreqSeekbar = (SeekBar) findViewById(R.id.nc_sampling_seekbar);
+		receptionFreqEditor = (EditText) findViewById(R.id.nc_reception_freq_view);
+		samplingFreqEditor = (EditText) findViewById(R.id.nc_sampling_freq_view);
 		configurationName = (EditText) findViewById(R.id.dev_name);
 		macAddress = (EditText) findViewById(R.id.nc_mac_address);
 		activeChannels = (TextView) findViewById(R.id.nc_txt_active_channels);
 		channelsToDisplay = (TextView) findViewById(R.id.nc_txt_channels_to_show);
 	}
 
-	private void initializeFrequencyComponents() {
-		frequencySeekbar
+	private void initializeReceptionFrequencyComponents() {
+		receptionfreqSeekbar
 				.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 					public void onProgressChanged(SeekBar seekBar,
 							int progress, boolean changedByUser) {
 						if (changedByUser) {
-							frequencyEditor.setText(String.valueOf(progress
-									+ FREQUENCY_MIN));
-							newConfiguration.setFrequency(progress
-									+ FREQUENCY_MIN);
+							receptionFreqEditor.setText(String.valueOf(progress
+									+ RECEPTION_FREQ_MIN));
+							newConfiguration.setReceptionFrequency(progress
+									+ RECEPTION_FREQ_MIN);
 						}
 					}
 
@@ -100,7 +107,7 @@ public class NewConfigurationActivity extends Activity {
 					public void onStopTrackingTouch(SeekBar seekBar) {
 					}
 				});
-		frequencyEditor.setOnEditorActionListener(new OnEditorActionListener() {
+		receptionFreqEditor.setOnEditorActionListener(new OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView currentView, int actionId,
 					KeyEvent event) {
@@ -120,28 +127,99 @@ public class NewConfigurationActivity extends Activity {
 			}
 
 			private void setFrequency(int newFrequency) {
-				if (newFrequency >= FREQUENCY_MIN
-						&& newFrequency <= FREQUENCY_MAX) {
-					frequencySeekbar
-							.setProgress((newFrequency - FREQUENCY_MIN));
-					newConfiguration.setFrequency(newFrequency);
-				} else if (newFrequency > FREQUENCY_MAX) {
-					frequencySeekbar.setProgress(FREQUENCY_MAX);
-					frequencyEditor.setText(String.valueOf(FREQUENCY_MAX));
-					newConfiguration.setFrequency(FREQUENCY_MAX);
-					displayErrorToast(getString(R.string.nc_error_max_frequency) + FREQUENCY_MAX
+				if (newFrequency >= RECEPTION_FREQ_MIN
+						&& newFrequency <= RECEPTION_FREQ_MAX) {
+					receptionfreqSeekbar
+							.setProgress((newFrequency - RECEPTION_FREQ_MIN));
+					newConfiguration.setReceptionFrequency(newFrequency);
+				} else if (newFrequency > RECEPTION_FREQ_MAX) {
+					receptionfreqSeekbar.setProgress(RECEPTION_FREQ_MAX);
+					receptionFreqEditor.setText(String.valueOf(RECEPTION_FREQ_MAX));
+					newConfiguration.setReceptionFrequency(RECEPTION_FREQ_MAX);
+					displayErrorToast(getString(R.string.nc_error_max_frequency)+" "+RECEPTION_FREQ_MAX
 							+ "Hz");
 				} else {
-					frequencySeekbar.setProgress(0);
-					frequencyEditor.setText(String.valueOf(FREQUENCY_MIN));
-					newConfiguration.setFrequency(FREQUENCY_MIN);
-					displayErrorToast(getString(R.string.nc_error_min_frequency) + FREQUENCY_MIN
+					receptionfreqSeekbar.setProgress(0);
+					receptionFreqEditor.setText(String.valueOf(RECEPTION_FREQ_MIN));
+					newConfiguration.setReceptionFrequency(RECEPTION_FREQ_MIN);
+					displayErrorToast(getString(R.string.nc_error_min_frequency)+" "+RECEPTION_FREQ_MIN
 							+ " Hz");
 				}
 			}
 
 			private void closeKeyboardAndClearFocus() {
-				frequencyEditor.clearFocus();
+				receptionFreqEditor.clearFocus();
+				InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+				inputManager.hideSoftInputFromWindow(getCurrentFocus()
+						.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+			}
+		});
+	}
+	
+	private void initializeSamplingFrequencyComponents() {
+		samplingfreqSeekbar
+				.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+					public void onProgressChanged(SeekBar seekBar,
+							int progress, boolean changedByUser) {
+						if (changedByUser) {
+							samplingFreqEditor.setText(String.valueOf(progress
+									+ SAMPLING_FREQ_MIN));
+							newConfiguration.setSamplingFrequency(progress
+									+ SAMPLING_FREQ_MIN);
+						}
+					}
+
+					public void onStartTrackingTouch(SeekBar seekBar) {
+					}
+
+					public void onStopTrackingTouch(SeekBar seekBar) {
+					}
+				});
+		
+		samplingFreqEditor.setOnEditorActionListener(new OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView currentView, int actionId,
+					KeyEvent event) {
+				boolean handled = false;
+
+				if (actionId == EditorInfo.IME_ACTION_DONE) {
+					String frequencyString = currentView.getText().toString();
+					if(frequencyString.compareTo("")==0)
+						frequencyString="0";
+					int newFrequency = Integer.parseInt(frequencyString);
+
+					setFrequency(newFrequency);
+					closeKeyboardAndClearFocus();
+					handled = true;
+				}
+				return handled;
+			}
+
+			private void setFrequency(int newFrequency) {
+				if (newFrequency >= SAMPLING_FREQ_MIN
+						&& newFrequency <= SAMPLING_FREQ_MAX) {
+					samplingfreqSeekbar
+							.setProgress((newFrequency - SAMPLING_FREQ_MIN));
+					newConfiguration.setSamplingFrequency(newFrequency);
+				} else if (newFrequency > SAMPLING_FREQ_MAX) {
+					samplingfreqSeekbar.setProgress(SAMPLING_FREQ_MAX);
+					samplingFreqEditor.setText(String.valueOf(SAMPLING_FREQ_MAX));
+					newConfiguration.setSamplingFrequency(SAMPLING_FREQ_MAX);
+					displayErrorToast(getString(R.string.nc_error_max_frequency)+" "+SAMPLING_FREQ_MAX
+							+ "Hz");
+				} else {
+					samplingfreqSeekbar.setProgress(0);
+					samplingFreqEditor.setText(String.valueOf(SAMPLING_FREQ_MIN));
+					newConfiguration.setSamplingFrequency(SAMPLING_FREQ_MIN);
+					displayErrorToast(getString(R.string.nc_error_min_frequency)+" "+SAMPLING_FREQ_MIN
+							+ " Hz");
+				}
+			}
+
+			private void closeKeyboardAndClearFocus() {
+				samplingFreqEditor.clearFocus();
 				InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
 				inputManager.hideSoftInputFromWindow(getCurrentFocus()
@@ -499,7 +577,8 @@ public class NewConfigurationActivity extends Activity {
 			initializeVariables();
 			findViews();
 			errorMessageChannelsToDisplayNumber = getString(R.string.nc_error_channels_to_display);
-			initializeFrequencyComponents();
+			initializeReceptionFrequencyComponents();
+			initializeSamplingFrequencyComponents();
 			return "execuded";
 		}
 

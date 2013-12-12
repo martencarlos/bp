@@ -1,21 +1,8 @@
 package ceu.marten.services;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import plux.android.bioplux.BPException;
 import plux.android.bioplux.Device;
@@ -25,17 +12,16 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import ceu.marten.bplux.R;
 import ceu.marten.model.Configuration;
+import ceu.marten.model.io.DataManager;
 import ceu.marten.ui.NewRecordingActivity;
 
 public class BiopluxService extends Service {
@@ -48,40 +34,35 @@ public class BiopluxService extends Service {
 	public static final int MSG_FIRST_DATA = 4;
 	public static final int MSG_SECOND_DATA = 5;
 
-	private String formatFileCollectedData = "%-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s%n";
-
-	static ArrayList<Messenger> mClients = new ArrayList<Messenger>();
+	static Messenger client = null;
 	private NotificationManager notificationManager;
 	private Timer timer = new Timer();
-	private Configuration configuration;
+	private boolean isWriting;
+	private static DataManager dataManager;
+
 	private String recordingName;
-	private static String duration;
-	private ArrayList<Integer> channelsToDisplay;
+	private Configuration configuration;
 	private int numberOfChannelsToDisplay;
+	private ArrayList<Integer> channelsToDisplay;
+	private ArrayList<Integer> activeChannels;
 
 	private Device connection;
 	private Device.Frame[] frames;
-	private int frameCounter;
-	private boolean isWriting;
-	private short[] frameTmp;
-	private ArrayList<Integer> activeChannels;
-	private OutputStreamWriter outStreamWriter;
-	private BufferedWriter bufferedWriter;
+
 	private final Messenger mMessenger = new Messenger(new IncomingHandler());
 
-	static class IncomingHandler extends Handler { // Handler of incoming messages from
-											// clients.
+	static class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_REGISTER_CLIENT:
-				mClients.add(msg.replyTo);
+				client = msg.replyTo;
 				break;
 			case MSG_UNREGISTER_CLIENT:
-				mClients.remove(msg.replyTo);
+				client = null;
 				break;
 			case MSG_RECORDING_DURATION:
-				duration = msg.getData().getString("duration");
+				dataManager.setDuration(msg.getData().getString("duration"));
 				break;
 			default:
 				super.handleMessage(msg);
@@ -89,120 +70,48 @@ public class BiopluxService extends Service {
 		}
 	}
 
-	private void compressFile() {
-		BufferedInputStream origin = null;
-		ZipOutputStream out = null;
-		try {
-			String zipFileName = recordingName + ".zip";
-			String file = recordingName + ".txt";
-			String appDirectory=Environment.getExternalStorageDirectory().toString()+"/Bioplux/";
-			File root = new File(appDirectory);
-			root.mkdirs();
-			int BUFFER = 500;
-			
-			FileOutputStream dest = new FileOutputStream(root +"/"+ zipFileName);
-					
-			out = new ZipOutputStream(new BufferedOutputStream(
-					dest));
-			byte data[] = new byte[BUFFER];
-
-			FileInputStream fi = new FileInputStream(getFilesDir() + "/" + file);
-			origin = new BufferedInputStream(fi, BUFFER);
-
-			ZipEntry entry = new ZipEntry(
-					file.substring(file.lastIndexOf("/") + 1));
-			out.putNextEntry(entry);
-			int count;
-
-			while ((count = origin.read(data, 0, BUFFER)) != -1) {
-				out.write(data, 0, count);
-			}
-			deleteFile(recordingName + ".txt");
-
-		} catch (Exception e) {
-			Log.e(TAG, "exception while zipping", e);
-		}
-		finally{
-			try {
-				origin.close();
-				out.close();
-			} catch (IOException e) {
-				Log.e(TAG, "Exception while closing streams", e);
-			}
-			
-		}
-	}
-
 	@Override
 	public void onCreate() {
-		super.onCreate();
 		frames = new Device.Frame[80];
 		for (int i = 0; i < frames.length; i++)
 			frames[i] = new Frame();
-
 		Log.i(TAG, "Service created");
+		super.onCreate();
 	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
 		getInfoFromActivity(intent);
 		connectToBiopluxDevice();
-		frameTmp = new short[8];
-		frameCounter = 0;
-		
-		try {
-			outStreamWriter = new OutputStreamWriter(openFileOutput(
-					"tmp.txt", MODE_APPEND));
-		} catch (FileNotFoundException e) {
-			Log.e(TAG, "file to write frames on, not found", e);
-		}
-		bufferedWriter = new BufferedWriter(outStreamWriter);
+		dataManager = new DataManager(this, activeChannels, recordingName,
+				configuration);
+		showNotification(intent);
+
 		timer.schedule(new TimerTask() {
 			public void run() {
 				processFrames();
 			}
 		}, 0, 50L);
-		
-		showNotification(intent);
+
 		return mMessenger.getBinder();
 	}
 
 	private void processFrames() {
-			isWriting = true;
-			getFrames(80);
-			for (Frame f : frames) {
-				writeFramesToTmpFile(f);
-				
-			}
-			isWriting = false;
+		isWriting = true;
+		getFrames(80);
+		for (Frame f : frames) {
+			dataManager.writeFramesToTmpFile(f);
+
+		}
+		isWriting = false;
 		try {
 			sendFirstGraphData(frames[0].an_in[(channelsToDisplay.get(0) - 1)]);
-			if(numberOfChannelsToDisplay==2)
-					sendSecondGraphData(frames[0].an_in[(channelsToDisplay.get(1) - 1)]);
-				
+			if (numberOfChannelsToDisplay == 2)
+				sendSecondGraphData(frames[0].an_in[(channelsToDisplay.get(1) - 1)]);
+
 		} catch (Throwable t) {
 			Log.e(TAG, "error processing frames", t);
 		}
-		
-	}
-
-	public void writeFramesToTmpFile(Frame f) {
-		frameCounter++;
-		int index = 0;
-		for (int i = 0; i < activeChannels.size(); i++) {
-			index = activeChannels.get(i) - 1;
-			frameTmp[index] = f.an_in[i];
-		}
-		try {
-			bufferedWriter.write(String.format(formatFileCollectedData, frameCounter,
-					String.valueOf(frameTmp[0]), String.valueOf(frameTmp[1]),
-					String.valueOf(frameTmp[2]), String.valueOf(frameTmp[3]),
-					String.valueOf(frameTmp[4]), String.valueOf(frameTmp[5]),
-					String.valueOf(frameTmp[6]), String.valueOf(frameTmp[7])));
-		} catch (IOException e) {
-			Log.e(TAG, "Exception while writing frame row", e);
-		}
-		
 	}
 
 	private void getFrames(int nFrames) {
@@ -213,81 +122,23 @@ public class BiopluxService extends Service {
 		}
 	}
 
-	private void writeTextFile() {
-
-		DateFormat dateFormat = DateFormat.getDateTimeInstance();		
-		Date date = new Date();
-		OutputStreamWriter out = null;
-		BufferedInputStream origin = null;
-		BufferedOutputStream dest = null;
-		try {
-			out = new OutputStreamWriter(openFileOutput(
-					recordingName + ".txt", MODE_PRIVATE));
-			out.write(String.format("%-10s %-10s%n", "# "+getString(R.string.bs_header_name),
-					configuration.getName()));
-			out.write(String.format("%-10s %-14s%n", "# "+getString(R.string.bs_header_date),
-					dateFormat.format(date)));
-			out.write(String.format("%-10s %-4s%n", "# "+getString(R.string.bs_header_frequency),
-					configuration.getFrequency() + " Hz"));
-			out.write(String.format("%-10s %-10s%n", "# "+getString(R.string.bs_header_bits),
-					configuration.getNumberOfBits() + " bits"));
-			out.write(String.format("%-10s %-14s%n", "# "+getString(R.string.bs_header_duration), duration
-					+ " seconds"));
-			out.write(String.format("%-10s %-14s%n%n", "# "+getString(R.string.bs_header_active_channels),
-					configuration.getActiveChannelsAsString()));
-			out.write(String.format(formatFileCollectedData, "#num", "ch 1",
-					"ch 2", "ch 3", "ch 4", "ch 5", "ch 6", "ch 7", "ch 8"));
-			out.flush();
-			out.close();
-
-			// APPEND DATA
-			FileOutputStream outBytes = new FileOutputStream(getFilesDir()
-					+ "/" + recordingName + ".txt", true);
-			dest = new BufferedOutputStream(outBytes);
-			FileInputStream fi = new FileInputStream(getFilesDir() + "/"
-					+ "tmp.txt");
-			 
-			origin = new BufferedInputStream(fi, 1000);
-			int count;
-			byte data[] = new byte[1000];
-			while ((count = origin.read(data, 0, 1000)) != -1) {
-				dest.write(data, 0, count);
-			}
-
-		} catch (FileNotFoundException e) {
-			Log.e(TAG, "file to write header on, not found", e);
-		} catch (IOException e) {
-			Log.e(TAG, "write header stream exception", e);
-		}
-		finally{
-			try {
-				out.close();
-				origin.close();
-				dest.close();
-				deleteFile("tmp.txt");
-			} catch (IOException e) {
-				Log.e(TAG, "closing streams exception", e);
-			}
-			
-		}
-	}
-
 	private void getInfoFromActivity(Intent intent) {
 		recordingName = intent.getStringExtra("recordingName").toString();
 		configuration = (Configuration) intent
 				.getSerializableExtra("configSelected");
 		activeChannels = configuration.getActiveChannels();
-		numberOfChannelsToDisplay = configuration.getNumberOfChannelsToDisplay();
+		numberOfChannelsToDisplay = configuration
+				.getNumberOfChannelsToDisplay();
 		channelsToDisplay = configuration.getChannelsToDisplay();
 	}
 
 	private void connectToBiopluxDevice() {
 
-		// bioPlux initialization
+		// BIOPLUX INITIALIZATION
 		try {
 			connection = Device.Create(configuration.getMacAddress());
-			// Device mac addr 00:07:80:4C:2A:FB
-			connection.BeginAcq(configuration.getFrequency(),
+			// MAC EXAMPLE 00:07:80:4C:2A:FB
+			connection.BeginAcq(configuration.getReceptionFrequency(),
 					configuration.getActiveChannelsAsInteger(),
 					configuration.getNumberOfBits());
 		} catch (BPException e) {
@@ -304,46 +155,41 @@ public class BiopluxService extends Service {
 				.setContentTitle("Device Connected")
 				.setContentText("service running, receiving data..");
 
+		// EXTRA INFO ON INTENT
 		Intent newRecordingIntent = new Intent(this, NewRecordingActivity.class);
 		newRecordingIntent.putExtra("recordingName", recordingName);
 		newRecordingIntent.putExtra("configSelected", configuration);
-		
-		PendingIntent pendingIntent =
-		        TaskStackBuilder.create(this)
-		                        .addNextIntentWithParentStack(newRecordingIntent)
-		                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-		 
-		//PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0,
-		//		newRecordingIntent, 0);
-		mBuilder.setContentIntent(pendingIntent);
 
-		// mBuilder.setAutoCancel(true);
+		// PENDING INTENT
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+				newRecordingIntent, 0);
+		mBuilder.setContentIntent(pendingIntent);
 		mBuilder.setOngoing(true);
+
+		// GET THE NOTIFICATION AND NOTIFY
 		Notification notification = mBuilder.build();
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.notify(R.string.service_id, notification);
 	}
 
 	private void sendFirstGraphData(int intvaluetosend) {
-		for (int i = mClients.size() - 1; i >= 0; i--) {
-			try {
-				mClients.get(i).send(
-						Message.obtain(null, MSG_FIRST_DATA, intvaluetosend, 0));
-			} catch (RemoteException e) {
-				Log.e(TAG, "client is dead. Removing from clients list", e);
-				mClients.remove(i);
-			}
+
+		try {
+			client.send(Message.obtain(null, MSG_FIRST_DATA, intvaluetosend, 0));
+		} catch (RemoteException e) {
+			Log.e(TAG, "client is dead. Removing from clients list", e);
+			client = null;
 		}
+
 	}
+
 	private void sendSecondGraphData(int intvaluetosend) {
-		for (int i = mClients.size() - 1; i >= 0; i--) {
-			try {
-				mClients.get(i).send(
-						Message.obtain(null, MSG_SECOND_DATA, intvaluetosend, 0));
-			} catch (RemoteException e) {
-				Log.e(TAG, "client is dead. Removing from clients list", e);
-				mClients.remove(i);
-			}
+		try {
+			client.send(Message
+					.obtain(null, MSG_SECOND_DATA, intvaluetosend, 0));
+		} catch (RemoteException e) {
+			Log.e(TAG, "client is dead. Removing from clients list", e);
+			client = null;
 		}
 	}
 
@@ -354,32 +200,26 @@ public class BiopluxService extends Service {
 
 	@Override
 	public void onDestroy() {
-		super.onDestroy();
+
 		if (timer != null)
 			timer.cancel();
-		while(isWriting){
+
+		while (isWriting) {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e2) {
 				Log.e(TAG, "Exception thread is sleeping", e2);
 			}
 		}
-		try {
-			bufferedWriter.flush();
-			bufferedWriter.close();
-			outStreamWriter.close();
-		} catch (IOException e1) {
-			Log.e(TAG, "Exception while closing StreamWriter", e1);
-		}
+		dataManager.closeWriters();
 		try {
 			connection.EndAcq();
 		} catch (BPException e) {
 			Log.e(TAG, "error ending ACQ", e);
 		}
-		writeTextFile();
-		compressFile();
-
+		dataManager.saveFiles();
 		notificationManager.cancel(R.string.service_id);
 		Log.i(TAG, "service stopped");
+		super.onDestroy();
 	}
 }

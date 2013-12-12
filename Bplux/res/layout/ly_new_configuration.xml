@@ -1,290 +1,353 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:fillViewport="true" >
+    android:layout_height="wrap_content"
+    android:background="#fff" >
 
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/header"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#fff" >
+        android:background="@layout/header_gradient"
+        android:gravity="center_horizontal"
+        android:paddingBottom="5dip"
+        android:paddingTop="5dip" >
 
-        <LinearLayout
-            android:id="@+id/header"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nc_header_title"
+            android:textColor="@android:color/white"
+            android:textSize="25sp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/header"
+        android:fillViewport="true" >
+
+        <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@layout/header_gradient"
-            android:gravity="center_horizontal"
-            android:paddingBottom="5dip"
-            android:paddingTop="5dip" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/nc_header_title"
-                android:textColor="@android:color/white"
-                android:textSize="25sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/regForm"
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:layout_below="@id/header"
-            android:orientation="vertical" >
+            android:background="#fff" >
 
             <LinearLayout
+                android:id="@+id/regForm"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="vertical"
-                android:paddingLeft="10dip"
-                android:paddingRight="10dip"
-                android:paddingTop="10dip" >
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/nc_configuration_name"
-                    android:textColor="@color/grey"
-                    android:textSize="16sp" />
-
-                <EditText
-                    android:id="@+id/dev_name"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:singleLine="true"
-                    android:maxLength="14"
-                    android:textColor="@color/grey" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="10dip"
-                android:paddingTop="10dip" >
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/nc_mac_address"
-                    android:textColor="@color/grey"
-                    android:textSize="16sp" />
-
-                <EditText
-                    android:id="@+id/nc_mac_address"
-                    android:layout_width="195dip"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:singleLine="true"
-                    android:hint="@string/nc_mac_address_hint"
-                    android:textColorHint="@color/light_grey"
-                    android:maxLength="17"
-                    android:textColor="@color/grey" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="10dip"
-                android:paddingTop="10dip" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/nc_frequency"
-                    android:textColor="@color/grey"
-                    android:textSize="16sp" />
+                android:layout_height="fill_parent"
+                android:orientation="vertical" >
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <SeekBar
-                        android:id="@+id/freq_seekbar"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:max="964"
-                        android:layout_weight="1"
-                        android:paddingTop="5dip"
-                        android:progress="464" />
-
-                    <EditText
-                        android:id="@+id/freq_view"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@null"
-                        android:imeOptions="actionDone"
-                        android:inputType="number"
-                        android:lines="1"
-                        android:layout_weight="4"
-                        android:nextFocusForward="@+id/radioBttn8"
-                        android:paddingTop="10dip"
-                        android:text="@string/nc_frequency_number"
-                        android:textColor="#025f7c"
-                        android:maxLength="5"
-                        android:textSize="15sp" />
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:orientation="vertical"
+                    android:paddingLeft="10dip"
+                    android:paddingRight="10dip"
+                    android:paddingTop="10dip" >
 
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:paddingRight="10dip"
-                        android:paddingTop="10dip"
-                        android:layout_weight="4"
-                        android:text="@string/nc_frequency_metric"
-                        android:textColor="#025f7c"
-                        android:textSize="15sp" />
+                        android:text="@string/nc_configuration_name"
+                        android:textColor="@color/grey"
+                        android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/dev_name"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLength="14"
+                        android:singleLine="true"
+                        android:textColor="@color/grey" />
                 </LinearLayout>
-            </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dip"
-                android:orientation="horizontal"
-                android:paddingLeft="10dip" >
-
-                <TextView
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingTop="5dip"
-                    android:text="@string/nc_bits"
-                    android:textColor="@color/grey"
-                    android:textSize="16sp" />
+                    android:orientation="vertical"
+                    android:paddingLeft="10dip"
+                    android:paddingTop="10dip" >
 
-                <RadioGroup
-                    android:layout_width="fill_parent"
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nc_mac_address"
+                        android:textColor="@color/grey"
+                        android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/nc_mac_address"
+                        android:layout_width="195dip"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/nc_mac_address_hint"
+                        android:inputType="text"
+                        android:maxLength="17"
+                        android:singleLine="true"
+                        android:textColor="@color/grey"
+                        android:textColorHint="@color/light_grey" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="10dip"
+                    android:paddingTop="10dip" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nc_frequency_reception"
+                        android:textColor="@color/grey"
+                        android:textSize="16sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" >
+
+                        <SeekBar
+                            android:id="@+id/nc_reception_seekbar"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:max="964"
+                            android:paddingTop="5dip"
+                            android:progress="482" />
+
+                        <EditText
+                            android:id="@+id/nc_reception_freq_view"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="4"
+                            android:background="@null"
+                            android:imeOptions="actionDone"
+                            android:inputType="number"
+                            android:lines="1"
+                            android:maxLength="5"
+                            android:nextFocusForward="@+id/radioBttn8"
+                            android:paddingTop="10dip"
+                            android:text="@string/nc_frequency_reception_default"
+                            android:textColor="#025f7c"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="4"
+                            android:paddingRight="10dip"
+                            android:paddingTop="10dip"
+                            android:text="@string/nc_frequency_metric"
+                            android:textColor="#025f7c"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="10dip"
+                    android:paddingTop="10dip" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nc_frequency_sampling"
+                        android:textColor="@color/grey"
+                        android:textSize="16sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" >
+
+                        <SeekBar
+                            android:id="@+id/nc_sampling_seekbar"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:max="99"
+                            android:paddingTop="5dip"
+                            android:progress="49" />
+
+                        <EditText
+                            android:id="@+id/nc_sampling_freq_view"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="4"
+                            android:background="@null"
+                            android:imeOptions="actionDone"
+                            android:inputType="number"
+                            android:lines="1"
+                            android:maxLength="4"
+                            android:paddingTop="10dip"
+                            android:text="@string/nc_frequency_sampling_default"
+                            android:textColor="#025f7c"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="4"
+                            android:paddingRight="10dip"
+                            android:paddingTop="10dip"
+                            android:text="@string/nc_frequency_metric"
+                            android:textColor="#025f7c"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dip"
                     android:orientation="horizontal"
                     android:paddingLeft="10dip" >
 
-                    <RadioButton
-                        android:id="@+id/radioBttn8"
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:checked="true"
+                        android:layout_weight="1"
+                        android:paddingTop="5dip"
+                        android:text="@string/nc_bits"
                         android:textColor="@color/grey"
-                        android:onClick="onRadioButtonClicked"
-                        android:text="@string/nc_bits_eight" />
+                        android:textSize="16sp" />
 
-                    <RadioButton
-                        android:id="@+id/radioBttn12"
-                        android:layout_width="wrap_content"
+                    <RadioGroup
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/grey"
-                        android:onClick="onRadioButtonClicked"
-                        android:text="@string/nc_bits_twelve" />
-                </RadioGroup>
-            </LinearLayout>
+                        android:orientation="horizontal"
+                        android:paddingLeft="10dip" >
 
-            
-			<LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="20dip"
-                android:layout_marginBottom="15dip"
-                android:orientation="vertical" >
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="35sp"
-                    android:background="@drawable/button_selector"
-                    android:drawableRight="@drawable/select"
-                    android:onClick="onClickedChannelPickDialog"
-                    android:paddingLeft="10dip"
-                    android:text="@string/nc_button_active_channels"
-                    android:textColor="@android:color/white" />
-                <TextView
-                    android:id="@+id/nc_txt_active_channels"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dip"
-                    android:textColor="@color/blue" />
-            </LinearLayout>
+                        <RadioButton
+                            android:id="@+id/radioBttn8"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:onClick="onRadioButtonClicked"
+                            android:text="@string/nc_bits_eight"
+                            android:textColor="@color/grey" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dip"
-                android:orientation="vertical"
-                android:paddingLeft="10dip" >
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="35sp"
-                    android:background="@drawable/button_selector"
-                    android:drawableRight="@drawable/select"
-                    android:paddingLeft="10dip"
-                    android:onClick="onClickedChannelDisplayPickDialog"
-                    android:text="@string/nc_button_channels_to_display"
-                    android:textColor="@android:color/white" />
-                <TextView
-                    android:id="@+id/nc_txt_channels_to_show"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dip"
-                    android:textColor="@color/blue" />
-            </LinearLayout>
-            
-            <LinearLayout
-                android:id="@+id/nr_buttons"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:gravity="bottom"
-                android:orientation="vertical"
-                android:paddingBottom="2dip"
-                android:paddingTop="5dip" >
-
-                <ImageView
-                    android:contentDescription="@string/divider_image_content"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="2dp"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:paddingTop="2dp"
-                    android:scaleType="fitXY"
-                    android:src="?android:attr/listDivider" />
+                        <RadioButton
+                            android:id="@+id/radioBttn12"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:onClick="onRadioButtonClicked"
+                            android:text="@string/nc_bits_twelve"
+                            android:textColor="@color/grey" />
+                    </RadioGroup>
+                </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/sl_buttons"
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dip"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="20dip"
+                    android:orientation="vertical" >
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="35sp"
+                        android:background="@drawable/button_selector"
+                        android:drawableRight="@drawable/select"
+                        android:onClick="onClickedChannelPickDialog"
+                        android:paddingLeft="10dip"
+                        android:text="@string/nc_button_active_channels"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:id="@+id/nc_txt_active_channels"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="10dip"
+                        android:textColor="@color/blue" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dip"
+                    android:orientation="vertical"
+                    android:paddingLeft="10dip" >
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="35sp"
+                        android:background="@drawable/button_selector"
+                        android:drawableRight="@drawable/select"
+                        android:onClick="onClickedChannelDisplayPickDialog"
+                        android:paddingLeft="10dip"
+                        android:text="@string/nc_button_channels_to_display"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:id="@+id/nc_txt_channels_to_show"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="10dip"
+                        android:textColor="@color/blue" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/nr_buttons"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
                     android:gravity="bottom"
-                    android:orientation="horizontal"
-                    android:paddingTop="5dip"
-                    android:paddingLeft="5dip"
-                    android:paddingRight="5dip" >
+                    android:orientation="vertical"
+                    android:paddingBottom="2dip"
+                    android:paddingTop="5dip" >
 
-                    <Button
-                        android:id="@+id/sl_bttnCancel"
+                    <ImageView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="5dip"
-                        android:layout_weight="1"
-                        android:background="@drawable/button_selector"
-                        android:onClick="onClickedCancel"
-                        android:text="@string/nc_button_cancel"
-                        android:textColor="@android:color/white" />
+                        android:contentDescription="@string/divider_image_content"
+                        android:paddingBottom="2dp"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:paddingTop="2dp"
+                        android:scaleType="fitXY"
+                        android:src="?android:attr/listDivider" />
 
-                    <Button
-                        android:id="@+id/btnRegister"
+                    <LinearLayout
+                        android:id="@+id/sl_buttons"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@drawable/button_selector"
-                        android:onClick="onClickedSubmit"
-                        android:text="@string/nc_button_submit"
-                        android:textColor="@android:color/white" />
+                        android:gravity="bottom"
+                        android:orientation="horizontal"
+                        android:paddingLeft="5dip"
+                        android:paddingRight="5dip"
+                        android:paddingTop="5dip" >
+
+                        <Button
+                            android:id="@+id/sl_bttnCancel"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="5dip"
+                            android:layout_weight="1"
+                            android:background="@drawable/button_selector"
+                            android:onClick="onClickedCancel"
+                            android:text="@string/nc_button_cancel"
+                            android:textColor="@android:color/white" />
+
+                        <Button
+                            android:id="@+id/btnRegister"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/button_selector"
+                            android:onClick="onClickedSubmit"
+                            android:text="@string/nc_button_submit"
+                            android:textColor="@android:color/white" />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
-    </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
 
-</ScrollView>
+</RelativeLayout>

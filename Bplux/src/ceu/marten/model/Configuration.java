@@ -27,7 +27,9 @@ public class Configuration implements Serializable {
 	@DatabaseField(canBeNull = true)
 	private String createDate = null;
 	@DatabaseField(canBeNull = true)
-	private int frequency = 0;
+	private int receptionFrequency = 0;
+	@DatabaseField(canBeNull = true)
+	private int samplingFrequency = 0;
 	@DatabaseField(canBeNull = true)
 	private int numberOfBits = 8; // number of bits can be 8 or 12 [0-255] |
 									// [0-4095]
@@ -65,12 +67,20 @@ public class Configuration implements Serializable {
 		this.createDate = createDate;
 	}
 
-	public void setFrequency(int frequency) {
-		this.frequency = frequency;
+	public void setReceptionFrequency(int frequency) {
+		this.receptionFrequency = frequency;
 	}
 
-	public int getFrequency() {
-		return frequency;
+	public int getReceptionFrequency() {
+		return receptionFrequency;
+	}
+
+	public int getSamplingFrequency() {
+		return samplingFrequency;
+	}
+
+	public void setSamplingFrequency(int samplingFrequency) {
+		this.samplingFrequency = samplingFrequency;
 	}
 
 	public int getNumberOfBits() {
@@ -212,7 +222,7 @@ public class Configuration implements Serializable {
 
 	@Override
 	public String toString() {
-		return "name " + name + "; " + "freq " + frequency + "; " + "nBits "
+		return "name " + name + "; " + "freq " + receptionFrequency + "; " + "nBits "
 				+ numberOfBits + "; " + "\n Active channels ";
 	}
 }

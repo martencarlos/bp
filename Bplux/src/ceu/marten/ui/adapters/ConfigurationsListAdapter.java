@@ -32,7 +32,8 @@ public class ConfigurationsListAdapter extends ArrayAdapter<Configuration> {
 		}
 
 		TextView name = (TextView) rowView.findViewById(R.id.dli_name);
-		TextView frequency = (TextView) rowView.findViewById(R.id.dli_freq);
+		TextView receptionFreq = (TextView) rowView.findViewById(R.id.dli_reception_freq);
+		TextView samplingFreq = (TextView) rowView.findViewById(R.id.dli_sampling_freq);
 		TextView mac = (TextView) rowView.findViewById(R.id.dli_mac);
 		TextView bits = (TextView) rowView.findViewById(R.id.dli_nbits);
 		TextView date = (TextView) rowView.findViewById(R.id.dli_date);
@@ -44,7 +45,8 @@ public class ConfigurationsListAdapter extends ArrayAdapter<Configuration> {
 		Configuration configuration = getItem(position);
 
 		name.setText(configuration.getName());
-		frequency.setText(String.valueOf(configuration.getFrequency()) + " Hz");
+		receptionFreq.setText(String.valueOf(configuration.getReceptionFrequency()) + " Hz");
+		samplingFreq.setText(String.valueOf(configuration.getSamplingFrequency()) + " Hz");
 		mac.setText(configuration.getMacAddress());
 		bits.setText(String.valueOf(configuration.getNumberOfBits()) + " bits");
 		date.setText(configuration.getCreateDate());

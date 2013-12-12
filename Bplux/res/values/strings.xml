@@ -46,9 +46,11 @@
     <string name="nc_configuration_name">Configuration name</string>
     <string name="nc_mac_address">MAC address</string>
     <string name="nc_mac_address_hint">00:B0:D0:86:BB:F7</string>
-    <string name="nc_frequency">Frequency</string>
-    <string name="nc_frequency_number">500</string>
-    <string name="nc_frequency_metric">Hz</string>
+    <string name="nc_frequency_reception">"Reception frequency"</string>
+    <string name="nc_frequency_reception_default">"500"</string>
+    <string name="nc_frequency_metric">"Hz"</string>
+    <string name="nc_frequency_sampling">"Sampling frequency"</string>
+    <string name="nc_frequency_sampling_default">"50"</string>
     <string name="nc_bits">Bits per signal</string>
     <string name="nc_bits_eight">8</string>
     <string name="nc_bits_twelve">12</string>
@@ -79,7 +81,8 @@
     
     <!-- NEW RECORDING ACTIVITY -->
     <string name="nr_configuration_name">Configuration name: </string>
-    <string name="nr_frequency">Frequency: </string>
+    <string name="nr_reception_frequency">Reception frequency: </string>
+    <string name="nr_sampling_frequency">Sampling frequency: </string>
     <string name="nr_bits">Number of bits: </string>
     <string name="nr_active_channels">Active channels: </string>
     <string name="nr_button_start">Start recording</string>
