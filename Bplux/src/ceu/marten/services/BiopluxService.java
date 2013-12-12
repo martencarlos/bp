@@ -32,6 +32,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import ceu.marten.bplux.R;
 import ceu.marten.model.Configuration;
@@ -61,6 +62,7 @@ public class BiopluxService extends Service {
 	private Device connection;
 	private Device.Frame[] frames;
 	private int frameCounter;
+	private boolean isWriting;
 	private short[] frameTmp;
 	private ArrayList<Integer> activeChannels;
 	private OutputStreamWriter outStreamWriter;
@@ -134,7 +136,7 @@ public class BiopluxService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		frames = new Device.Frame[20];
+		frames = new Device.Frame[80];
 		for (int i = 0; i < frames.length; i++)
 			frames[i] = new Frame();
 
@@ -159,17 +161,20 @@ public class BiopluxService extends Service {
 			public void run() {
 				processFrames();
 			}
-		}, 0, 10L);
+		}, 0, 50L);
 		
 		showNotification(intent);
 		return mMessenger.getBinder();
 	}
 
 	private void processFrames() {
-			getFrames(20);
+			isWriting = true;
+			getFrames(80);
 			for (Frame f : frames) {
 				writeFramesToTmpFile(f);
+				
 			}
+			isWriting = false;
 		try {
 			sendFirstGraphData(frames[0].an_in[(channelsToDisplay.get(0) - 1)]);
 			if(numberOfChannelsToDisplay==2)
@@ -178,6 +183,7 @@ public class BiopluxService extends Service {
 		} catch (Throwable t) {
 			Log.e(TAG, "error processing frames", t);
 		}
+		
 	}
 
 	public void writeFramesToTmpFile(Frame f) {
@@ -196,6 +202,7 @@ public class BiopluxService extends Service {
 		} catch (IOException e) {
 			Log.e(TAG, "Exception while writing frame row", e);
 		}
+		
 	}
 
 	private void getFrames(int nFrames) {
@@ -300,16 +307,15 @@ public class BiopluxService extends Service {
 		Intent newRecordingIntent = new Intent(this, NewRecordingActivity.class);
 		newRecordingIntent.putExtra("recordingName", recordingName);
 		newRecordingIntent.putExtra("configSelected", configuration);
-		/*
-		 * TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-		 * stackBuilder.addParentStack(NewRecordingActivity.class);
-		 * stackBuilder.addNextIntent(newRecordingIntent); PendingIntent
-		 * resultPendingIntent = stackBuilder.getPendingIntent(0,
-		 * PendingIntent.FLAG_UPDATE_CURRENT);
-		 */
-		PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0,
-				newRecordingIntent, 0);
-		mBuilder.setContentIntent(resultPendingIntent);
+		
+		PendingIntent pendingIntent =
+		        TaskStackBuilder.create(this)
+		                        .addNextIntentWithParentStack(newRecordingIntent)
+		                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+		 
+		//PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0,
+		//		newRecordingIntent, 0);
+		mBuilder.setContentIntent(pendingIntent);
 
 		// mBuilder.setAutoCancel(true);
 		mBuilder.setOngoing(true);
@@ -351,11 +357,12 @@ public class BiopluxService extends Service {
 		super.onDestroy();
 		if (timer != null)
 			timer.cancel();
-			
-		try {
-			Thread.sleep(100);// for sync with main thread
-		} catch (InterruptedException e) {
-			Log.e(TAG, "interrupted sleep of thread", e);
+		while(isWriting){
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e2) {
+				Log.e(TAG, "Exception thread is sleeping", e2);
+			}
 		}
 		try {
 			bufferedWriter.flush();

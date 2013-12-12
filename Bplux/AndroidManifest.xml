@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ceu.marten.bplux"
     android:versionCode="1"
-    android:versionName="1.1" >
+    android:versionName="Alpha" >
 
     <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="8" 
-        android:maxSdkVersion="18"/>
+        android:maxSdkVersion="19"
+        android:minSdkVersion="14"
+        android:targetSdkVersion="14" />
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-   	<uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE"/>
-   	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-   	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-   	<uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -27,14 +26,27 @@
             android:label="@string/home_label" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name="ceu.marten.ui.ConfigurationsActivity"
             android:label="@string/configurations_label"
-            android:windowSoftInputMode="adjustPan"
-            android:parentActivityName="ceu.marten.ui.HomeActivity" >
+            android:parentActivityName="ceu.marten.ui.HomeActivity"
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity
+            android:name="ceu.marten.ui.NewRecordingActivity"
+            android:label="@string/new_recordings_label"
+            android:launchMode="singleInstance"
+            android:windowSoftInputMode="adjustPan" 
+            android:parentActivityName="ceu.marten.ui.ConfigurationsActivity" >
+
+            <!-- The meta-data element is needed for versions lower than 4.1 -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.myfirstapp.MainActivity" />
         </activity>
         <activity
             android:name="ceu.marten.ui.NewConfigurationActivity"
@@ -43,16 +55,12 @@
         </activity>
         <activity
             android:name="ceu.marten.ui.RecordingsActivity"
-            android:label="@string/recordings_label" >
+            android:label="@string/recordings_label"
+            android:parentActivityName="ceu.marten.ui.HomeActivity" >
         </activity>
-        <activity
-            android:name="ceu.marten.ui.NewRecordingActivity"
-            android:label="@string/new_recordings_label"
-            android:parentActivityName="ceu.marten.ui.ConfigurationsActivity" >
-            android:launchMode="singleInstance" >
-            
-        </activity>
-		<service android:name="ceu.marten.services.BiopluxService"/>    
+        
+
+        <service android:name="ceu.marten.services.BiopluxService" />
     </application>
 
 </manifest>

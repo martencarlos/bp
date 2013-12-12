@@ -56,8 +56,10 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	
 	@Override
 	public void onBackPressed() {
-	    super.onBackPressed();
+		Intent backIntent = new Intent(this, HomeActivity.class);
+	    startActivity(backIntent);
 	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right );
+	    super.onBackPressed();
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -106,6 +108,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 										configurations
 												.get(currentConfigurationsPosition));
 								startActivity(intent);
+								overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 								}
 							}
 						})

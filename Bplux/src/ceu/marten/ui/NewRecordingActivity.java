@@ -98,22 +98,17 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	};
 
 	static void appendDataToGraphTop(int value) {
-		graph.setxValue(20000d / currentConfiguration.getFrequency()
+		graph.setxValue(80000d / currentConfiguration.getFrequency()
 				* lastXValue++);// in miliseconds
 		graph.getSerie().appendData(
-				new GraphViewData(graph.getxValue(), value), true, 500);// scroll
-																		// to
-																		// end,
-																		// true
+				new GraphViewData(graph.getxValue(), value), true, 600);
 	}
 
 	static void appendDataToGraphBottom(int value) {
-		graphBottom.setxValue(lastXValue++);
+		graphBottom.setxValue(80000d / currentConfiguration.getFrequency()
+				* lastXValue++);
 		graphBottom.getSerie().appendData(
-				new GraphViewData(graphBottom.getxValue(), value), true, 500);// scroll
-																				// to
-																				// end,
-																				// true
+				new GraphViewData(graphBottom.getxValue(), value), true, 600);
 	}
 
 	@Override
@@ -160,6 +155,14 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			uiActiveChannels.setText(currentConfiguration
 					.getActiveChannelsAsString());
 		}
+	}
+	
+	@Override
+	public void onBackPressed() {
+	    Intent backIntent = new Intent(this, ConfigurationsActivity.class);
+	    startActivity(backIntent);
+	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right );
+		super.onBackPressed();
 	}
 
 	@Override
@@ -235,7 +238,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			SaveRecoridngRunnable myRunnable = new SaveRecoridngRunnable();
 			Thread saveRecordingThread = new Thread(myRunnable);
 			saveRecordingThread.start();
-
 			displayInfoToast(getString(R.string.nr_info_stopped));
 			uiStartStopbutton.setText(getString(R.string.nr_button_start));
 		}
@@ -336,10 +338,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 	}
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
 
 	@Override
 	protected void onDestroy() {
