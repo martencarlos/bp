@@ -66,7 +66,7 @@ public class HRGraph implements Serializable{
 		
 		GraphViewStyle gvs= new GraphViewStyle();
 		gvs.setNumHorizontalLabels(4);
-		gvs.setVerticalLabelsWidth(65);
+		gvs.setVerticalLabelsWidth(70);
 		gvs.setVerticalLabelsAlign(Align.LEFT);
 		gvs.setGridColor(context.getResources().getColor(R.color.light_grey));
 		gvs.setHorizontalLabelsColor(context.getResources().getColor(R.color.grey));

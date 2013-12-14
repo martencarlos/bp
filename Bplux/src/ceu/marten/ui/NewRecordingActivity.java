@@ -64,6 +64,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private boolean isServiceBounded;
 	private Context context = this;
 	private AlertDialog dialog;
+	private LayoutInflater inflater;
 	private final Messenger mActivity = new Messenger(new IncomingHandler());
 
 	static class IncomingHandler extends Handler {
@@ -121,14 +122,14 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 		// INIT VARIABLES
 		int numberOfChannelsToDisplay = currentConfiguration.getNumberOfChannelsToDisplay();
+		inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		graphs = new HRGraph[numberOfChannelsToDisplay];
 		isChronometerRunning = false;
 		isServiceBounded = false;
 		lastXValue = 0;
 
 		// INIT LAYOUT
-		LayoutInflater inflater = (LayoutInflater) getApplicationContext()
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		
 		LayoutParams graphParams = new LayoutParams(LayoutParams.MATCH_PARENT,
 				450);
 		LayoutParams detailParameters = new LayoutParams(
@@ -194,10 +195,11 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private void setupBackDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("Recording will be stopped and saved").setTitle(
-				"Are you sure?");
+		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
+		customTitleView.setText(R.string.nr_back_dialog_title);
+		builder.setMessage(getString(R.string.nr_back_dialog_message)).setCustomTitle(customTitleView);
 
-		builder.setPositiveButton("proceed",
+		builder.setPositiveButton(getString(R.string.nr_dialog_positive_button),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						new saveRecording().execute("");
@@ -209,7 +211,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 						finish();
 					}
 				});
-		builder.setNegativeButton("cancel",
+		builder.setNegativeButton(getString(R.string.nc_dialog_negative_button),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						// dialog gets closed

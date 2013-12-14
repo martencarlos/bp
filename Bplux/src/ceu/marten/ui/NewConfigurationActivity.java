@@ -47,6 +47,7 @@ public class NewConfigurationActivity extends Activity {
 	private SeekBar samplingfreqSeekbar;
 	private EditText configurationName, macAddress, receptionFreqEditor, samplingFreqEditor;
 	private TextView activeChannels, channelsToDisplay;
+	private LayoutInflater inflater;
 
 	String[] channelsActivated = null;
 	boolean[] channelsSelected = null;
@@ -75,6 +76,7 @@ public class NewConfigurationActivity extends Activity {
 		newConfiguration.setReceptionFrequency(DEFAULT_RECEPTION_FREQ);
 		newConfiguration.setSamplingFrequency(DEFAULT_SAMPLING_FREQ);
 		newConfiguration.setNumberOfBits(DEFAULT_NUMBER_OF_BITS);
+		inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	private void findViews() {
@@ -240,12 +242,15 @@ public class NewConfigurationActivity extends Activity {
 		AlertDialog.Builder activeChannelsBuilder;
 		AlertDialog activeChannelsDialog;
 		ListView activeChannelsListView;
+		
+		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
+		customTitleView.setText(R.string.nc_dialog_title_channels_to_activate);
 
 		// ACTIVE CHANNELS BUILDER
 		activeChannelsBuilder = new AlertDialog.Builder(this);
 		activeChannelsBuilder
 				.setIcon(R.drawable.select_dialog)
-				.setTitle(getString(R.string.nc_dialog_title_channels_to_activate))
+				.setCustomTitle(customTitleView)
 				.setView(
 						getLayoutInflater().inflate(
 								R.layout.dialog_channels_listview, null));
@@ -330,12 +335,14 @@ public class NewConfigurationActivity extends Activity {
 		AlertDialog.Builder channelsToDisplayBuilder;
 		AlertDialog channelsToDisplayDialog;
 
+		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
+		customTitleView.setText(R.string.nc_dialog_title_channels_to_display);
 		// BUILDER
 		channelsToDisplayBuilder = new AlertDialog.Builder(this);
-		channelsToDisplayBuilder.setIcon(R.drawable.select_dialog);
-		channelsToDisplayBuilder.setTitle(getString(R.string.nc_dialog_title_channels_to_display));
-		channelsToDisplayBuilder.setView(getLayoutInflater().inflate(
-				R.layout.dialog_channels_listview, null));
+		channelsToDisplayBuilder.setIcon(R.drawable.select_dialog)
+								.setCustomTitle(customTitleView)
+								.setView(getLayoutInflater().inflate(
+										R.layout.dialog_channels_listview, null));
 
 		channelsToDisplayBuilder.setPositiveButton(getString(R.string.nc_dialog_positive_button),
 				new DialogInterface.OnClickListener() {

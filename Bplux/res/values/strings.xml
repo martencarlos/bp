@@ -90,6 +90,9 @@
     <string name="nr_button_stop">Stop recording</string>
     <string name="nr_info_started">Recording started</string>
     <string name="nr_info_rec_saved">Recording saved</string>
+    <string name="nr_back_dialog_title">Are you sure?</string>
+    <string name="nr_back_dialog_message">If you wish to proceed, recording will be stopped and saved</string>
+    <string name="nr_dialog_positive_button">Proceed</string>
     
     <!-- BIOPLUX SERVICE -->
     <string name="bs_header_name">Configuration name: </string>

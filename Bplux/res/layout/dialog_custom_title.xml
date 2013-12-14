@@ -8,5 +8,5 @@
     android:paddingBottom="20dip"
     android:paddingRight="10dip"
     android:paddingLeft="10dip"
-    android:textColor="@color/grey"
-    android:text="@string/ca_dialog_title" />
+    android:background="@layout/header_color"
+    android:textColor="@android:color/white"/>
