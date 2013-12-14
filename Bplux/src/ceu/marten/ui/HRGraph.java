@@ -37,7 +37,7 @@ public class HRGraph implements Serializable{
 
 	public HRGraph(android.content.Context context, String title) {
 		// STYLE
-		style = new GraphViewSeriesStyle(Color.rgb(23, 118, 8), 2); // green and
+		style = new GraphViewSeriesStyle(randomColor(), 2); // green and
 																	// thickness
 		
 		// INIT SERIE DATA
@@ -89,6 +89,14 @@ public class HRGraph implements Serializable{
 
 		// Current X value
 		xValue = 2d;
+	}
+	
+	private int randomColor() {
+		int min = 100, max = 180;
+		int r = 0;
+		int g = min + (int)(Math.random()*max); 
+		int b = min + (int)(Math.random()*max); 
+		return Color.rgb(r, g, b);
 	}
 	
 	public GraphView getGraphView() {

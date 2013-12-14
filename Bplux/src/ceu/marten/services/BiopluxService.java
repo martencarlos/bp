@@ -33,7 +33,6 @@ public class BiopluxService extends Service {
 	public static final int MSG_UNREGISTER_CLIENT = 2;
 	public static final int MSG_RECORDING_DURATION = 3;
 	public static final int MSG_DATA = 4;
-	public static final int MSG_SECOND_DATA = 5;
 
 	static Messenger client = null;
 	private NotificationManager notificationManager;
