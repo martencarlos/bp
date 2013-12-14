@@ -1,6 +1,6 @@
 package ceu.marten.ui;
 
-import java.text.DecimalFormat;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -22,14 +22,17 @@ import com.jjoe64.graphview.LineGraphView;
  * Created by martencarlos on 25/07/13.
  */
 
-public class HRGraph{
+public class HRGraph implements Serializable{
 
+	private static final long serialVersionUID = -5122704369223869018L;
+
+	
 	private GraphViewSeries serie;
 	private GraphViewSeriesStyle style;
 	private double xValue;
 	private GraphView graphView;
 	private Date currentValue;
-	private DecimalFormat decimalFormat = new DecimalFormat("#.##"); 
+	//private DecimalFormat decimalFormat = new DecimalFormat("#.##"); 
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss",Locale.UK);
 
 	public HRGraph(android.content.Context context, String title) {
@@ -46,7 +49,7 @@ public class HRGraph{
 		// ADD SERIES TO GRAPHVIEW and SET SCROLLABLE
 		graphView.addSeries(serie);
 		// graphView.setScrollable(true);
-		graphView.setViewPort(2, 500);
+		graphView.setViewPort(2, 5000);
 		graphView.setScalable(true);
 		graphView.setCustomLabelFormatter(new CustomLabelFormatter() {  
 			   @Override  
@@ -56,7 +59,7 @@ public class HRGraph{
 			    	  return timeFormat.format(currentValue);
 			      }
 			      else
-			    	  return decimalFormat.format(value);
+			    	  return String.valueOf(((Double)value).intValue());
 			     
 			   }  
 			}); 

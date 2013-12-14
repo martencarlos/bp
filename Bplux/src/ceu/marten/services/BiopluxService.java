@@ -59,7 +59,7 @@ public class BiopluxService extends Service {
 				client = msg.replyTo;
 				break;
 			case MSG_UNREGISTER_CLIENT:
-				client = null;
+				//client = null
 				break;
 			case MSG_RECORDING_DURATION:
 				dataManager.setDuration(msg.getData().getString("duration"));
@@ -200,7 +200,7 @@ public class BiopluxService extends Service {
 
 	@Override
 	public void onDestroy() {
-
+		notificationManager.cancel(R.string.service_id);
 		if (timer != null)
 			timer.cancel();
 
@@ -218,7 +218,7 @@ public class BiopluxService extends Service {
 			Log.e(TAG, "error ending ACQ", e);
 		}
 		dataManager.saveFiles();
-		notificationManager.cancel(R.string.service_id);
+		
 		Log.i(TAG, "service stopped");
 		super.onDestroy();
 	}

@@ -89,7 +89,7 @@
     
     <string name="nr_button_stop">Stop recording</string>
     <string name="nr_info_started">Recording started</string>
-    <string name="nr_info_stopped">Recording stopped</string>
+    <string name="nr_info_rec_saved">Recording saved</string>
     
     <!-- BIOPLUX SERVICE -->
     <string name="bs_header_name">Configuration name: </string>

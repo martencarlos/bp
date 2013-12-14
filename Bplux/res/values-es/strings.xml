@@ -87,7 +87,7 @@
     
     <string name="nr_button_stop">Parar grabación</string>
     <string name="nr_info_started">Grabación ha comenzado</string>
-    <string name="nr_info_stopped">Grabación guardada</string>
+    <string name="nr_info_rec_saved">Grabación guardada</string>
     
      <!-- BIOPLUX SERVICE -->
     <string name="bs_header_name">Nombre de configuración: </string>

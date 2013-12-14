@@ -8,10 +8,13 @@ import java.util.Locale;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -44,7 +47,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static final String TAG = NewRecordingActivity.class.getName();
 
 	private TextView uiRecordingName, uiConfigurationName, uiNumberOfBits,
-			uiReceptionFrequency,uiSamplingFrequency, uiActiveChannels, uiMacAddress;
+			uiReceptionFrequency, uiSamplingFrequency, uiActiveChannels,
+			uiMacAddress;
 	private LinearLayout uiGraph;
 	private Button uiStartStopbutton;
 	private static Chronometer chronometer;
@@ -60,6 +64,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static double lastXValue;
 	private static HRGraph graphBottom;
 	private boolean isServiceBounded = false;
+	private Context context = this;
+	private AlertDialog dialog;
 	private final Messenger mActivity = new Messenger(new IncomingHandler());
 
 	static class IncomingHandler extends Handler {
@@ -97,18 +103,20 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 	};
 
-	static void appendDataToGraphTop(int value) {
-		graph.setxValue(80000d / currentConfiguration.getReceptionFrequency()
-				* lastXValue++);// in miliseconds
-		graph.getSerie().appendData(
-				new GraphViewData(graph.getxValue(), value), true, 600);
+	static void appendDataToGraphTop(int yValue) {
+		graph.getSerie()
+				.appendData(
+						new GraphViewData(
+								(80000d / currentConfiguration
+										.getReceptionFrequency() * lastXValue++),
+								yValue), true, 800);
 	}
 
-	static void appendDataToGraphBottom(int value) {
-		graphBottom.setxValue(80000d / currentConfiguration.getReceptionFrequency()
-				* lastXValue++);
+	static void appendDataToGraphBottom(int yValue) {
 		graphBottom.getSerie().appendData(
-				new GraphViewData(graphBottom.getxValue(), value), true, 600);
+				new GraphViewData(80000d
+						/ currentConfiguration.getReceptionFrequency()
+						* lastXValue++, yValue), true, 600);
 	}
 
 	@Override
@@ -116,23 +124,36 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_new_recording);
-		findViews();
-
+		findViews(); //GETTING THE VIEWS
+		
+		//GETTING EXTRA INFO FROM INTENT
 		extras = getIntent().getExtras();
 		currentConfiguration = (Configuration) extras
 				.getSerializable("configSelected");
 		recordingName = extras.getString("recordingName").toString();
 		lastXValue = 0;
 
+		// IF SERVICE WAS RUNNING BIND TO IT
 		if (isServiceRunning()) {
 			bindToService();
 			uiStartStopbutton.setText(getString(R.string.nr_button_stop));
 		}
 
 		// SET INTERFACE COMPONENTS
-		graph = new HRGraph(this, getString(R.string.nc_dialog_channel) + " "
-				+ currentConfiguration.getChannelsToDisplay().get(0).toString());
-		uiGraph.addView(graph.getGraphView());
+		@SuppressWarnings("deprecation")
+		final Object data = getLastNonConfigurationInstance();
+		if (data != null) {
+			graph = (HRGraph) data;
+			((ViewGroup) (graph.getGraphView().getParent())).removeView(graph
+					.getGraphView());
+			uiGraph.addView(graph.getGraphView());
+		} else {
+			graph = new HRGraph(this, getString(R.string.nc_dialog_channel)
+					+ " "
+					+ currentConfiguration.getChannelsToDisplay().get(0)
+							.toString());
+			uiGraph.addView(graph.getGraphView());
+		}
 		uiRecordingName.setText(recordingName);
 
 		if (currentConfiguration.getNumberOfChannelsToDisplay() == 2) {
@@ -141,10 +162,10 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 							+ " "
 							+ currentConfiguration.getChannelsToDisplay()
 									.get(1).toString());
-			ViewGroup la = (ViewGroup) findViewById(R.id.nr_graph_details);
-			la.removeAllViews();
-			la.setPadding(20, 0, 20, 0);
-			la.addView(graphBottom.getGraphView());
+			ViewGroup vgDetails = (ViewGroup) findViewById(R.id.nr_graph_details);
+			vgDetails.removeAllViews();
+			vgDetails.setPadding(20, 0, 20, 0);
+			vgDetails.addView(graphBottom.getGraphView());
 		} else {
 			uiConfigurationName.setText(currentConfiguration.getName());
 			uiReceptionFrequency.setText(String.valueOf(currentConfiguration
@@ -157,43 +178,78 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			uiActiveChannels.setText(currentConfiguration
 					.getActiveChannelsAsString());
 		}
+		setupBackDialog();
 	}
-	
+
+	private void setupBackDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Recording will be stopped and saved")
+		       .setTitle("Are you sure?");
+		
+		builder.setPositiveButton("proceed", new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int id) {
+	        	   	new saveRecording().execute("");
+	        	   	Intent backIntent = new Intent(context, ConfigurationsActivity.class);
+	       			startActivity(backIntent);
+	       			overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+	       			finish();
+	           }
+	       });
+	builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int id) {
+	               //just close dialog
+	           }
+	       });
+
+		
+		dialog = builder.create();
+		
+	}
+
 	@Override
 	public void onBackPressed() {
-	    Intent backIntent = new Intent(this, ConfigurationsActivity.class);
-	    startActivity(backIntent);
-	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right );
-		super.onBackPressed();
+		if(isChronometerRunning)
+			dialog.show();
+		else{
+			Intent backIntent = new Intent(context, ConfigurationsActivity.class);
+   			startActivity(backIntent);
+   			overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+   			super.onBackPressed();
+		}
+			
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
 		if (isChronometerRunning) {
 			extras.putLong("chronometerBase", chronometer.getBase());
 			extras.putDouble("xcounter", lastXValue);
-		}
-
-		else
+		} else
 			extras.putLong("chronometerBase", 0);
+
 		savedInstanceState.putAll(extras);
-		super.onSaveInstanceState(savedInstanceState);
+	}
+
+	@Override
+	public Object onRetainNonConfigurationInstance() {
+		return graph;
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
 		if (savedInstanceState.getLong("chronometerBase") != 0) {
 			chronometer.setBase(savedInstanceState.getLong("chronometerBase"));
 			chronometer.start();
 			isChronometerRunning = true;
 			lastXValue = savedInstanceState.getDouble("xcounter");
 		}
+
 		currentConfiguration = (Configuration) savedInstanceState
 				.getSerializable("configSelected");
 		recordingName = savedInstanceState.getString("recordingName")
 				.toString();
-
-		super.onRestoreInstanceState(savedInstanceState);
 	}
 
 	private void findViews() {
@@ -238,24 +294,10 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			startChronometer();
 
 		} else {
-			SaveRecoridngRunnable myRunnable = new SaveRecoridngRunnable();
-			Thread saveRecordingThread = new Thread(myRunnable);
-			saveRecordingThread.start();
-			displayInfoToast(getString(R.string.nr_info_stopped));
+			new saveRecording().execute("");
 			uiStartStopbutton.setText(getString(R.string.nr_button_start));
 		}
 
-	}
-
-	class SaveRecoridngRunnable implements Runnable {
-		public void run() {
-			stopChronometer();
-			sendRecordingDuration();
-			saveRecording();
-			unbindOfService();
-			stopService(new Intent(NewRecordingActivity.this,
-					BiopluxService.class));
-		}
 	}
 
 	private void displayInfoToast(String messageToDisplay) {
@@ -323,6 +365,35 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		isServiceBounded = true;
 	}
 
+	private class saveRecording extends AsyncTask<String, Void, String> {
+
+		@Override
+		protected String doInBackground(String... params) {
+			// android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+			stopChronometer();
+			sendRecordingDuration();
+			saveRecording();
+			unbindOfService();
+			stopService(new Intent(NewRecordingActivity.this,
+					BiopluxService.class));
+			return "executed";
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			displayInfoToast(getString(R.string.nr_info_rec_saved));
+		}
+
+		@Override
+		protected void onPreExecute() {
+
+		}
+
+		@Override
+		protected void onProgressUpdate(Void... values) {
+		}
+	}
+
 	void unbindOfService() {
 		if (isServiceBounded) {
 			if (mService != null) {
@@ -341,9 +412,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 	}
 
-
 	@Override
 	protected void onDestroy() {
+		Log.d(TAG, "destroy");
 		super.onDestroy();
 		try {
 			unbindOfService();
