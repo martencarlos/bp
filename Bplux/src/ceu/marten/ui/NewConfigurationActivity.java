@@ -342,27 +342,20 @@ public class NewConfigurationActivity extends Activity {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						channelsSelected = channelsToDisplayListAdapter
-								.getChecked();
+						channelsSelected = channelsToDisplayListAdapter.getChecked();
 						boolean[] channelsToDisplayArray = new boolean[8];
 
-						if (numberOfChannelsSelected(channelsSelected) > 2)
-							displayErrorToast(errorMessageChannelsToDisplayNumber);
-						else if (numberOfChannelsSelected(channelsSelected) != 0){
+						if (numberOfChannelsSelected(channelsSelected) != 0){
 							channelsToDisplay.setError(null);
 							channelsToDisplay.setTextColor(getResources().getColor(R.color.blue));
 							channelsToDisplay.setText(R.string.nc_channels_to_display);
-							printChannelsToDisplay(channelsToDisplayArray,
-									channelsSelected);
-							newConfiguration
-									.setChannelsToDisplay(channelsToDisplayArray);
+							printChannelsToDisplay(channelsToDisplayArray,channelsSelected);
+							newConfiguration.setChannelsToDisplay(channelsToDisplayArray);
 						}
 
 					}
 
-					private void printChannelsToDisplay(
-							boolean[] channelsToDisplayArray,
-							boolean[] channelsSelected) {
+					private void printChannelsToDisplay(boolean[] channelsToDisplayArray, boolean[] channelsSelected) {
 						String si = "";
 						for (int i = 0; i < channelsSelected.length; i++) {
 							if (channelsSelected[i]) {

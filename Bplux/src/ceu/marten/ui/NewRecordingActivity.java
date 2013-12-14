@@ -26,10 +26,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import ceu.marten.bplux.R;
@@ -49,10 +49,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private TextView uiRecordingName, uiConfigurationName, uiNumberOfBits,
 			uiReceptionFrequency, uiSamplingFrequency, uiActiveChannels,
 			uiMacAddress;
-	private LinearLayout uiGraph;
 	private Button uiStartStopbutton;
 	private static Chronometer chronometer;
-	private boolean isChronometerRunning = false;
+	private boolean isChronometerRunning;
 
 	private static Configuration currentConfiguration;
 	private String recordingName;
@@ -60,10 +59,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private Bundle extras;
 
 	private Messenger mService = null;
-	private static HRGraph graph;
+	private static HRGraph[] graphs;
 	private static double lastXValue;
-	private static HRGraph graphBottom;
-	private boolean isServiceBounded = false;
+	private boolean isServiceBounded;
 	private Context context = this;
 	private AlertDialog dialog;
 	private final Messenger mActivity = new Messenger(new IncomingHandler());
@@ -72,11 +70,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case BiopluxService.MSG_FIRST_DATA:
-				appendDataToGraphTop(msg.arg1);
-				break;
-			case BiopluxService.MSG_SECOND_DATA:
-				appendDataToGraphBottom(msg.arg1);
+			case BiopluxService.MSG_DATA:
+				appendDataToGraphs(msg.getData().getShortArray("frame"));
 				break;
 			default:
 				super.handleMessage(msg);
@@ -103,70 +98,75 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 	};
 
-	static void appendDataToGraphTop(int yValue) {
-		graph.getSerie()
-				.appendData(
-						new GraphViewData(
-								(80000d / currentConfiguration
-										.getReceptionFrequency() * lastXValue++),
-								yValue), true, 800);
+	static void appendDataToGraphs(short[] data) {
+		lastXValue++;
+		for(int i=0;i< graphs.length;i++)
+			graphs[i].getSerie().appendData(new GraphViewData(
+					(80000d / currentConfiguration.getReceptionFrequency() * lastXValue),
+						data[currentConfiguration.getChannelsToDisplay().get(i)-1]), true, 800);
 	}
 
-	static void appendDataToGraphBottom(int yValue) {
-		graphBottom.getSerie().appendData(
-				new GraphViewData(80000d
-						/ currentConfiguration.getReceptionFrequency()
-						* lastXValue++, yValue), true, 600);
-	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_new_recording);
-		findViews(); //GETTING THE VIEWS
-		
-		//GETTING EXTRA INFO FROM INTENT
+
+		// GETTING EXTRA INFO FROM INTENT
 		extras = getIntent().getExtras();
 		currentConfiguration = (Configuration) extras
 				.getSerializable("configSelected");
 		recordingName = extras.getString("recordingName").toString();
+
+		// INIT VARIABLES
+		int numberOfChannelsToDisplay = currentConfiguration.getNumberOfChannelsToDisplay();
+		graphs = new HRGraph[numberOfChannelsToDisplay];
+		isChronometerRunning = false;
+		isServiceBounded = false;
 		lastXValue = 0;
 
-		// IF SERVICE WAS RUNNING BIND TO IT
-		if (isServiceRunning()) {
-			bindToService();
-			uiStartStopbutton.setText(getString(R.string.nr_button_stop));
-		}
+		// INIT LAYOUT
+		LayoutInflater inflater = (LayoutInflater) getApplicationContext()
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutParams graphParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+				450);
+		LayoutParams detailParameters = new LayoutParams(
+				LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		/*LayoutParams buttonParameters = new LayoutParams(
+				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);*/
+		View graphsView = findViewById(R.id.nr_graphs);
 
-		// SET INTERFACE COMPONENTS
+		// ON SCREEN ROTATION, RESTORE GRAPH VIEWS
 		@SuppressWarnings("deprecation")
 		final Object data = getLastNonConfigurationInstance();
 		if (data != null) {
-			graph = (HRGraph) data;
-			((ViewGroup) (graph.getGraphView().getParent())).removeView(graph
-					.getGraphView());
-			uiGraph.addView(graph.getGraphView());
+			graphs = (HRGraph[]) data;
+			for (int i = 0; i < graphs.length; i++) {
+				((ViewGroup) (graphs[i].getGraphView().getParent())).removeView(graphs[i].getGraphView());
+				View graph = inflater.inflate(R.layout.in_ly_graph, null);
+				((ViewGroup) graph).addView(graphs[i].getGraphView());
+				((ViewGroup) graphsView).addView(graph, graphParams);
+			}
 		} else {
-			graph = new HRGraph(this, getString(R.string.nc_dialog_channel)
-					+ " "
-					+ currentConfiguration.getChannelsToDisplay().get(0)
-							.toString());
-			uiGraph.addView(graph.getGraphView());
+			for (int i = 0; i < numberOfChannelsToDisplay; i++) {
+				graphs[i] = new HRGraph(this,getString(R.string.nc_dialog_channel)+ " "+ currentConfiguration.getChannelsToDisplay().get(i).toString());
+				View graph = inflater.inflate(R.layout.in_ly_graph, null);
+				((ViewGroup) graph).addView(graphs[i].getGraphView());
+				((ViewGroup) graphsView).addView(graph, graphParams);
+			}
 		}
+		// FIND ACTIVITY GENERAL VIEWS
+		uiRecordingName = (TextView) findViewById(R.id.nr_txt_recordingName);
 		uiRecordingName.setText(recordingName);
+		uiStartStopbutton = (Button) findViewById(R.id.nr_bttn_StartPause);
+		chronometer = (Chronometer) findViewById(R.id.nr_chronometer);
 
-		if (currentConfiguration.getNumberOfChannelsToDisplay() == 2) {
-			graphBottom = new HRGraph(this,
-					getString(R.string.nc_dialog_channel)
-							+ " "
-							+ currentConfiguration.getChannelsToDisplay()
-									.get(1).toString());
-			ViewGroup vgDetails = (ViewGroup) findViewById(R.id.nr_graph_details);
-			vgDetails.removeAllViews();
-			vgDetails.setPadding(20, 0, 20, 0);
-			vgDetails.addView(graphBottom.getGraphView());
-		} else {
+		if (numberOfChannelsToDisplay == 1) {
+			View details = inflater.inflate(R.layout.in_ly_graph_details, null);
+			((ViewGroup) graphsView).addView(details, detailParameters);
+			findDetailViews();
+
 			uiConfigurationName.setText(currentConfiguration.getName());
 			uiReceptionFrequency.setText(String.valueOf(currentConfiguration
 					.getReceptionFrequency()) + " Hz");
@@ -178,45 +178,61 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			uiActiveChannels.setText(currentConfiguration
 					.getActiveChannelsAsString());
 		}
+
+		/*View buttons = inflater.inflate(R.layout.in_ly_buttons, null);
+		((ViewGroup) graphsView).addView(buttons, buttonParameters);
+		 */
+		// IF SERVICE WAS RUNNING BIND TO IT
+		if (isServiceRunning()) {
+			bindToService();
+			uiStartStopbutton.setText(getString(R.string.nr_button_stop));
+		}
+
 		setupBackDialog();
+
 	}
 
 	private void setupBackDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("Recording will be stopped and saved")
-		       .setTitle("Are you sure?");
-		
-		builder.setPositiveButton("proceed", new DialogInterface.OnClickListener() {
-	           public void onClick(DialogInterface dialog, int id) {
-	        	   	new saveRecording().execute("");
-	        	   	Intent backIntent = new Intent(context, ConfigurationsActivity.class);
-	       			startActivity(backIntent);
-	       			overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-	       			finish();
-	           }
-	       });
-	builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-	           public void onClick(DialogInterface dialog, int id) {
-	               //just close dialog
-	           }
-	       });
+		builder.setMessage("Recording will be stopped and saved").setTitle(
+				"Are you sure?");
 
-		
+		builder.setPositiveButton("proceed",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						new saveRecording().execute("");
+						Intent backIntent = new Intent(context,
+								ConfigurationsActivity.class);
+						startActivity(backIntent);
+						overridePendingTransition(R.anim.slide_in_left,
+								R.anim.slide_out_right);
+						finish();
+					}
+				});
+		builder.setNegativeButton("cancel",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						// dialog gets closed
+					}
+				});
+
 		dialog = builder.create();
-		
+
 	}
 
 	@Override
 	public void onBackPressed() {
-		if(isChronometerRunning)
+		if (isChronometerRunning)
 			dialog.show();
-		else{
-			Intent backIntent = new Intent(context, ConfigurationsActivity.class);
-   			startActivity(backIntent);
-   			overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-   			super.onBackPressed();
+		else {
+			Intent backIntent = new Intent(context,
+					ConfigurationsActivity.class);
+			startActivity(backIntent);
+			overridePendingTransition(R.anim.slide_in_left,
+					R.anim.slide_out_right);
+			super.onBackPressed();
 		}
-			
+
 	}
 
 	@Override
@@ -233,7 +249,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
-		return graph;
+		return graphs;
 	}
 
 	@Override
@@ -252,17 +268,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				.toString();
 	}
 
-	private void findViews() {
-		uiGraph = (LinearLayout) findViewById(R.id.nr_graph_data);
-		uiStartStopbutton = (Button) findViewById(R.id.nr_bttn_StartPause);
-		uiRecordingName = (TextView) findViewById(R.id.nr_txt_recordingName);
+	private void findDetailViews() {
 		uiConfigurationName = (TextView) findViewById(R.id.nr_txt_configName);
 		uiNumberOfBits = (TextView) findViewById(R.id.nr_txt_config_nbits);
 		uiReceptionFrequency = (TextView) findViewById(R.id.nr_reception_freq);
 		uiSamplingFrequency = (TextView) findViewById(R.id.nr_sampling_freq);
 		uiActiveChannels = (TextView) findViewById(R.id.nr_txt_channels_active);
 		uiMacAddress = (TextView) findViewById(R.id.nr_txt_mac);
-		chronometer = (Chronometer) findViewById(R.id.nr_chronometer);
 	}
 
 	private void sendRecordingDuration() {

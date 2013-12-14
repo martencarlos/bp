@@ -12,6 +12,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -31,7 +32,7 @@ public class BiopluxService extends Service {
 	public static final int MSG_REGISTER_CLIENT = 1;
 	public static final int MSG_UNREGISTER_CLIENT = 2;
 	public static final int MSG_RECORDING_DURATION = 3;
-	public static final int MSG_FIRST_DATA = 4;
+	public static final int MSG_DATA = 4;
 	public static final int MSG_SECOND_DATA = 5;
 
 	static Messenger client = null;
@@ -42,8 +43,6 @@ public class BiopluxService extends Service {
 
 	private String recordingName;
 	private Configuration configuration;
-	private int numberOfChannelsToDisplay;
-	private ArrayList<Integer> channelsToDisplay;
 	private ArrayList<Integer> activeChannels;
 
 	private Device connection;
@@ -99,15 +98,12 @@ public class BiopluxService extends Service {
 	private void processFrames() {
 		isWriting = true;
 		getFrames(80);
-		for (Frame f : frames) {
+		for (Frame f : frames) 
 			dataManager.writeFramesToTmpFile(f);
 
-		}
 		isWriting = false;
 		try {
-			sendFirstGraphData(frames[0].an_in[(channelsToDisplay.get(0) - 1)]);
-			if (numberOfChannelsToDisplay == 2)
-				sendSecondGraphData(frames[0].an_in[(channelsToDisplay.get(1) - 1)]);
+			sendGraphDataToActivity(frames[0].an_in);
 
 		} catch (Throwable t) {
 			Log.e(TAG, "error processing frames", t);
@@ -127,9 +123,6 @@ public class BiopluxService extends Service {
 		configuration = (Configuration) intent
 				.getSerializableExtra("configSelected");
 		activeChannels = configuration.getActiveChannels();
-		numberOfChannelsToDisplay = configuration
-				.getNumberOfChannelsToDisplay();
-		channelsToDisplay = configuration.getChannelsToDisplay();
 	}
 
 	private void connectToBiopluxDevice() {
@@ -172,25 +165,19 @@ public class BiopluxService extends Service {
 		notificationManager.notify(R.string.service_id, notification);
 	}
 
-	private void sendFirstGraphData(int intvaluetosend) {
+	private void sendGraphDataToActivity(short[] data) {
 
+		Bundle b = new Bundle();
+        b.putShortArray("frame", data);
+        Message message = Message.obtain(null, MSG_DATA);
+        message.setData(b);
 		try {
-			client.send(Message.obtain(null, MSG_FIRST_DATA, intvaluetosend, 0));
+			client.send(message);
 		} catch (RemoteException e) {
-			Log.e(TAG, "client is dead. Removing from clients list", e);
+			Log.e(TAG, "client is dead. Client removed", e);
 			client = null;
 		}
 
-	}
-
-	private void sendSecondGraphData(int intvaluetosend) {
-		try {
-			client.send(Message
-					.obtain(null, MSG_SECOND_DATA, intvaluetosend, 0));
-		} catch (RemoteException e) {
-			Log.e(TAG, "client is dead. Removing from clients list", e);
-			client = null;
-		}
 	}
 
 	@Override

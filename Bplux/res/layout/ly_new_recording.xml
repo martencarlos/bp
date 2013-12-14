@@ -1,264 +1,95 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:fillViewport="true" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/nr_header"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#fff"
-        android:orientation="vertical" >
+        android:background="@layout/header_gradient"
+        android:paddingBottom="2dip"
+        android:paddingTop="5dip" >
 
-        <RelativeLayout
-            android:id="@+id/nr_header"
+        <TextView
+            android:id="@+id/nr_txt_recordingName"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@layout/header_gradient"
-            android:paddingBottom="2dip"
-            android:paddingTop="5dip" >
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="25sp" />
 
-            <TextView
-                android:id="@+id/nr_txt_recordingName"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@android:color/white"
-                android:textSize="25sp" />
+        <LinearLayout
+            android:id="@+id/nr_headerChronometer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dip"
+            android:layout_marginTop="5dip"
+            android:orientation="horizontal" >
 
-            <LinearLayout
-                android:id="@+id/nr_headerChronometer"
+            <Chronometer
+                android:id="@+id/nr_chronometer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="5dip"
-                android:layout_marginRight="15dip"
-                android:orientation="horizontal" >
-
-                <Chronometer
-                    android:id="@+id/nr_chronometer"
-                    android:layout_width="wrap_content"
-                    android:drawablePadding="5dip"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:drawableLeft="@drawable/chronometer"/>
-            </LinearLayout>
-        </RelativeLayout>
-
-        <LinearLayout
-            android:id="@+id/nr_graph_data"
-            android:layout_width="fill_parent"
-            android:layout_height="220dip"
-            android:layout_marginBottom="5dip"
-            android:orientation="vertical"
-            android:paddingLeft="10dip"
-            android:paddingRight="10dip" >
+                android:drawableLeft="@drawable/chronometer"
+                android:drawablePadding="5dip"
+                android:textColor="@android:color/white" />
         </LinearLayout>
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/nr_scroll_view"
+        android:layout_width="fill_parent"
+        android:layout_below="@id/nr_header"
+        android:layout_height="fill_parent"
+        android:layout_marginBottom="60dip"
+        android:fillViewport="true" >
 
         <LinearLayout
-            android:id="@+id/nr_graph_details"
-            android:layout_width="match_parent"
-            android:layout_height="220dip"
+            android:id="@+id/nr_graphs"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
             android:orientation="vertical" >
-
-            <ImageView
-                android:contentDescription="@string/divider_image_content"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dip"
-                android:paddingBottom="2dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:scaleType="fitXY"
-                android:src="?android:attr/listDivider" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="20dip"
-                android:paddingRight="20dip"
-                android:paddingTop="5dip" >
-
-                <TextView
-                    android:id="@+id/nr_txt_mac"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:paddingTop="2dip"
-                    android:textColor="@color/blue"
-                    android:textSize="@dimen/recording_text_size"/>
-
-            </RelativeLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="20dip"
-                android:paddingRight="10dip"
-                android:paddingTop="15dip" >
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/nr_configuration_name"
-                    android:textColor="@color/grey"
-                    android:textSize="@dimen/recording_text_size" />
-
-                <TextView
-                    android:id="@+id/nr_txt_configName"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="5dip"
-                    android:layout_weight="1"
-                    android:textColor="@color/blue"
-                    android:textSize="@dimen/recording_text_size" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="20dip"
-                android:paddingRight="10dip"
-                android:paddingTop="5dip" >
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/nr_reception_frequency"
-                    android:textColor="@color/grey"
-                    android:textSize="@dimen/recording_text_size" />
-
-                <TextView
-                    android:id="@+id/nr_reception_freq"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="5dip"
-                    android:layout_weight="1"
-                    android:textColor="@color/blue"
-                    android:textSize="@dimen/recording_text_size" />
-            </LinearLayout>
-            
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="20dip"
-                android:paddingRight="10dip"
-                android:paddingTop="5dip" >
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/nr_sampling_frequency"
-                    android:textColor="@color/grey"
-                    android:textSize="@dimen/recording_text_size" />
-
-                <TextView
-                    android:id="@+id/nr_sampling_freq"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="5dip"
-                    android:layout_weight="1"
-                    android:textColor="@color/blue"
-                    android:textSize="@dimen/recording_text_size" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="20dip"
-                android:paddingRight="10dip"
-                android:paddingTop="5dip" >
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/nr_bits"
-                    android:textColor="@color/grey"
-                    android:textSize="@dimen/recording_text_size" />
-
-                <TextView
-                    android:id="@+id/nr_txt_config_nbits"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="5dip"
-                    android:layout_weight="1"
-                    android:textColor="@color/blue"
-                    android:textSize="@dimen/recording_text_size" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="20dip"
-                android:paddingRight="10dip"
-                android:paddingTop="5dip" >
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/nr_active_channels"
-                    android:textColor="@color/grey"
-                    android:textSize="@dimen/recording_text_size" />
-
-                <TextView
-                    android:id="@+id/nr_txt_channels_active"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="5dip"
-                    android:layout_weight="1"
-                    android:textColor="@color/blue"
-                    android:textSize="@dimen/recording_text_size" />
-            </LinearLayout>
         </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/nr_buttons"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:paddingTop="5dip" >
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/divider_image_content"
+            android:paddingBottom="2dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="2dp"
+            android:scaleType="fitXY"
+            android:src="?android:attr/listDivider" />
 
         <LinearLayout
-            android:id="@+id/nr_buttons"
+            android:id="@+id/buttons"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:gravity="bottom"
-            android:orientation="vertical"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="2dp"
             android:paddingTop="5dip" >
 
-            <ImageView
-               	android:contentDescription="@string/divider_image_content"
-                android:layout_width="fill_parent"
+            <Button
+                android:id="@+id/nr_bttn_StartPause"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:paddingBottom="2dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingTop="2dp"
-                android:scaleType="fitXY"
-                android:src="?android:attr/listDivider" />
-
-            <LinearLayout
-                android:id="@+id/buttons"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="2dp"
-                android:paddingTop="5dip" >
-
-                <Button
-                    android:id="@+id/nr_bttn_StartPause"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/button_selector"
-                    android:onClick="onClickedStartStop"
-                    android:text="@string/nr_button_start"
-                    android:textColor="@android:color/white" />
-            </LinearLayout>
+                android:layout_weight="1"
+                android:background="@drawable/button_selector"
+                android:onClick="onClickedStartStop"
+                android:text="@string/nr_button_start"
+                android:textColor="@android:color/white" />
         </LinearLayout>
     </LinearLayout>
-
-</ScrollView>
+</RelativeLayout>
