@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/nr_graph_details"
+            android:layout_width="match_parent"
+            android:layout_height="220dip"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:contentDescription="@string/divider_image_content"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dip"
+                android:paddingBottom="2dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:scaleType="fitXY"
+                android:src="?android:attr/listDivider" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="20dip"
+                android:paddingRight="20dip"
+                android:paddingTop="5dip" >
+
+                <TextView
+                    android:id="@+id/nr_txt_mac"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:paddingTop="2dip"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/recording_text_size"/>
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="20dip"
+                android:paddingRight="10dip"
+                android:paddingTop="15dip" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/nr_configuration_name"
+                    android:textColor="@color/grey"
+                    android:textSize="@dimen/recording_text_size" />
+
+                <TextView
+                    android:id="@+id/nr_txt_configName"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="5dip"
+                    android:layout_weight="1"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/recording_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="20dip"
+                android:paddingRight="10dip"
+                android:paddingTop="5dip" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/nr_reception_frequency"
+                    android:textColor="@color/grey"
+                    android:textSize="@dimen/recording_text_size" />
+
+                <TextView
+                    android:id="@+id/nr_reception_freq"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="5dip"
+                    android:layout_weight="1"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/recording_text_size" />
+            </LinearLayout>
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="20dip"
+                android:paddingRight="10dip"
+                android:paddingTop="5dip" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/nr_sampling_frequency"
+                    android:textColor="@color/grey"
+                    android:textSize="@dimen/recording_text_size" />
+
+                <TextView
+                    android:id="@+id/nr_sampling_freq"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="5dip"
+                    android:layout_weight="1"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/recording_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="20dip"
+                android:paddingRight="10dip"
+                android:paddingTop="5dip" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/nr_bits"
+                    android:textColor="@color/grey"
+                    android:textSize="@dimen/recording_text_size" />
+
+                <TextView
+                    android:id="@+id/nr_txt_config_nbits"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="5dip"
+                    android:layout_weight="1"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/recording_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="20dip"
+                android:paddingRight="10dip"
+                android:paddingTop="5dip" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/nr_active_channels"
+                    android:textColor="@color/grey"
+                    android:textSize="@dimen/recording_text_size" />
+
+                <TextView
+                    android:id="@+id/nr_txt_channels_active"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="5dip"
+                    android:layout_weight="1"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/recording_text_size" />
+            </LinearLayout>
+        </LinearLayout>

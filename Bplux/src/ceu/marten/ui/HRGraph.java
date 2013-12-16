@@ -73,29 +73,29 @@ public class HRGraph implements Serializable{
 			   }  
 			}); 
 		
-		GraphViewStyle gvs= new GraphViewStyle();
-		gvs.setNumHorizontalLabels(4);
-		gvs.setVerticalLabelsWidth(70);
-		gvs.setVerticalLabelsAlign(Align.LEFT);
-		gvs.setGridColor(context.getResources().getColor(R.color.light_grey));
-		gvs.setHorizontalLabelsColor(context.getResources().getColor(R.color.grey));
-		gvs.setVerticalLabelsColor(context.getResources().getColor(R.color.grey));
+		GraphViewStyle graphStyle= new GraphViewStyle();
+		graphStyle.setNumHorizontalLabels(4);
+		graphStyle.setVerticalLabelsWidth(70);
+		graphStyle.setVerticalLabelsAlign(Align.LEFT);
+		graphStyle.setGridColor(context.getResources().getColor(R.color.light_grey));
+		graphStyle.setHorizontalLabelsColor(context.getResources().getColor(R.color.grey));
+		graphStyle.setVerticalLabelsColor(context.getResources().getColor(R.color.grey));
 		
 		switch (context.getResources().getDisplayMetrics().densityDpi) {
 		case DisplayMetrics.DENSITY_LOW:
-			gvs.setTextSize((float) 10);
+			graphStyle.setTextSize((float) 10);
 		    break;
 		case DisplayMetrics.DENSITY_MEDIUM:
-			gvs.setTextSize((float) 14);
+			graphStyle.setTextSize((float) 14);
 		    break;
 		case DisplayMetrics.DENSITY_HIGH:
-			gvs.setTextSize((float) 18);
+			graphStyle.setTextSize((float) 18);
 		    break;
 		case DisplayMetrics.DENSITY_XHIGH:
-			gvs.setTextSize((float) 30);
+			graphStyle.setTextSize((float) 30);
 		    break;
 		}
-		graphView.setGraphViewStyle(gvs);
+		graphView.setGraphViewStyle(graphStyle);
 		graphView.setLegendAlign(LegendAlign.BOTTOM);
 		graphView.setLegendWidth(200);
 		graphView.setShowLegend(true);

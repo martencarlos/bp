@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen  xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- opens a subscreen of settings -->
+    <PreferenceScreen
+        android:key="button_voicemail_category_key"
+        android:title="graph settings"
+        android:persistent="false">
+        <!-- opens another nested subscreen -->
+        <CheckBoxPreference
+            android:key="screen_rotation"
+            android:title="rotate the screen"/>
+        
+    </PreferenceScreen>
+    
+</PreferenceScreen>
