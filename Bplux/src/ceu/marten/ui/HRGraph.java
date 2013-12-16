@@ -8,7 +8,6 @@ import java.util.Locale;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import ceu.marten.bplux.R;
 
 import com.jjoe64.graphview.CustomLabelFormatter;
