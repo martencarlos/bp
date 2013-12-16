@@ -212,7 +212,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			height=300;
 		    break;
 		case DisplayMetrics.DENSITY_XHIGH:
-			height=350;
+			height=450;
 		    break;
 		}
 		return height;

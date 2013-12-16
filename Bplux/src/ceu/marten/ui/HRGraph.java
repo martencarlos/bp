@@ -8,6 +8,7 @@ import java.util.Locale;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import ceu.marten.bplux.R;
 
 import com.jjoe64.graphview.CustomLabelFormatter;
@@ -38,6 +39,7 @@ public class HRGraph implements Serializable{
 
 	@SuppressWarnings("deprecation")
 	public HRGraph(android.content.Context context, String title) {
+		int legendWidth=0;
 		// STYLE
 		style = new GraphViewSeriesStyle(randomColor(), 2); // green and
 																	// thickness
@@ -85,22 +87,24 @@ public class HRGraph implements Serializable{
 		case DisplayMetrics.DENSITY_MEDIUM:
 			graphStyle.setTextSize((float) 14);
 			graphStyle.setVerticalLabelsWidth(40);
-			graphView.setLegendWidth(100);
+			legendWidth = 100;
+			
 		    break;
 		case DisplayMetrics.DENSITY_HIGH:
 			graphStyle.setTextSize((float) 18);
 			graphStyle.setVerticalLabelsWidth(50);
-			graphView.setLegendWidth(150);
+			legendWidth = 150;
 		    break;
 		case DisplayMetrics.DENSITY_XHIGH:
 			graphStyle.setTextSize((float) 30);
 			graphStyle.setVerticalLabelsWidth(70);
-			graphView.setLegendWidth(200);
+			legendWidth = 200;
+			
 		    break;
 		}
 		graphView.setGraphViewStyle(graphStyle);
+		graphView.setLegendWidth(legendWidth);
 		graphView.setLegendAlign(LegendAlign.BOTTOM);
-		
 		graphView.setShowLegend(true);
 
 		// Current X value
