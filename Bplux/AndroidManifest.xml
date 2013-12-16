@@ -6,8 +6,8 @@
 
     <uses-sdk
         android:maxSdkVersion="19"
-        android:minSdkVersion="6"
-        android:targetSdkVersion="14" />
+        android:minSdkVersion="8"
+        android:targetSdkVersion="8" />
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -41,8 +41,7 @@
             android:label="@string/new_recordings_label"
             android:launchMode="singleInstance"
             android:windowSoftInputMode="adjustPan" 
-            android:parentActivityName="ceu.marten.ui.ConfigurationsActivity" >
-
+            android:parentActivityName="ceu.marten.ui.ConfigurationsActivity">
             <!-- The meta-data element is needed for versions lower than 4.1 -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -59,6 +58,13 @@
             android:parentActivityName="ceu.marten.ui.HomeActivity" >
         </activity>
         
+        <activity android:name="ceu.marten.ui.SettingsActivity" android:label="General Settings"
+        android:screenOrientation="nosensor">
+        <intent-filter>
+            <action android:name="ceu.marten.ui.SettingsActivity" />
+            <category android:name="android.intent.cetagory.PREFERENCE" />
+        </intent-filter>
+</activity>
 
         <service android:name="ceu.marten.services.BiopluxService" />
     </application>

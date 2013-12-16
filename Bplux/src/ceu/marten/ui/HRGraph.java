@@ -8,11 +8,13 @@ import java.util.Locale;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import ceu.marten.bplux.R;
 
 import com.jjoe64.graphview.CustomLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphView.GraphViewData;
+import com.jjoe64.graphview.GraphView.LegendAlign;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
 import com.jjoe64.graphview.GraphViewStyle;
@@ -35,27 +37,34 @@ public class HRGraph implements Serializable{
 	//private DecimalFormat decimalFormat = new DecimalFormat("#.##"); 
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss",Locale.UK);
 
+	@SuppressWarnings("deprecation")
 	public HRGraph(android.content.Context context, String title) {
 		// STYLE
 		style = new GraphViewSeriesStyle(randomColor(), 2); // green and
 																	// thickness
 		
 		// INIT SERIE DATA
-		serie = new GraphViewSeries("BPM", style, new GraphViewData[] {
+		serie = new GraphViewSeries(title, style, new GraphViewData[] {
 				new GraphViewData(1.0, 125), new GraphViewData(1.5, 10) });
 		// INIT GRAPHVIEW
-		graphView = new LineGraphView(context, title);
+		graphView = new LineGraphView(context, "");
 
 		// ADD SERIES TO GRAPHVIEW and SET SCROLLABLE
 		graphView.addSeries(serie);
 		// graphView.setScrollable(true);
 		graphView.setViewPort(2, 5000);
+		
 		graphView.setScalable(true);
+		
 		graphView.setCustomLabelFormatter(new CustomLabelFormatter() {  
 			   @Override  
 			   public String formatLabel(double value, boolean isValueX) {  
-			      if (isValueX) {  
-			    	  currentValue = new Date((long)value);
+			      if (isValueX) {
+			    	  if(value<0)
+			    		  return "00:00:00";
+			    	  Log.d("test", String.valueOf(Math.round(value)));
+			    	  currentValue = new Date((long)(value));
+			    	 
 			    	  return timeFormat.format(currentValue);
 			      }
 			      else
@@ -71,6 +80,7 @@ public class HRGraph implements Serializable{
 		gvs.setGridColor(context.getResources().getColor(R.color.light_grey));
 		gvs.setHorizontalLabelsColor(context.getResources().getColor(R.color.grey));
 		gvs.setVerticalLabelsColor(context.getResources().getColor(R.color.grey));
+		
 		switch (context.getResources().getDisplayMetrics().densityDpi) {
 		case DisplayMetrics.DENSITY_LOW:
 			gvs.setTextSize((float) 10);
@@ -86,6 +96,9 @@ public class HRGraph implements Serializable{
 		    break;
 		}
 		graphView.setGraphViewStyle(gvs);
+		graphView.setLegendAlign(LegendAlign.BOTTOM);
+		graphView.setLegendWidth(200);
+		graphView.setShowLegend(true);
 
 		// Current X value
 		xValue = 2d;
@@ -93,7 +106,7 @@ public class HRGraph implements Serializable{
 	
 	private int randomColor() {
 		int min = 100, max = 180;
-		int r = 0;
+		int r = 10 + (int)(Math.random()*50);
 		int g = min + (int)(Math.random()*max); 
 		int b = min + (int)(Math.random()*max); 
 		return Color.rgb(r, g, b);

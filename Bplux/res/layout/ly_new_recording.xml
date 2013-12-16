@@ -6,8 +6,8 @@
         android:id="@+id/nr_header"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@layout/header_color"
-        android:paddingBottom="2dip"
+        android:background="@xml/header_color"
+       android:paddingBottom="2dip"
         android:paddingTop="5dip" >
 
         <TextView

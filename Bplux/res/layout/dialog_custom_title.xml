@@ -8,5 +8,5 @@
     android:paddingBottom="20dip"
     android:paddingRight="10dip"
     android:paddingLeft="10dip"
-    android:background="@layout/header_color"
+    android:background="@xml/header_color"
     android:textColor="@android:color/white"/>

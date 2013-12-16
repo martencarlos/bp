@@ -41,6 +41,7 @@ public class BiopluxService extends Service {
 	private static DataManager dataManager;
 
 	private String recordingName;
+	private int samplingFrames;
 	private Configuration configuration;
 	private ArrayList<Integer> activeChannels;
 
@@ -70,9 +71,7 @@ public class BiopluxService extends Service {
 
 	@Override
 	public void onCreate() {
-		frames = new Device.Frame[80];
-		for (int i = 0; i < frames.length; i++)
-			frames[i] = new Frame();
+		
 		Log.i(TAG, "Service created");
 		super.onCreate();
 	}
@@ -80,6 +79,10 @@ public class BiopluxService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		getInfoFromActivity(intent);
+		
+		frames = new Device.Frame[samplingFrames];
+		for (int i = 0; i < frames.length; i++)
+			frames[i] = new Frame();
 		connectToBiopluxDevice();
 		dataManager = new DataManager(this, activeChannels, recordingName,
 				configuration);
@@ -89,14 +92,14 @@ public class BiopluxService extends Service {
 			public void run() {
 				processFrames();
 			}
-		}, 0, 50L);
+		}, 0, 5L);
 
 		return mMessenger.getBinder();
 	}
 
 	private void processFrames() {
 		isWriting = true;
-		getFrames(80);
+		getFrames(samplingFrames);
 		for (Frame f : frames) 
 			dataManager.writeFramesToTmpFile(f);
 
@@ -122,6 +125,7 @@ public class BiopluxService extends Service {
 		configuration = (Configuration) intent
 				.getSerializableExtra("configSelected");
 		activeChannels = configuration.getActiveChannels();
+		samplingFrames = configuration.getReceptionFrequency()/configuration.getSamplingFrequency();
 	}
 
 	private void connectToBiopluxDevice() {

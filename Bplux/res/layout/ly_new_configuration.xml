@@ -8,8 +8,8 @@
         android:id="@+id/header"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@layout/header_color"
-        android:gravity="center_horizontal"
+        android:background="@xml/header_color"
+       android:gravity="center_horizontal"
         android:paddingBottom="5dip"
         android:paddingTop="5dip" >
 
@@ -27,15 +27,10 @@
         android:layout_below="@id/header"
         android:fillViewport="true" >
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="#fff" >
-
             <LinearLayout
                 android:id="@+id/regForm"
                 android:layout_width="match_parent"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical" >
 
                 <LinearLayout
@@ -347,7 +342,8 @@
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-        </RelativeLayout>
+
+            
     </ScrollView>
 
 </RelativeLayout>

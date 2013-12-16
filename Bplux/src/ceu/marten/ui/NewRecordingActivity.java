@@ -61,6 +61,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private Messenger mService = null;
 	private static HRGraph[] graphs;
 	private static double lastXValue;
+	private static double period;
 	private boolean isServiceBounded;
 	private Context context = this;
 	private AlertDialog dialog;
@@ -103,8 +104,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		lastXValue++;
 		for(int i=0;i< graphs.length;i++)
 			graphs[i].getSerie().appendData(new GraphViewData(
-					(80000d / currentConfiguration.getReceptionFrequency() * lastXValue),
-						data[currentConfiguration.getChannelsToDisplay().get(i)-1]), true, 800);
+					(period * lastXValue),
+						data[currentConfiguration.getChannelsToDisplay().get(i)-1]), true, 600);
 	}
 
 
@@ -119,11 +120,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		currentConfiguration = (Configuration) extras
 				.getSerializable("configSelected");
 		recordingName = extras.getString("recordingName").toString();
-
+		
 		// INIT VARIABLES
 		int numberOfChannelsToDisplay = currentConfiguration.getNumberOfChannelsToDisplay();
 		inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		graphs = new HRGraph[numberOfChannelsToDisplay];
+		int samplingFrames = currentConfiguration.getReceptionFrequency()/currentConfiguration.getSamplingFrequency();
+		period = samplingFrames*1000d / currentConfiguration.getReceptionFrequency();
 		isChronometerRunning = false;
 		isServiceBounded = false;
 		lastXValue = 0;
