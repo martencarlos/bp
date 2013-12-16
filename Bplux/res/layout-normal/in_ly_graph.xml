@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/graph_view"   
-    android:layout_width="fill_parent"
-    android:layout_height="220dip"
-    android:layout_marginBottom="5dip"
+    android:layout_width="match_parent"
+    android:layout_height="220dp"
+    android:layout_marginBottom="5dp"
     android:orientation="vertical"
-    android:paddingLeft="10dip"
-    android:paddingRight="10dip" >
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp" >
 </LinearLayout>

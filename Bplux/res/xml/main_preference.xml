@@ -11,5 +11,4 @@
             android:title="rotate the screen"/>
         
     </PreferenceScreen>
-    
 </PreferenceScreen>

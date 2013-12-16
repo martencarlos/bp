@@ -249,7 +249,6 @@ public class NewConfigurationActivity extends Activity {
 		// ACTIVE CHANNELS BUILDER
 		activeChannelsBuilder = new AlertDialog.Builder(this);
 		activeChannelsBuilder
-				.setIcon(R.drawable.select_dialog)
 				.setCustomTitle(customTitleView)
 				.setView(
 						getLayoutInflater().inflate(
@@ -339,8 +338,7 @@ public class NewConfigurationActivity extends Activity {
 		customTitleView.setText(R.string.nc_dialog_title_channels_to_display);
 		// BUILDER
 		channelsToDisplayBuilder = new AlertDialog.Builder(this);
-		channelsToDisplayBuilder.setIcon(R.drawable.select_dialog)
-								.setCustomTitle(customTitleView)
+		channelsToDisplayBuilder.setCustomTitle(customTitleView)
 								.setView(getLayoutInflater().inflate(
 										R.layout.dialog_channels_listview, null));
 

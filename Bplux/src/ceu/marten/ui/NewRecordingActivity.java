@@ -22,6 +22,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import ceu.marten.bplux.R;
@@ -105,7 +107,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		for(int i=0;i< graphs.length;i++)
 			graphs[i].getSerie().appendData(new GraphViewData(
 					(period * lastXValue),
-						data[currentConfiguration.getChannelsToDisplay().get(i)-1]), true, 600);
+						data[currentConfiguration.getChannelsToDisplay().get(i)-1]), true, 5000);
 	}
 
 
@@ -120,7 +122,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		currentConfiguration = (Configuration) extras
 				.getSerializable("configSelected");
 		recordingName = extras.getString("recordingName").toString();
-		
+	
 		// INIT VARIABLES
 		int numberOfChannelsToDisplay = currentConfiguration.getNumberOfChannelsToDisplay();
 		inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -132,9 +134,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		lastXValue = 0;
 
 		// INIT LAYOUT
-		
 		LayoutParams graphParams = new LayoutParams(LayoutParams.MATCH_PARENT,
-				450);
+				getGraphHeight());
 		LayoutParams detailParameters = new LayoutParams(
 				LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		/*LayoutParams buttonParameters = new LayoutParams(
@@ -155,11 +156,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		} else {
 			for (int i = 0; i < numberOfChannelsToDisplay; i++) {
 				graphs[i] = new HRGraph(this,getString(R.string.nc_dialog_channel)+ " "+ currentConfiguration.getChannelsToDisplay().get(i).toString());
-				View graph = inflater.inflate(R.layout.in_ly_graph, null);
+				LinearLayout graph = (LinearLayout)inflater.inflate(R.layout.in_ly_graph,null);
+				
 				((ViewGroup) graph).addView(graphs[i].getGraphView());
 				((ViewGroup) graphsView).addView(graph, graphParams);
 			}
 		}
+
 		// FIND ACTIVITY GENERAL VIEWS
 		uiRecordingName = (TextView) findViewById(R.id.nr_txt_recordingName);
 		uiRecordingName.setText(recordingName);
@@ -195,6 +198,26 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		setupBackDialog();
 
 	}
+
+	private int getGraphHeight() {
+		int height = 100;
+		switch (context.getResources().getDisplayMetrics().densityDpi) {
+		case DisplayMetrics.DENSITY_LOW:
+			height=150;
+		    break;
+		case DisplayMetrics.DENSITY_MEDIUM:
+			height=160;
+		    break;
+		case DisplayMetrics.DENSITY_HIGH:
+			height=300;
+		    break;
+		case DisplayMetrics.DENSITY_XHIGH:
+			height=350;
+		    break;
+		}
+		return height;
+	}
+
 
 	private void setupBackDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);

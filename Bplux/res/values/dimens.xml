@@ -10,6 +10,6 @@
     
     
     <!-- NEW RECORDING ACTIVITY -->
-    <dimen name="recording_text_size">16sp</dimen>
+    <dimen name="recording_text_size">14sp</dimen>
 
 </resources>

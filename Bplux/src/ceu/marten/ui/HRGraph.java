@@ -8,7 +8,6 @@ import java.util.Locale;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import ceu.marten.bplux.R;
 
 import com.jjoe64.graphview.CustomLabelFormatter;
@@ -52,7 +51,7 @@ public class HRGraph implements Serializable{
 		// ADD SERIES TO GRAPHVIEW and SET SCROLLABLE
 		graphView.addSeries(serie);
 		// graphView.setScrollable(true);
-		graphView.setViewPort(2, 5000);
+		graphView.setViewPort(2, 2000);
 		
 		graphView.setScalable(true);
 		
@@ -62,9 +61,7 @@ public class HRGraph implements Serializable{
 			      if (isValueX) {
 			    	  if(value<0)
 			    		  return "00:00:00";
-			    	  Log.d("test", String.valueOf(Math.round(value)));
 			    	  currentValue = new Date((long)(value));
-			    	 
 			    	  return timeFormat.format(currentValue);
 			      }
 			      else
@@ -74,8 +71,8 @@ public class HRGraph implements Serializable{
 			}); 
 		
 		GraphViewStyle graphStyle= new GraphViewStyle();
-		graphStyle.setNumHorizontalLabels(4);
-		graphStyle.setVerticalLabelsWidth(70);
+		graphStyle.setNumHorizontalLabels(3);
+		
 		graphStyle.setVerticalLabelsAlign(Align.LEFT);
 		graphStyle.setGridColor(context.getResources().getColor(R.color.light_grey));
 		graphStyle.setHorizontalLabelsColor(context.getResources().getColor(R.color.grey));
@@ -87,17 +84,23 @@ public class HRGraph implements Serializable{
 		    break;
 		case DisplayMetrics.DENSITY_MEDIUM:
 			graphStyle.setTextSize((float) 14);
+			graphStyle.setVerticalLabelsWidth(40);
+			graphView.setLegendWidth(100);
 		    break;
 		case DisplayMetrics.DENSITY_HIGH:
 			graphStyle.setTextSize((float) 18);
+			graphStyle.setVerticalLabelsWidth(50);
+			graphView.setLegendWidth(150);
 		    break;
 		case DisplayMetrics.DENSITY_XHIGH:
 			graphStyle.setTextSize((float) 30);
+			graphStyle.setVerticalLabelsWidth(70);
+			graphView.setLegendWidth(200);
 		    break;
 		}
 		graphView.setGraphViewStyle(graphStyle);
 		graphView.setLegendAlign(LegendAlign.BOTTOM);
-		graphView.setLegendWidth(200);
+		
 		graphView.setShowLegend(true);
 
 		// Current X value

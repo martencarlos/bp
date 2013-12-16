@@ -81,6 +81,7 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 			int pos, long id) {
 
 		TextView t = (TextView) currentText;
+		t.setTextSize(14);
 		if (t.getText().toString().compareTo(context.getString(R.string.nc_active_channels_list_adapter_comparation)) != 0) {
 			int position = (Integer) spinner.getTag();
 			sensorsChecked[position] = ((Spinner) spinner).getSelectedItem()

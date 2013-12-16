@@ -1,0 +1,95 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/nr_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@xml/header_color"
+       android:paddingBottom="2dip"
+        android:paddingTop="5dip" >
+
+        <TextView
+            android:id="@+id/nr_txt_recordingName"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="25sp" />
+
+        <LinearLayout
+            android:id="@+id/nr_headerChronometer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dip"
+            android:layout_marginTop="5dip"
+            android:orientation="horizontal" >
+
+            <Chronometer
+                android:id="@+id/nr_chronometer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/chronometer"
+                android:drawablePadding="5dip"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/nr_scroll_view"
+        android:layout_width="fill_parent"
+        android:layout_below="@id/nr_header"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dip"
+        android:fillViewport="true" >
+
+        <LinearLayout
+            android:id="@+id/nr_graphs"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:orientation="vertical" >
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/nr_buttons"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:paddingTop="5dip" >
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/divider_image_content"
+            android:paddingBottom="2dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="2dp"
+            android:scaleType="fitXY"
+            android:src="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:id="@+id/buttons"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="2dp"
+            android:paddingTop="5dip" >
+
+            <Button
+                android:id="@+id/nr_bttn_StartPause"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/button_selector"
+                android:onClick="onClickedStartStop"
+                android:text="@string/nr_button_start"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

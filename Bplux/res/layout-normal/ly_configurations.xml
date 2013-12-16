@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#fff"
+    android:paddingBottom="2dip" >
+    
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@xml/header_color"
+        android:gravity="center_horizontal"
+        android:paddingBottom="5dip"
+        android:paddingTop="5dip" >
+      
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:text="@string/ca_header_title"
+            android:textSize="20sp" />
+    </LinearLayout>
+  
+    <LinearLayout
+        android:id="@+id/sl_button"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical"
+        android:layout_below="@id/header"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/empty_list_configurations"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/ca_empty_list"
+            android:layout_marginBottom="45dip"
+            android:textSize="20sp"
+            android:textColor="@color/light_grey"
+            android:visibility="gone" />
+
+        <ListView
+            android:id="@+id/lvConfigs"
+            android:layout_width="fill_parent"
+            android:layout_height="0dip"
+            android:layout_marginBottom="45dp"
+            android:layout_marginTop="2dp"
+            android:layout_weight="0.44"
+            android:gravity="center_horizontal"
+            android:headerDividersEnabled="true" >
+        </ListView>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/bttnAddConfig"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/button_selector"
+        android:drawableEnd="@drawable/new_configuration"
+        android:paddingLeft="20dip"
+        android:paddingRight="30dip"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        android:onClick="onClickedNewConfig"
+        android:text="@string/ca_button" />
+
+</RelativeLayout>
