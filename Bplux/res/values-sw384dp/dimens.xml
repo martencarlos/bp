@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="graph_dimension">200dip</dimen>
-    <dimen name="paddingGraph">30dp</dimen>
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="titleTextSize">24dp</dimen>
-    <dimen name="footerTxtSize">10sp</dimen>
-    
-    
+    <!-- NEW CONFIGURATION ACTIVITY -->
+    <dimen name="new_configuration_text_size">16sp</dimen>
+    <string name="active_channel_dialog_spinner_text">15</string>
+ 
     <!-- NEW RECORDING ACTIVITY -->
-    <dimen name="recording_text_size">16sp</dimen>
+    <dimen name="graph_details_text_size">16sp</dimen>
+    <dimen name="back_dialog_text_size">16sp</dimen>
+    
+    <string name="graph_max_data_count">5000</string>
+    <string name="graph_height">450</string>
+    
+    <!-- GRAPH DIMENSIONS -->
+    <string name="graph_viewport_size">2000</string>  <!--2 seconds-->
+    <string name="graph_numberof_horizontal_labels">4</string>
+    <string name="graph_labels_text_size">30</string>
+    <string name="graph_vertical_labels_width">70</string>
+	<string name="graph_legend_width">200</string>
 
 </resources>

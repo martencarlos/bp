@@ -48,7 +48,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/nc_configuration_name"
                         android:textColor="@color/grey"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/new_configuration_text_size" />
 
                     <EditText
                         android:id="@+id/dev_name"
@@ -72,7 +72,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/nc_mac_address"
                         android:textColor="@color/grey"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/new_configuration_text_size" />
 
                     <EditText
                         android:id="@+id/nc_mac_address"
@@ -81,7 +81,7 @@
                         android:hint="@string/nc_mac_address_hint"
                         android:inputType="text"
                         android:maxLength="17"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/new_configuration_text_size"
                         android:singleLine="true"
                         android:textColor="@color/grey"
                         android:textColorHint="@color/light_grey" />
@@ -99,7 +99,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/nc_frequency_reception"
                         android:textColor="@color/grey"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/new_configuration_text_size" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -155,7 +155,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/nc_frequency_sampling"
                         android:textColor="@color/grey"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/new_configuration_text_size" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -212,7 +212,7 @@
                         android:paddingTop="5dip"
                         android:text="@string/nc_bits"
                         android:textColor="@color/grey"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/new_configuration_text_size" />
 
                     <RadioGroup
                         android:layout_width="fill_parent"
@@ -256,7 +256,7 @@
                         android:drawableRight="@drawable/select"
                         android:onClick="onClickedChannelPickDialog"
                         android:paddingLeft="10dip"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/new_configuration_text_size"
                         android:text="@string/nc_button_active_channels"
                         android:textColor="@android:color/white" />
 
@@ -282,7 +282,7 @@
                         android:drawableRight="@drawable/select"
                         android:onClick="onClickedChannelDisplayPickDialog"
                         android:paddingLeft="10dip"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/new_configuration_text_size"
                         android:text="@string/nc_button_channels_to_display"
                         android:textColor="@android:color/white" />
 
@@ -333,7 +333,7 @@
                             android:background="@drawable/button_selector"
                             android:onClick="onClickedCancel"
                             android:text="@string/nc_button_cancel"
-                            android:textSize="14sp"
+                            android:textSize="@dimen/new_configuration_text_size"
                             android:textColor="@android:color/white" />
 
                         <Button
@@ -343,7 +343,7 @@
                             android:layout_weight="1"
                             android:background="@drawable/button_selector"
                             android:onClick="onClickedSubmit"
-                            android:textSize="14sp"
+                            android:textSize="@dimen/new_configuration_text_size"
                             android:text="@string/nc_button_submit"
                             android:textColor="@android:color/white" />
                     </LinearLayout>

@@ -1,13 +1,11 @@
 package ceu.marten.ui;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import android.graphics.Color;
 import android.graphics.Paint.Align;
-import android.util.DisplayMetrics;
 import ceu.marten.bplux.R;
 
 import com.jjoe64.graphview.CustomLabelFormatter;
@@ -32,16 +30,11 @@ public class HRGraph implements Serializable{
 	private GraphViewSeriesStyle style;
 	private double xValue;
 	private GraphView graphView;
-	private Date currentValue;
-	//private DecimalFormat decimalFormat = new DecimalFormat("#.##"); 
-	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss",Locale.UK);
 
 	@SuppressWarnings("deprecation")
 	public HRGraph(android.content.Context context, String title) {
-		int legendWidth=0;
-		// STYLE
-		style = new GraphViewSeriesStyle(randomColor(), 2); // green and
-																	// thickness
+		// SET THE SERIE STYLE
+		style = new GraphViewSeriesStyle(randomColor(), 2); // 2 -> thickness
 		
 		// INIT SERIE DATA
 		serie = new GraphViewSeries(title, style, new GraphViewData[] {
@@ -51,63 +44,43 @@ public class HRGraph implements Serializable{
 
 		// ADD SERIES TO GRAPHVIEW and SET SCROLLABLE
 		graphView.addSeries(serie);
-		// graphView.setScrollable(true);
-		graphView.setViewPort(2, 2000);
-		
+		graphView.setViewPort(2, Double.parseDouble(context.getResources().getString(R.string.graph_viewport_size)));
 		graphView.setScalable(true);
-		
 		graphView.setCustomLabelFormatter(new CustomLabelFormatter() {  
 			   @Override  
 			   public String formatLabel(double value, boolean isValueX) {  
 			      if (isValueX) {
 			    	  if(value<0)
 			    		  return "00:00:00";
-			    	  currentValue = new Date((long)(value));
-			    	  return timeFormat.format(currentValue);
+			    	  String strValue = String.format(Locale.getDefault(),"%02d:%02d:%02d", 
+			    			  TimeUnit.MILLISECONDS.toHours((long)value),
+			    			  TimeUnit.MILLISECONDS.toMinutes((long)value),
+			    			  TimeUnit.MILLISECONDS.toSeconds((long)value) - 
+			    			  TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long)value)));
+
+			    			  return strValue;
 			      }
 			      else
-			    	  return String.valueOf(((Double)value).intValue());
-			     
+			    	  return String.valueOf(((Double)value).intValue()); //vertical labels value
 			   }  
-			}); 
+		}); 
 		
+		// SET THE GRAPH VIEW STYLE
 		GraphViewStyle graphStyle= new GraphViewStyle();
-		graphStyle.setNumHorizontalLabels(3);
-		
+		graphStyle.setNumHorizontalLabels(Integer.parseInt(context.getResources().getString(R.string.graph_numberof_horizontal_labels)));
 		graphStyle.setVerticalLabelsAlign(Align.LEFT);
 		graphStyle.setGridColor(context.getResources().getColor(R.color.light_grey));
 		graphStyle.setHorizontalLabelsColor(context.getResources().getColor(R.color.grey));
 		graphStyle.setVerticalLabelsColor(context.getResources().getColor(R.color.grey));
-		
-		switch (context.getResources().getDisplayMetrics().densityDpi) {
-		case DisplayMetrics.DENSITY_LOW:
-			graphStyle.setTextSize((float) 10);
-		    break;
-		case DisplayMetrics.DENSITY_MEDIUM:
-			graphStyle.setTextSize((float) 14);
-			graphStyle.setVerticalLabelsWidth(40);
-			legendWidth = 100;
-			
-		    break;
-		case DisplayMetrics.DENSITY_HIGH:
-			graphStyle.setTextSize((float) 18);
-			graphStyle.setVerticalLabelsWidth(50);
-			legendWidth = 150;
-		    break;
-		case DisplayMetrics.DENSITY_XHIGH:
-			graphStyle.setTextSize((float) 30);
-			graphStyle.setVerticalLabelsWidth(70);
-			legendWidth = 200;
-			
-		    break;
-		}
+		graphStyle.setTextSize(Float.parseFloat(context.getResources().getString(R.string.graph_labels_text_size)));
+		graphStyle.setVerticalLabelsWidth(Integer.parseInt((context.getResources().getString(R.string.graph_vertical_labels_width))));
+
 		graphView.setGraphViewStyle(graphStyle);
-		graphView.setLegendWidth(legendWidth);
+		
+		// SET THE LEGEND
+		graphView.setLegendWidth((Integer.parseInt((context.getResources().getString(R.string.graph_legend_width)))));
 		graphView.setLegendAlign(LegendAlign.BOTTOM);
 		graphView.setShowLegend(true);
-
-		// Current X value
-		xValue = 2d;
 	}
 	
 	private int randomColor() {

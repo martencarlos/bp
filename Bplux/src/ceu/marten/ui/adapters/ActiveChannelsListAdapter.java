@@ -28,7 +28,6 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 		this.context = context;
 		this.strings = strings;
 		this.sensorsChecked = new String[strings.size()];
-
 	}
 
 	@Override
@@ -81,13 +80,12 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 			int pos, long id) {
 
 		TextView t = (TextView) currentText;
-		t.setTextSize(14);
+		t.setTextSize(Float.parseFloat(context.getResources().getString(R.string.active_channel_dialog_spinner_text)));
 		if (t.getText().toString().compareTo(context.getString(R.string.nc_active_channels_list_adapter_comparation)) != 0) {
 			int position = (Integer) spinner.getTag();
 			sensorsChecked[position] = ((Spinner) spinner).getSelectedItem()
 					.toString();
 		}
-
 	}
 
 	@Override

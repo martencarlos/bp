@@ -8,9 +8,62 @@
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:hint="@string/dn_hint"
-        android:textColorHint="@color/light_grey"
         android:maxLength="12"
-        android:paddingTop="20dp" >
-        <requestFocus />
+        android:maxLines="1"
+        android:paddingTop="20dp"
+        android:textColorHint="@color/light_grey" >
     </EditText>
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/divider_image_content"
+        android:paddingBottom="2dp"
+        android:paddingTop="2dp"
+        android:scaleType="fitXY"
+        android:src="?android:attr/listDivider" />
+
+    <LinearLayout
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:measureWithLargestChild="true"
+        android:orientation="horizontal"
+        android:paddingEnd="2dip"
+        android:paddingStart="2dip"
+        android:paddingTop="4dip" >
+
+        <LinearLayout
+            android:id="@+id/leftSpacer"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:orientation="horizontal"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/bttn_positive"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:onClick="onNegativeClick"
+            android:text="@string/nc_dialog_negative_button"
+            android:textSize="@dimen/new_configuration_text_size" />
+
+        <Button
+            android:id="@+id/bttn_negative"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:onClick="onPositiveClick"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:text="@string/nc_dialog_positive_button"
+            android:textSize="@dimen/new_configuration_text_size" />
+    </LinearLayout>
+
 </LinearLayout>

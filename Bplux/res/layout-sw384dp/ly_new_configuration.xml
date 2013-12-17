@@ -48,7 +48,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/nc_configuration_name"
                         android:textColor="@color/grey"
-                        android:textSize="16sp" />
+                        android:textSize="@dimen/new_configuration_text_size" />
 
                     <EditText
                         android:id="@+id/dev_name"
@@ -72,7 +72,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/nc_mac_address"
                         android:textColor="@color/grey"
-                        android:textSize="16sp" />
+                        android:textSize="@dimen/new_configuration_text_size" />
 
                     <EditText
                         android:id="@+id/nc_mac_address"
@@ -98,7 +98,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/nc_frequency_reception"
                         android:textColor="@color/grey"
-                        android:textSize="16sp" />
+                        android:textSize="@dimen/new_configuration_text_size" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -154,7 +154,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/nc_frequency_sampling"
                         android:textColor="@color/grey"
-                        android:textSize="16sp" />
+                        android:textSize="@dimen/new_configuration_text_size"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -211,7 +211,7 @@
                         android:paddingTop="5dip"
                         android:text="@string/nc_bits"
                         android:textColor="@color/grey"
-                        android:textSize="16sp" />
+                        android:textSize="@dimen/new_configuration_text_size" />
 
                     <RadioGroup
                         android:layout_width="fill_parent"

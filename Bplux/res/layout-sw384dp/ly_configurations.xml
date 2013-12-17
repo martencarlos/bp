@@ -40,7 +40,7 @@
             android:textSize="20sp"
             android:textColor="@color/light_grey"
             android:visibility="gone" />
-
+        
         <ListView
             android:id="@+id/lvConfigs"
             android:layout_width="fill_parent"
@@ -61,7 +61,7 @@
         android:background="@drawable/button_selector"
         android:drawableEnd="@drawable/new_configuration"
         android:paddingLeft="20dip"
-        android:paddingRight="60dip"
+        android:paddingRight="40dip"
         android:textColor="@android:color/white"
         android:onClick="onClickedNewConfig"
         android:text="@string/ca_button" />

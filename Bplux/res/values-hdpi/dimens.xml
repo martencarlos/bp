@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+ 	<!-- NEW CONFIGURATION ACTIVITY -->
+    <dimen name="new_configuration_text_size">14sp</dimen>
+    <string name="active_channel_dialog_spinner_text">14</string>
+    
+    <!-- NEW RECORDING ACTIVITY -->
+    <dimen name="graph_details_text_size">14sp</dimen>
+    <dimen name="back_dialog_text_size">14sp</dimen>
+   
+    <string name="graph_max_data_count">5000</string>
+    <string name="graph_height">300</string>
+    
+    <!-- GRAPH DIMENSIONS -->
+    <string name="graph_viewport_size">2000</string>  <!--2 seconds-->
+    <string name="graph_numberof_horizontal_labels">3</string>
+    <string name="graph_labels_text_size">18</string>
+    <string name="graph_vertical_labels_width">50</string>
+	<string name="graph_legend_width">150</string>
+
+</resources>

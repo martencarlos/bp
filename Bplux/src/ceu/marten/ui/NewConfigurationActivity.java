@@ -200,10 +200,8 @@ public class NewConfigurationActivity extends Activity {
 			}
 
 			private void setFrequency(int newFrequency) {
-				if (newFrequency >= SAMPLING_FREQ_MIN
-						&& newFrequency <= SAMPLING_FREQ_MAX) {
-					samplingfreqSeekbar
-							.setProgress((newFrequency - SAMPLING_FREQ_MIN));
+				if (newFrequency >= SAMPLING_FREQ_MIN && newFrequency <= SAMPLING_FREQ_MAX) {
+					samplingfreqSeekbar.setProgress((newFrequency - SAMPLING_FREQ_MIN));
 					newConfiguration.setSamplingFrequency(newFrequency);
 				} else if (newFrequency > SAMPLING_FREQ_MAX) {
 					samplingfreqSeekbar.setProgress(SAMPLING_FREQ_MAX);
@@ -226,7 +224,6 @@ public class NewConfigurationActivity extends Activity {
 
 				inputManager.hideSoftInputFromWindow(getCurrentFocus()
 						.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-
 			}
 		});
 	}
@@ -296,8 +293,7 @@ public class NewConfigurationActivity extends Activity {
 		activeChannelsDialog = activeChannelsBuilder.create();
 		activeChannelsDialog.show();
 
-		activeChannelsListView = (ListView) activeChannelsDialog
-				.findViewById(R.id.lv_channelsSelection);
+		activeChannelsListView = (ListView) activeChannelsDialog.findViewById(R.id.lv_channelsSelection);
 		activeChannelsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		activeChannelsListView.setItemsCanFocus(false);
 		activeChannelsListView.setAdapter(activeChannelsListAdapter);
@@ -336,6 +332,7 @@ public class NewConfigurationActivity extends Activity {
 
 		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.nc_dialog_title_channels_to_display);
+		
 		// BUILDER
 		channelsToDisplayBuilder = new AlertDialog.Builder(this);
 		channelsToDisplayBuilder.setCustomTitle(customTitleView)
@@ -431,11 +428,9 @@ public class NewConfigurationActivity extends Activity {
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 
-		newConfiguration = (Configuration) savedInstanceState
-				.getSerializable("configuration");
+		newConfiguration = (Configuration) savedInstanceState.getSerializable("configuration");
 		activeChannels.setText(savedInstanceState.getString("activeChannels"));
-		channelsToDisplay.setText(savedInstanceState
-				.getString("channelsToDisplay"));
+		channelsToDisplay.setText(savedInstanceState.getString("channelsToDisplay"));
 	}
 
 	private void displayErrorToast(String messageToDisplay) {
@@ -444,8 +439,7 @@ public class NewConfigurationActivity extends Activity {
 		LayoutInflater inflater = getLayoutInflater();
 		View toastView = inflater.inflate(R.layout.toast_error, null);
 		errorToast.setView(toastView);
-		((TextView) toastView.findViewById(R.id.display_text))
-				.setText(messageToDisplay);
+		((TextView) toastView.findViewById(R.id.display_text)).setText(messageToDisplay);
 
 		errorToast.show();
 	}
@@ -466,7 +460,6 @@ public class NewConfigurationActivity extends Activity {
 
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		Date date = new Date();
-		
 
 		newConfiguration.setCreateDate(dateFormat.format(date));
 		newConfiguration.setName(configurationName.getText().toString());
@@ -531,7 +524,7 @@ public class NewConfigurationActivity extends Activity {
 		// VALIDATE NAME FIELD
 		if (configurationName.getText().toString() == null
 				|| configurationName.getText().toString().compareTo("") == 0) {
-			//errorMessage += (" *"+getString(R.string.nc_error_message_name)+"\n");
+			
 			configurationName.setError(getString(R.string.nc_error_message_name));
 			configurationName.requestFocus();
 			validated = false;

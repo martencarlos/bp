@@ -22,7 +22,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +46,7 @@ import com.jjoe64.graphview.GraphView.GraphViewData;
 public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private static final String TAG = NewRecordingActivity.class.getName();
+	private static int maxDataCount = 0;
 
 	private TextView uiRecordingName, uiConfigurationName, uiNumberOfBits,
 			uiReceptionFrequency, uiSamplingFrequency, uiActiveChannels,
@@ -107,7 +107,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		for(int i=0;i< graphs.length;i++)
 			graphs[i].getSerie().appendData(new GraphViewData(
 					(period * lastXValue),
-						data[currentConfiguration.getChannelsToDisplay().get(i)-1]), true, 5000);
+						data[currentConfiguration.getChannelsToDisplay().get(i)-1]), true, maxDataCount);
 	}
 
 
@@ -119,28 +119,28 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 		// GETTING EXTRA INFO FROM INTENT
 		extras = getIntent().getExtras();
-		currentConfiguration = (Configuration) extras
-				.getSerializable("configSelected");
+		currentConfiguration = (Configuration) extras.getSerializable("configSelected");
 		recordingName = extras.getString("recordingName").toString();
 	
-		// INIT VARIABLES
-		int numberOfChannelsToDisplay = currentConfiguration.getNumberOfChannelsToDisplay();
-		inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		graphs = new HRGraph[numberOfChannelsToDisplay];
+		// INIT LOCAL VARIABLES
 		int samplingFrames = currentConfiguration.getReceptionFrequency()/currentConfiguration.getSamplingFrequency();
+		int numberOfChannelsToDisplay = currentConfiguration.getNumberOfChannelsToDisplay();
+		LayoutParams graphParams, detailParameters;
+		View graphsView;
+		
+		// INIT GLOBAL VARIABLES
+		inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		maxDataCount = Integer.parseInt((getResources().getString(R.string.graph_max_data_count)));
 		period = samplingFrames*1000d / currentConfiguration.getReceptionFrequency();
+		graphs = new HRGraph[numberOfChannelsToDisplay];
 		isChronometerRunning = false;
 		isServiceBounded = false;
 		lastXValue = 0;
-
+		
 		// INIT LAYOUT
-		LayoutParams graphParams = new LayoutParams(LayoutParams.MATCH_PARENT,
-				getGraphHeight());
-		LayoutParams detailParameters = new LayoutParams(
-				LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		/*LayoutParams buttonParameters = new LayoutParams(
-				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);*/
-		View graphsView = findViewById(R.id.nr_graphs);
+		graphParams = new LayoutParams(LayoutParams.MATCH_PARENT, Integer.parseInt((getResources().getString(R.string.graph_height))));
+		detailParameters = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		graphsView = findViewById(R.id.nr_graphs);
 
 		// ON SCREEN ROTATION, RESTORE GRAPH VIEWS
 		@SuppressWarnings("deprecation")
@@ -157,7 +157,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			for (int i = 0; i < numberOfChannelsToDisplay; i++) {
 				graphs[i] = new HRGraph(this,getString(R.string.nc_dialog_channel)+ " "+ currentConfiguration.getChannelsToDisplay().get(i).toString());
 				LinearLayout graph = (LinearLayout)inflater.inflate(R.layout.in_ly_graph,null);
-				
 				((ViewGroup) graph).addView(graphs[i].getGraphView());
 				((ViewGroup) graphsView).addView(graph, graphParams);
 			}
@@ -186,9 +185,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 					.getActiveChannelsAsString());
 		}
 
-		/*View buttons = inflater.inflate(R.layout.in_ly_buttons, null);
-		((ViewGroup) graphsView).addView(buttons, buttonParameters);
-		 */
 		// IF SERVICE WAS RUNNING BIND TO IT
 		if (isServiceRunning()) {
 			bindToService();
@@ -199,33 +195,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	}
 
-	private int getGraphHeight() {
-		int height = 100;
-		switch (context.getResources().getDisplayMetrics().densityDpi) {
-		case DisplayMetrics.DENSITY_LOW:
-			height=150;
-		    break;
-		case DisplayMetrics.DENSITY_MEDIUM:
-			height=160;
-		    break;
-		case DisplayMetrics.DENSITY_HIGH:
-			height=350;
-		    break;
-		case DisplayMetrics.DENSITY_XHIGH:
-			height=450;
-		    break;
-		}
-		return height;
-	}
-
-
 	private void setupBackDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.nr_back_dialog_title);
-		builder.setMessage(getString(R.string.nr_back_dialog_message)).setCustomTitle(customTitleView);
-
-		builder.setPositiveButton(getString(R.string.nr_dialog_positive_button),
+		builder.setCustomTitle(customTitleView)
+		.setView(inflater.inflate(R.layout.dialog_newrecording_backbutton_content, null))
+		.setPositiveButton(getString(R.string.nr_dialog_positive_button),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						new saveRecording().execute("");
@@ -253,11 +229,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		if (isChronometerRunning)
 			dialog.show();
 		else {
-			Intent backIntent = new Intent(context,
-					ConfigurationsActivity.class);
+			Intent backIntent = new Intent(context,ConfigurationsActivity.class);
 			startActivity(backIntent);
-			overridePendingTransition(R.anim.slide_in_left,
-					R.anim.slide_out_right);
+			overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
 			super.onBackPressed();
 		}
 
@@ -290,10 +264,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			lastXValue = savedInstanceState.getDouble("xcounter");
 		}
 
-		currentConfiguration = (Configuration) savedInstanceState
-				.getSerializable("configSelected");
-		recordingName = savedInstanceState.getString("recordingName")
-				.toString();
+		currentConfiguration = (Configuration) savedInstanceState.getSerializable("configSelected");
+		recordingName = savedInstanceState.getString("recordingName").toString();
 	}
 
 	private void findDetailViews() {
@@ -326,8 +298,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	public void onClickedStartStop(View view) {
 		if (!isServiceRunning()) {
-			startService(new Intent(NewRecordingActivity.this,
-					BiopluxService.class));
+			startService(new Intent(NewRecordingActivity.this, BiopluxService.class));
 			bindToService();
 			displayInfoToast(getString(R.string.nr_info_started));
 			uiStartStopbutton.setText(getString(R.string.nr_button_stop));
@@ -346,8 +317,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		LayoutInflater inflater = getLayoutInflater();
 		View toastView = inflater.inflate(R.layout.toast_info, null);
 		infoToast.setView(toastView);
-		((TextView) toastView.findViewById(R.id.display_text))
-				.setText(messageToDisplay);
+		((TextView) toastView.findViewById(R.id.display_text)).setText(messageToDisplay);
 
 		infoToast.show();
 	}
@@ -360,9 +330,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private void stopChronometer() {
 		chronometer.stop();
-		Date elapsedMiliseconds = new Date(SystemClock.elapsedRealtime()
-				- chronometer.getBase());
-		DateFormat formatter = new SimpleDateFormat("HH:mm:ss", Locale.UK);
+		Date elapsedMiliseconds = new Date(SystemClock.elapsedRealtime()- chronometer.getBase());
+		DateFormat formatter = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
 		duration = formatter.format(elapsedMiliseconds);
 		isChronometerRunning = false;
 	}
@@ -409,7 +378,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 		@Override
 		protected String doInBackground(String... params) {
-			// android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 			stopChronometer();
 			sendRecordingDuration();
 			saveRecording();
@@ -454,14 +422,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	@Override
 	protected void onDestroy() {
-		Log.d(TAG, "destroy");
 		super.onDestroy();
 		try {
 			unbindOfService();
 		} catch (Throwable t) {
 			Log.e(TAG,
-					"failed to unbind from service when activity is destroyed",
-					t);
+					"failed to unbind from service when activity is destroyed", t);
 		}
 	}
 

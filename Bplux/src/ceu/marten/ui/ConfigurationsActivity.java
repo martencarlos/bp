@@ -4,8 +4,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,6 +57,8 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	@Override
 	public void onBackPressed() {
 		Intent backIntent = new Intent(this, HomeActivity.class);
+		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+		backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 	    startActivity(backIntent);
 	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right );
 	    super.onBackPressed();
@@ -79,15 +81,15 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	}
 
 	private void setupRecordingNameDialog() {
-
+		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		LayoutInflater inflater = this.getLayoutInflater();
 		
 		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.ca_dialog_title);
 		builder.setView(inflater.inflate(R.layout.dialog_recording_name_content, null))
-				.setCustomTitle(customTitleView)
-				.setPositiveButton(getString(R.string.nc_dialog_positive_button),
+				.setCustomTitle(customTitleView);
+				/*.setPositiveButton(getString(R.string.nc_dialog_positive_button),
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int id) {
@@ -99,7 +101,8 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 									displayErrorToast(" *"+getString(R.string.ca_dialog_error_name)+"\n");
 								}else{
 									
-								
+								*/
+								/*
 								Intent intent = new Intent(classContext,
 										NewRecordingActivity.class);
 								intent.putExtra("recordingName",
@@ -109,8 +112,8 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 										configurations
 												.get(currentConfigurationsPosition));
 								startActivity(intent);
-								overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-								}
+								overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);*/
+				/*}
 							}
 						})
 				.setNegativeButton(getString(R.string.nc_dialog_negative_button),
@@ -118,11 +121,12 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 							public void onClick(DialogInterface dialog, int id) {
 								displayInfoToast(getString(R.string.ca_info_recording_canceled));
 							}
-						});
+						});*/
 		recordingNameDialog = builder.create();
-
+		
+		
 	}
-
+	
 	private void setupConfigurationsListView() {
 
 		final OnItemClickListener shortPressListener = new OnItemClickListener() {
@@ -227,5 +231,31 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		startActivityForResult(intent, 1);
 		overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_top);
 	}
-
+	
+	public void onNegativeClick(View v) {
+		EditText editText = (EditText) recordingNameDialog.findViewById(R.id.dialog_txt_new_recording_name);
+		editText.setError(null);
+		recordingNameDialog.cancel();
+	}
+	
+	
+	public void onPositiveClick(View v) {
+		EditText editText = (EditText) recordingNameDialog.findViewById(R.id.dialog_txt_new_recording_name);
+		String newRecordingName = editText.getText().toString();
+		
+		if (newRecordingName == null || newRecordingName.compareTo("") == 0) {
+			editText.setError(getString(R.string.ca_dialog_error_name));
+		}else{
+			Intent intent = new Intent(classContext,
+					NewRecordingActivity.class);
+			intent.putExtra("recordingName",
+					newRecordingName);
+			intent.putExtra(
+					"configSelected",
+					configurations
+							.get(currentConfigurationsPosition));
+			startActivity(intent);
+			overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+		}
+	}
 }
