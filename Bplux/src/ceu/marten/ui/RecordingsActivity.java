@@ -4,6 +4,9 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,9 +38,11 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	private static final String TAG = RecordingsActivity.class.getName();
 
 	private ListView lvRecordings;
-	String recordingName;
+	private String recordingName;
+	private AlertDialog confirmDialog;
 	private RecordingsListAdapter baseAdapter;
 	private ArrayList<Recording> recordingsArrayList = null;
+	private int[] reverseSortedPositions;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +51,55 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		setContentView(R.layout.ly_recordings);
 		loadRecordings();
 		setupRecordingListView();
+		setupConfirmationDialog();
 	}
 	
 	@Override
 	public void onBackPressed() {
 	    super.onBackPressed();
 	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+	}
+	
+	private void setupConfirmationDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
+		customTitleView.setText(R.string.ra_confirm_dialog_title);
+		builder.setCustomTitle(customTitleView)
+		.setMessage(R.string.ra_confirm_dialog_message)
+		.setPositiveButton(getString(R.string.ra_confirm_dialog_positive),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						for (int position : reverseSortedPositions) {
+							baseAdapter.remove(position);
+							Dao<Recording, Integer> dao = null;
+
+							try {
+								dao = getHelper().getRecordingDao();
+								dao.delete(recordingsArrayList.get(position));
+							} catch (SQLException e) {
+								Log.e(TAG, "Exception removing recording from database ", e);
+							}
+							
+							File root = Environment.getExternalStorageDirectory();
+							recordingName = recordingsArrayList.get(position).getName();
+							String appDirectory="/Bioplux/";
+							File file = new File(root + appDirectory + recordingName + ".zip");
+							file.delete();
+							recordingsArrayList.remove(position);
+						}
+						displayInfoToast(getString(R.string.ra_recording_removed));
+					}
+				});
+		builder.setNegativeButton(getString(R.string.ra_confirm_dialog_negative),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						 setupRecordingListView();
+					}
+				});
+
+		confirmDialog = builder.create();
+		confirmDialog.setCanceledOnTouchOutside(false);
 	}
 
 	private void setupRecordingListView() {
@@ -108,25 +156,8 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 
 	@Override
 	public void onDismiss(AbsListView listView, int[] reverseSortedPositions) {
-		for (int position : reverseSortedPositions) {
-			baseAdapter.remove(position);
-			Dao<Recording, Integer> dao = null;
-
-			try {
-				dao = getHelper().getRecordingDao();
-				dao.delete(recordingsArrayList.get(position));
-			} catch (SQLException e) {
-				Log.e(TAG, "Exception removing recording from database ", e);
-			}
-			
-			File root = Environment.getExternalStorageDirectory();
-			recordingName = recordingsArrayList.get(position).getName();
-			String appDirectory="/Bioplux/";
-			File file = new File(root + appDirectory + recordingName + ".zip");
-			file.delete();
-			recordingsArrayList.remove(position);
-		}
-		displayInfoToast(getString(R.string.ra_recording_removed));
+		this.reverseSortedPositions = reverseSortedPositions;
+		confirmDialog.show();
 	}
 
 	public void loadRecordings() {

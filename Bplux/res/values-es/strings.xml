@@ -21,12 +21,16 @@
     <string name="ca_header_title">"Seleccione una configuración"</string>
     <string name="ca_button">"Añadir una nueva configuración"</string>
     <string name="ca_info_recording_canceled">Grabación cancelada</string>
-    <string name="ca_dialog_title">Nombre de nueva grabación</string>
+    <string name="ca_name_dialog_title">Nombre de nueva grabación</string>
     <string name="ca_empty_list">"No hay configuraciones \n Para añadir una, pulse el botón de abajo"</string>
     
     <string name="ca_configuration_removed">"Configuración eliminada"</string>
     <string name="ca_dialog_null_name">Nombre de grabación es obligatorio</string>
     <string name="ca_dialog_duplicate_name">Nombre de grabación ya existe</string>
+    <string name="ca_confirm_dialog_title">Estas seguro?</string>
+    <string name="ca_confirm_dialog_message">La configuración será borrada</string>
+    <string name="ca_confirm_dialog_positive">Confirmar</string>
+    <string name="ca_confirm_dialog_negative">Cancelar</string>
     
     <!-- CONFIGURATION LIST ADAPTER -->
     <string name="cl_active">Activos</string>
@@ -39,6 +43,10 @@
     <string name="ra_recording_removed">"Grabación eliminada"</string>
     <string name="ra_duration">"Duración "</string>
     <string name="ra_dialog_email">Seleccione cliente mail</string>
+    <string name="ra_confirm_dialog_title">Estas seguro?</string>
+    <string name="ra_confirm_dialog_message">La grabación será borrada</string>
+    <string name="ra_confirm_dialog_positive">Confirmar</string>
+    <string name="ra_confirm_dialog_negative">Cancelar</string>
     
     <!-- NEW CONFIGURATION ACTIVITY -->
     <string name="nc_header_title">Nueva configuración</string>
@@ -91,14 +99,15 @@
     <string name="nr_info_started">Grabación ha comenzado</string>
     <string name="nr_info_rec_saved">Grabación guardada</string>
     <string name="nr_back_dialog_title">Estas seguro?</string>
-    <string name="nr_bluetooth_dialog_title">Bluetooth apagado</string>
+    <string name="nr_bluetooth_dialog_title">Problema con bluetooth</string>
     <string name="nr_overwrite_dialog_title">La grabación actual será sobrescrita</string>
     <string name="nr_overwrite_dialog_message">¿Desea continuar?</string>
+    <string name="nr_bluetooth_dialog_paired">No hay dispositivos Bioplux conectados</string>
     <string name="nr_back_dialog_message">Si procedes, la grabación será detenida y almacenada</string>
     <string name="nr_overwrite_dialog_positive_button">Continuar</string>
     <string name="nr_bluetooth_dialog_message">Bluetooth tiene que estar encendido para la conexión con el dispositivo Bioplux</string>
     <string name="nr_back_dialog_positive_button">Proceder</string>
-    <string name="nr_bluetooth_dialog_positive_button">Encender</string>
+    <string name="nr_bluetooth_dialog_positive_button">Conectar</string>
     
      <!-- BIOPLUX SERVICE -->
     <string name="bs_header_name">Nombre de configuración: </string>

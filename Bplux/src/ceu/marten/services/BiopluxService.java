@@ -143,7 +143,6 @@ public class BiopluxService extends Service {
 		} catch (BPException e) {
 			Log.e(TAG, "bioplux connection exception", e);
 		}
-
 	}
 
 	private void showNotification(Intent parentIntent) {

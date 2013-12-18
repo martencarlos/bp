@@ -9,18 +9,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import com.j256.ormlite.dao.Dao;
-
 import ceu.marten.bplux.R;
 import ceu.marten.model.Configuration;
-import ceu.marten.model.Recording;
 
 import plux.android.bioplux.Device.Frame;
 import android.content.Context;

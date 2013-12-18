@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,23 +37,26 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	private static final String TAG = ConfigurationsActivity.class.getName();
 
 	private AlertDialog recordingNameDialog;
+	private AlertDialog confirmationNameDialog;
 	private ListView configurationsListView;
 	private ConfigurationsListAdapter baseAdapter;
 	private ArrayList<Configuration> configurations = null;
 	private ArrayList<Recording> recordings = null;
 	private Context classContext = this;
 	private int currentConfigurationsPosition = 0;
+	private int[] reverseSortedPositions;
+	private LayoutInflater inflater;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_configurations);
-
+		inflater = this.getLayoutInflater();
 		loadConfigurations();
 		setupConfigurationsListView();
 		setupRecordingNameDialog();
-		
+		setupConfirmationDialog();
 	}
 	
 	@Override
@@ -84,14 +88,50 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	private void setupRecordingNameDialog() {
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		LayoutInflater inflater = this.getLayoutInflater();
+		
 		
 		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
-		customTitleView.setText(R.string.ca_dialog_title);
+		customTitleView.setText(R.string.ca_name_dialog_title);
 		builder.setView(inflater.inflate(R.layout.dialog_recording_name_content, null))
 				.setCustomTitle(customTitleView);
 		recordingNameDialog = builder.create();
 		
+	}
+	
+	private void setupConfirmationDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
+		customTitleView.setText(R.string.ca_confirm_dialog_title);
+		builder.setCustomTitle(customTitleView)
+		.setMessage(R.string.ca_confirm_dialog_message)
+		.setPositiveButton(getString(R.string.ca_confirm_dialog_positive),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						for (int position : reverseSortedPositions) {
+							baseAdapter.remove(position);
+							Dao<Configuration, Integer> dao = null;
+
+							try {
+								dao = getHelper().getDeviceConfigDao();
+								dao.delete(configurations.get(position));
+							} catch (SQLException e) {
+								Log.e(TAG,"exception removing configuration from database by swiping",
+										e);
+							}
+							configurations.remove(position);
+						}
+						displayInfoToast(getString(R.string.ca_configuration_removed));
+					}
+				});
+		builder.setNegativeButton(getString(R.string.ca_confirm_dialog_negative),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						setupConfigurationsListView();
+					}
+				});
+
+		confirmationNameDialog = builder.create();
+		confirmationNameDialog.setCanceledOnTouchOutside(false);
 	}
 	
 	private void setupConfigurationsListView() {
@@ -126,21 +166,8 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 
 	@Override
 	public void onDismiss(AbsListView listView, int[] reverseSortedPositions) {
-		for (int position : reverseSortedPositions) {
-			baseAdapter.remove(position);
-			Dao<Configuration, Integer> dao = null;
-
-			try {
-				dao = getHelper().getDeviceConfigDao();
-				dao.delete(configurations.get(position));
-			} catch (SQLException e) {
-				Log.e(TAG,
-						"exception removing configuration from database by swiping",
-						e);
-			}
-			configurations.remove(position);
-		}
-		displayInfoToast(getString(R.string.ca_configuration_removed));
+		this.reverseSortedPositions = reverseSortedPositions;
+		confirmationNameDialog.show();
 	}
 
 	private void displayInfoToast(String messageToDisplay) {

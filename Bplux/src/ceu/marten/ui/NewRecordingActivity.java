@@ -6,6 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import plux.android.bioplux.BPException;
+import plux.android.bioplux.Device;
+
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
@@ -69,7 +72,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private boolean isServiceBounded;
 	private Context context = this;
 	private AlertDialog backDialog;
-	private AlertDialog bluetoothDialog;
+	private AlertDialog bluetoothConnectionDialog;
 	private AlertDialog overwriteDialog;
 	private LayoutInflater inflater;
 	private final Messenger mActivity = new Messenger(new IncomingHandler());
@@ -234,7 +237,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.nr_bluetooth_dialog_title);
 		builder.setCustomTitle(customTitleView)
-		.setMessage(R.string.nr_bluetooth_dialog_message)
 		.setPositiveButton(getString(R.string.nr_bluetooth_dialog_positive_button),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -250,7 +252,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 					}
 				});
 
-		bluetoothDialog = builder.create();
+		bluetoothConnectionDialog = builder.create();
 	}
 	
 	private void setupOverwriteDialog() {
@@ -386,12 +388,22 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			return false;
 		} else {
 		    if (!mBluetoothAdapter.isEnabled() && currentConfiguration.getMacAddress().compareTo("test") != 0) {
-		    	bluetoothDialog.show();
+		    	bluetoothConnectionDialog.setMessage(getResources().getString(R.string.nr_bluetooth_dialog_message));
+		    	bluetoothConnectionDialog.show();
 		    	return false;
-		    }else
+		    }else{
+		    	// BIOPLUX CONNECTION TEST
+				try {
+					 Device.Create(currentConfiguration.getMacAddress());
+				} catch (BPException e) {
+					bluetoothConnectionDialog.setMessage(getResources().getString(R.string.nr_bluetooth_dialog_paired));
+					bluetoothConnectionDialog.show();
+					Log.e(TAG, "bioplux connection exception", e);
+					return false;
+				}
 		    	return true;
+		    }
 		}
-		
 	}
 
 

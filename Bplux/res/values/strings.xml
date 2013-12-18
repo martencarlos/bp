@@ -23,7 +23,12 @@
     <string name="ca_header_title">Select a configuration</string>
     <string name="ca_button">Add a new configuration</string>
     <string name="ca_info_recording_canceled">Recording canceled</string>
-    <string name="ca_dialog_title">New recording name</string>
+    <string name="ca_name_dialog_title">New recording name</string>
+    <string name="ca_confirm_dialog_title">Are you sure?</string>
+    <string name="ca_confirm_dialog_message">The configuration will be deleted</string>
+    <string name="ca_confirm_dialog_positive">Confirm</string>
+    <string name="ca_confirm_dialog_negative">Cancel</string>
+    
     <string name="ca_empty_list">There are no configurations\nTo add one, press the button below</string>
     
     <string name="ca_configuration_removed">Configuration removed</string>
@@ -41,6 +46,10 @@
     <string name="ra_recording_removed">Recording removed</string>
     <string name="ra_duration">Duration </string>
     <string name="ra_dialog_email">Select email client</string>
+    <string name="ra_confirm_dialog_title">Are you sure?</string>
+    <string name="ra_confirm_dialog_message">The recording will be deleted</string>
+    <string name="ra_confirm_dialog_positive">Confirm</string>
+    <string name="ra_confirm_dialog_negative">Cancel</string>
     
     <!-- NEW CONFIGURATION ACTIVITY -->
     <string name="nc_header_title">New configuration</string>
@@ -93,14 +102,15 @@
     <string name="nr_info_started">Recording started</string>
     <string name="nr_info_rec_saved">Recording saved</string>
     <string name="nr_back_dialog_title">Are you sure?</string>
-    <string name="nr_bluetooth_dialog_title">Bluetooth is not enable</string>
+    <string name="nr_bluetooth_dialog_title">Bluetooth connection failed</string>
     <string name="nr_overwrite_dialog_title">Recording will be overwrited</string>
     <string name="nr_overwrite_dialog_message">The actual recording will be lost. Do you wish to proceed?</string>
     <string name="nr_overwrite_dialog_positive_button">Proceed</string>
     <string name="nr_back_dialog_message">If you wish to proceed, recording will be stopped and saved</string>
     <string name="nr_bluetooth_dialog_message">Bluetooth has to be enabled to connect to the Bioplux device</string>
+    <string name="nr_bluetooth_dialog_paired">There are no Bioplux devices connected</string>
     <string name="nr_back_dialog_positive_button">Proceed</string>
-    <string name="nr_bluetooth_dialog_positive_button">turn on</string>
+    <string name="nr_bluetooth_dialog_positive_button">Connect</string>
     
     <!-- BIOPLUX SERVICE -->
     <string name="bs_header_name">Configuration name: </string>
