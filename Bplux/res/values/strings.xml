@@ -27,7 +27,8 @@
     <string name="ca_empty_list">There are no configurations\nTo add one, press the button below</string>
     
     <string name="ca_configuration_removed">Configuration removed</string>
-    <string name="ca_dialog_error_name">Invalid recording name</string>
+    <string name="ca_dialog_null_name">Recording name is required</string>
+    <string name="ca_dialog_duplicate_name">Recording name already exists</string>
     
     <!-- CONFIGURATION LIST ADAPTER -->
     <string name="cl_active">Active</string>
@@ -65,7 +66,8 @@
     <string name="nc_error_max_frequency">Max frequency is </string>
     <string name="nc_error_min_frequency">Min frequency is </string>
     <string name="nc_error_button_channels_to_display">Please select channels to activate first</string>
-    <string name="nc_error_message_name">Invalid configuration name</string>
+    <string name="nc_error_message_name_null">Configuration name is required</string>
+   	<string name="nc_error_message_name_duplicate">Configuration name already exists</string>
     <string name="nc_error_message_mac">Invalid mac address</string>
     <string name="nc_error_message_active_channels">Channels to activate not selected</string>
     <string name="nc_error_message_channels_to_display">Channels to display not selected</string>
@@ -92,6 +94,9 @@
     <string name="nr_info_rec_saved">Recording saved</string>
     <string name="nr_back_dialog_title">Are you sure?</string>
     <string name="nr_bluetooth_dialog_title">Bluetooth is not enable</string>
+    <string name="nr_overwrite_dialog_title">Recording will be overwrited</string>
+    <string name="nr_overwrite_dialog_message">The actual recording will be lost. Do you wish to proceed?</string>
+    <string name="nr_overwrite_dialog_positive_button">Proceed</string>
     <string name="nr_back_dialog_message">If you wish to proceed, recording will be stopped and saved</string>
     <string name="nr_bluetooth_dialog_message">Bluetooth has to be enabled to connect to the Bioplux device</string>
     <string name="nr_back_dialog_positive_button">Proceed</string>

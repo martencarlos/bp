@@ -11,7 +11,7 @@ public class Recording implements Serializable {
 	private static final long serialVersionUID = -5456569572649294107L;
 	@DatabaseField(generatedId = true)
 	private Integer id;
-	@DatabaseField(canBeNull = true)
+	@DatabaseField(unique=true, canBeNull = true)
 	private String name;
 	@DatabaseField(canBeNull = true)
 	private String startDate;

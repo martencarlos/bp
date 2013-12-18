@@ -2,7 +2,6 @@ package ceu.marten.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-
 import android.util.Log;
 
 import com.j256.ormlite.field.DataType;
@@ -20,7 +19,7 @@ public class Configuration implements Serializable {
 	@DatabaseField(generatedId = true)
 	private Integer id;
 
-	@DatabaseField(canBeNull = true)
+	@DatabaseField(unique=true, canBeNull = true)
 	private String name = null;
 	@DatabaseField(canBeNull = true)
 	private String macAddress = null;

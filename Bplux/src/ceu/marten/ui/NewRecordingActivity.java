@@ -57,6 +57,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private boolean isChronometerRunning;
 
 	private static Configuration currentConfiguration;
+	private Recording recording;
 	private String recordingName;
 	private String duration;
 	private Bundle extras;
@@ -69,6 +70,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private Context context = this;
 	private AlertDialog backDialog;
 	private AlertDialog bluetoothDialog;
+	private AlertDialog overwriteDialog;
 	private LayoutInflater inflater;
 	private final Messenger mActivity = new Messenger(new IncomingHandler());
 
@@ -195,7 +197,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 		setupBackDialog();
 		setupBluetoothDialog();
-
+		setupOverwriteDialog();
 	}
 
 	private void setupBackDialog() {
@@ -249,7 +251,42 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				});
 
 		bluetoothDialog = builder.create();
+	}
+	
+	private void setupOverwriteDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
+		customTitleView.setText(R.string.nr_overwrite_dialog_title);
+		builder.setCustomTitle(customTitleView)
+		.setMessage(R.string.nr_overwrite_dialog_message)
+		.setPositiveButton(getString(R.string.nr_overwrite_dialog_positive_button),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						lastXValue = 0;
+						try {
+							Dao<Recording, Integer> dao = getHelper().getRecordingDao();
+							dao.delete(recording);
+						} catch (SQLException e) {
+							Log.e(TAG, "saving recording exception", e);
+						}
+							
+						for (HRGraph graphTmp : graphs)
+							graphTmp.getGraphView().redrawAll();
+						startService(new Intent(NewRecordingActivity.this, BiopluxService.class));
+						bindToService();
+						displayInfoToast(getString(R.string.nr_info_started));
+						uiStartStopbutton.setText(getString(R.string.nr_button_stop));
+						startChronometer();
+					}
+				});
+		builder.setNegativeButton(getString(R.string.nc_dialog_negative_button),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						// dialog gets closed
+					}
+				});
 
+		overwriteDialog = builder.create();
 	}
 
 	@Override
@@ -270,10 +307,10 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		super.onSaveInstanceState(savedInstanceState);
 		if (isChronometerRunning) {
 			extras.putLong("chronometerBase", chronometer.getBase());
-			extras.putDouble("xcounter", lastXValue);
 		} else
 			extras.putLong("chronometerBase", 0);
-
+		extras.putSerializable("recording", recording);
+		extras.putDouble("xcounter", lastXValue);
 		savedInstanceState.putAll(extras);
 	}
 
@@ -289,9 +326,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			chronometer.setBase(savedInstanceState.getLong("chronometerBase"));
 			chronometer.start();
 			isChronometerRunning = true;
-			lastXValue = savedInstanceState.getDouble("xcounter");
 		}
-
+		recording = (Recording) savedInstanceState.getSerializable("recording");
+		lastXValue = savedInstanceState.getDouble("xcounter");
 		currentConfiguration = (Configuration) savedInstanceState.getSerializable("configSelected");
 		recordingName = savedInstanceState.getString("recordingName").toString();
 	}
@@ -326,14 +363,16 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	public void onClickedStartStop(View view) {
 		boolean bluetoothOn = checkBluetoothConnection();
-		if (!isServiceRunning() && bluetoothOn) {
+		if (!isServiceRunning() && bluetoothOn && lastXValue==0 ) {
 			startService(new Intent(NewRecordingActivity.this, BiopluxService.class));
 			bindToService();
 			displayInfoToast(getString(R.string.nr_info_started));
 			uiStartStopbutton.setText(getString(R.string.nr_button_stop));
 			startChronometer();
 
-		} else if (isServiceRunning()) {
+		}else if (!isServiceRunning() && bluetoothOn && lastXValue!=0) {
+			overwriteDialog.show();
+		}else if (isServiceRunning()) {
 			new saveRecording().execute("");
 			uiStartStopbutton.setText(getString(R.string.nr_button_start));
 		}
@@ -385,7 +424,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		Date date = new Date();
 
-		Recording recording = new Recording();
+		recording = new Recording();
 		recording.setName(recordingName);
 		recording.setConfig(currentConfiguration);
 		recording.setSavedDate(dateFormat.format(date));

@@ -50,6 +50,7 @@ public class NewConfigurationActivity extends Activity {
 	private LayoutInflater inflater;
 
 	String[] channelsActivated = null;
+	ArrayList<Configuration> configurations;
 	boolean[] channelsSelected = null;
 	String errorMessageChannelsToDisplayNumber= null;
 
@@ -521,11 +522,20 @@ public class NewConfigurationActivity extends Activity {
 
 	private boolean validateFields() {
 		boolean validated = true;
-		// VALIDATE NAME FIELD
+		
+		// VALIDATE NAME FIELD ALREADY EXISTS
+		for(Configuration c : configurations){
+			if(c.getName().compareTo(configurationName.getText().toString())==0){
+				configurationName.setError(getString(R.string.nc_error_message_name_duplicate));
+				configurationName.requestFocus();
+				validated = false;
+			}
+		}
+		
+		// VALIDATE NAME FIELD IS NOT NULL
 		if (configurationName.getText().toString() == null
 				|| configurationName.getText().toString().compareTo("") == 0) {
-			
-			configurationName.setError(getString(R.string.nc_error_message_name));
+			configurationName.setError(getString(R.string.nc_error_message_name_null));
 			configurationName.requestFocus();
 			validated = false;
 		}
@@ -563,8 +573,11 @@ public class NewConfigurationActivity extends Activity {
 
 	private class InitActivity extends AsyncTask<String, Void, String> {
 
+		@SuppressWarnings("unchecked")
 		@Override
 		protected String doInBackground(String... params) {
+			configurations= new ArrayList<Configuration>();
+			configurations = (ArrayList<Configuration>) getIntent().getExtras().getSerializable("configurations");
 			initializeVariables();
 			findViews();
 			errorMessageChannelsToDisplayNumber = getString(R.string.nc_error_channels_to_display);

@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import ceu.marten.bplux.R;
 import ceu.marten.model.Configuration;
+import ceu.marten.model.Recording;
 import ceu.marten.model.io.DatabaseHelper;
 import ceu.marten.ui.adapters.ConfigurationsListAdapter;
 
@@ -38,6 +39,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	private ListView configurationsListView;
 	private ConfigurationsListAdapter baseAdapter;
 	private ArrayList<Configuration> configurations = null;
+	private ArrayList<Recording> recordings = null;
 	private Context classContext = this;
 	private int currentConfigurationsPosition = 0;
 
@@ -176,11 +178,26 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 			Log.e(TAG, "exception loading configurations from database ", e);
 		}
 	}
+	
+	public void loadRecordings() {
+		Dao<Recording, Integer> dao;
+		recordings= new ArrayList<Recording>();
+		try {
+			dao = getHelper().getRecordingDao();
+			QueryBuilder<Recording, Integer> builder = dao.queryBuilder();
+			builder.orderBy("startDate", false).limit(30L);
+			recordings = (ArrayList<Recording>) dao.query(builder
+					.prepare());
+		} catch (SQLException e) {
+			Log.e(TAG, "exception loading recordings from database ", e);
+		}
+	}
 
 	/* BUTTON EVENTS */
 
 	public void onClickedNewConfig(View v) {
 		Intent intent = new Intent(this, NewConfigurationActivity.class);
+		intent.putExtra("configurations", configurations);
 		startActivityForResult(intent, 1);
 		overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_top);
 	}
@@ -195,18 +212,23 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	public void onPositiveClick(View v) {
 		EditText editText = (EditText) recordingNameDialog.findViewById(R.id.dialog_txt_new_recording_name);
 		String newRecordingName = editText.getText().toString();
+		loadRecordings();
+		boolean recordingNameExists = false;
+		if(recordings!=null){
+			for(Recording r : recordings){
+				if(r.getName().compareTo(newRecordingName)==0)
+					recordingNameExists = true;
+			}
+		}
 		
 		if (newRecordingName == null || newRecordingName.compareTo("") == 0) {
-			editText.setError(getString(R.string.ca_dialog_error_name));
+			editText.setError(getString(R.string.ca_dialog_null_name));
+		}else if(recordingNameExists){
+			editText.setError(getString(R.string.ca_dialog_duplicate_name));
 		}else{
-			Intent intent = new Intent(classContext,
-					NewRecordingActivity.class);
-			intent.putExtra("recordingName",
-					newRecordingName);
-			intent.putExtra(
-					"configSelected",
-					configurations
-							.get(currentConfigurationsPosition));
+			Intent intent = new Intent(classContext,NewRecordingActivity.class);
+			intent.putExtra("recordingName",newRecordingName);
+			intent.putExtra("configSelected",configurations.get(currentConfigurationsPosition));
 			startActivity(intent);
 			overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 			recordingNameDialog.dismiss();

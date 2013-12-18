@@ -25,7 +25,8 @@
     <string name="ca_empty_list">"No hay configuraciones \n Para añadir una, pulse el botón de abajo"</string>
     
     <string name="ca_configuration_removed">"Configuración eliminada"</string>
-    <string name="ca_dialog_error_name">Nombre de grabación inválido</string>
+    <string name="ca_dialog_null_name">Nombre de grabación es obligatorio</string>
+    <string name="ca_dialog_duplicate_name">Nombre de grabación ya existe</string>
     
     <!-- CONFIGURATION LIST ADAPTER -->
     <string name="cl_active">Activos</string>
@@ -63,7 +64,8 @@
     <string name="nc_error_max_frequency">La frecuencia máxima es </string>
     <string name="nc_error_min_frequency">La frecuencia mínima es </string>
     <string name="nc_error_button_channels_to_display">Por favor, seleccione los canales activos primero</string>
-    <string name="nc_error_message_name">Nombre de la configuración inválido</string>
+    <string name="nc_error_message_name_null">Introduzca un nombre</string>
+    <string name="nc_error_message_name_duplicate">Este nombre ya existe</string>
     <string name="nc_error_message_mac">Dirección MAC inválida.</string>
     <string name="nc_error_message_active_channels">Canales activos no seleccionados</string>
     <string name="nc_error_message_channels_to_display">Seleccione canales a mostrar</string>
@@ -90,7 +92,10 @@
     <string name="nr_info_rec_saved">Grabación guardada</string>
     <string name="nr_back_dialog_title">Estas seguro?</string>
     <string name="nr_bluetooth_dialog_title">Bluetooth apagado</string>
+    <string name="nr_overwrite_dialog_title">La grabación actual será sobrescrita</string>
+    <string name="nr_overwrite_dialog_message">¿Desea continuar?</string>
     <string name="nr_back_dialog_message">Si procedes, la grabación será detenida y almacenada</string>
+    <string name="nr_overwrite_dialog_positive_button">Continuar</string>
     <string name="nr_bluetooth_dialog_message">Bluetooth tiene que estar encendido para la conexión con el dispositivo Bioplux</string>
     <string name="nr_back_dialog_positive_button">Proceder</string>
     <string name="nr_bluetooth_dialog_positive_button">Encender</string>
