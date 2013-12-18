@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -89,41 +88,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		customTitleView.setText(R.string.ca_dialog_title);
 		builder.setView(inflater.inflate(R.layout.dialog_recording_name_content, null))
 				.setCustomTitle(customTitleView);
-				/*.setPositiveButton(getString(R.string.nc_dialog_positive_button),
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int id) {
-								String newRecordingName = ((EditText) recordingNameDialog
-										.findViewById(R.id.dialog_txt_new_recording_name)).getText().toString();
-								
-								if (newRecordingName == null
-										|| newRecordingName.compareTo("") == 0) {
-									displayErrorToast(" *"+getString(R.string.ca_dialog_error_name)+"\n");
-								}else{
-									
-								*/
-								/*
-								Intent intent = new Intent(classContext,
-										NewRecordingActivity.class);
-								intent.putExtra("recordingName",
-										newRecordingName);
-								intent.putExtra(
-										"configSelected",
-										configurations
-												.get(currentConfigurationsPosition));
-								startActivity(intent);
-								overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);*/
-				/*}
-							}
-						})
-				.setNegativeButton(getString(R.string.nc_dialog_negative_button),
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								displayInfoToast(getString(R.string.ca_info_recording_canceled));
-							}
-						});*/
 		recordingNameDialog = builder.create();
-		
 		
 	}
 	
@@ -186,18 +151,6 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 				.setText(messageToDisplay);
 
 		infoToast.show();
-	}
-	
-	private void displayErrorToast(String messageToDisplay) {
-		Toast errorToast = new Toast(getApplicationContext());
-
-		LayoutInflater inflater = getLayoutInflater();
-		View toastView = inflater.inflate(R.layout.toast_error, null);
-		errorToast.setView(toastView);
-		((TextView) toastView.findViewById(R.id.display_text))
-				.setText(messageToDisplay);
-
-		errorToast.show();
 	}
 
 	public void saveConfiguration(Configuration config) {

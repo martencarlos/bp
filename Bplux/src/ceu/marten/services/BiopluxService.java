@@ -42,6 +42,7 @@ public class BiopluxService extends Service {
 
 	private String recordingName;
 	private int samplingFrames;
+	private int samplingCounter;
 	private Configuration configuration;
 	private ArrayList<Integer> activeChannels;
 
@@ -79,8 +80,8 @@ public class BiopluxService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		getInfoFromActivity(intent);
-		
-		frames = new Device.Frame[samplingFrames];
+		samplingCounter=0;
+		frames = new Device.Frame[80];
 		for (int i = 0; i < frames.length; i++)
 			frames[i] = new Frame();
 		connectToBiopluxDevice();
@@ -92,23 +93,25 @@ public class BiopluxService extends Service {
 			public void run() {
 				processFrames();
 			}
-		}, 0, 5L);
+		}, 0, 50L);
 
 		return mMessenger.getBinder();
 	}
 
 	private void processFrames() {
 		isWriting = true;
-		getFrames(samplingFrames);
-		for (Frame f : frames) 
+		getFrames(80);
+		for (Frame f : frames) {
 			dataManager.writeFramesToTmpFile(f);
-
-		isWriting = false;
-		try {
-			sendGraphDataToActivity(frames[0].an_in);
-
-		} catch (Throwable t) {
-			Log.e(TAG, "error processing frames", t);
+			isWriting = false;
+			if(samplingCounter++ == samplingFrames){
+				try {
+					sendGraphDataToActivity(f.an_in);
+					samplingCounter = 0;
+				} catch (Throwable t) {
+					Log.e(TAG, "error processing frames", t);
+				}
+			}	
 		}
 	}
 
