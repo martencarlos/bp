@@ -25,12 +25,14 @@ import ceu.marten.ui.adapters.RecordingsListAdapter;
 
 import com.haarman.listviewanimations.itemmanipulation.OnDismissCallback;
 import com.haarman.listviewanimations.itemmanipulation.SwipeDismissAdapter;
+import com.haarman.listviewanimations.itemmanipulation.contextualundo.ContextualUndoAdapter;
+import com.haarman.listviewanimations.itemmanipulation.contextualundo.ContextualUndoAdapter.DeleteItemCallback;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
-		implements OnDismissCallback {
+		implements OnDismissCallback{
 
 	private static final String TAG = RecordingsActivity.class.getName();
 
@@ -70,11 +72,9 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		lvRecordings.setEmptyView(findViewById(R.id.empty_list_recordings));
 		baseAdapter = new RecordingsListAdapter(this, recordingsArrayList);
 		setSwipeToDismissAdapter();
-
 	}
 
 	public void sendDataViaEmail() {
-		
 		File root = Environment.getExternalStorageDirectory();
 		String appDirectory="/Bioplux/";
 		File F = new File(root + appDirectory + recordingName + ".zip");
@@ -104,6 +104,9 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		swipeAdapter.setAbsListView(lvRecordings);
 		lvRecordings.setAdapter(baseAdapter);
 	}
+
+	
+
 
 	@Override
 	public void onDismiss(AbsListView listView, int[] reverseSortedPositions) {

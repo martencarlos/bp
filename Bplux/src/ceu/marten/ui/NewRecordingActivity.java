@@ -346,7 +346,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		    // Device does not support Bluetooth
 			return false;
 		} else {
-		    if (!mBluetoothAdapter.isEnabled() && currentConfiguration.getMacAddress().compareTo("tes") != 0) {
+		    if (!mBluetoothAdapter.isEnabled() && currentConfiguration.getMacAddress().compareTo("test") != 0) {
 		    	bluetoothDialog.show();
 		    	return false;
 		    }else
