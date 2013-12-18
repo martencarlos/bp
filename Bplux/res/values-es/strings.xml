@@ -89,8 +89,11 @@
     <string name="nr_info_started">Grabación ha comenzado</string>
     <string name="nr_info_rec_saved">Grabación guardada</string>
     <string name="nr_back_dialog_title">Estas seguro?</string>
+    <string name="nr_bluetooth_dialog_title">Bluetooth apagado</string>
     <string name="nr_back_dialog_message">Si procedes, la grabación será detenida y almacenada</string>
-    <string name="nr_dialog_positive_button">Proceder</string>
+    <string name="nr_bluetooth_dialog_message">Bluetooth tiene que estar encendido para la conexión con el dispositivo Bioplux</string>
+    <string name="nr_back_dialog_positive_button">Proceder</string>
+    <string name="nr_bluetooth_dialog_positive_button">Encender</string>
     
      <!-- BIOPLUX SERVICE -->
     <string name="bs_header_name">Nombre de configuración: </string>

@@ -9,6 +9,7 @@ import java.util.Locale;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -66,7 +67,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static double period;
 	private boolean isServiceBounded;
 	private Context context = this;
-	private AlertDialog dialog;
+	private AlertDialog backDialog;
+	private AlertDialog bluetoothDialog;
 	private LayoutInflater inflater;
 	private final Messenger mActivity = new Messenger(new IncomingHandler());
 
@@ -192,6 +194,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 
 		setupBackDialog();
+		setupBluetoothDialog();
 
 	}
 
@@ -201,7 +204,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		customTitleView.setText(R.string.nr_back_dialog_title);
 		builder.setCustomTitle(customTitleView)
 		.setView(inflater.inflate(R.layout.dialog_newrecording_backbutton_content, null))
-		.setPositiveButton(getString(R.string.nr_dialog_positive_button),
+		.setPositiveButton(getString(R.string.nr_back_dialog_positive_button),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						new saveRecording().execute("");
@@ -220,14 +223,39 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 					}
 				});
 
-		dialog = builder.create();
+		backDialog = builder.create();
+
+	}
+	
+	private void setupBluetoothDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
+		customTitleView.setText(R.string.nr_bluetooth_dialog_title);
+		builder.setCustomTitle(customTitleView)
+		.setMessage(R.string.nr_bluetooth_dialog_message)
+		.setPositiveButton(getString(R.string.nr_bluetooth_dialog_positive_button),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						Intent intentBluetooth = new Intent();
+				        intentBluetooth.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+				        context.startActivity(intentBluetooth);
+					}
+				});
+		builder.setNegativeButton(getString(R.string.nc_dialog_negative_button),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						// dialog gets closed
+					}
+				});
+
+		bluetoothDialog = builder.create();
 
 	}
 
 	@Override
 	public void onBackPressed() {
 		if (isChronometerRunning)
-			dialog.show();
+			backDialog.show();
 		else {
 			Intent backIntent = new Intent(context,ConfigurationsActivity.class);
 			startActivity(backIntent);
@@ -297,19 +325,36 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	public void onClickedStartStop(View view) {
-		if (!isServiceRunning()) {
+		boolean bluetoothOn = checkBluetoothConnection();
+		if (!isServiceRunning() && bluetoothOn) {
 			startService(new Intent(NewRecordingActivity.this, BiopluxService.class));
 			bindToService();
 			displayInfoToast(getString(R.string.nr_info_started));
 			uiStartStopbutton.setText(getString(R.string.nr_button_stop));
 			startChronometer();
 
-		} else {
+		} else if (isServiceRunning()) {
 			new saveRecording().execute("");
 			uiStartStopbutton.setText(getString(R.string.nr_button_start));
 		}
 
 	}
+
+	private boolean checkBluetoothConnection() {
+		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		if (mBluetoothAdapter == null) {
+		    // Device does not support Bluetooth
+			return false;
+		} else {
+		    if (!mBluetoothAdapter.isEnabled() && currentConfiguration.getMacAddress().compareTo("tes") != 0) {
+		    	bluetoothDialog.show();
+		    	return false;
+		    }else
+		    	return true;
+		}
+		
+	}
+
 
 	private void displayInfoToast(String messageToDisplay) {
 		Toast infoToast = new Toast(getApplicationContext());

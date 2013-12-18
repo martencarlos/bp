@@ -97,13 +97,12 @@ public class BiopluxService extends Service {
 
 		return mMessenger.getBinder();
 	}
-
+	
 	private void processFrames() {
 		isWriting = true;
 		getFrames(80);
 		for (Frame f : frames) {
 			dataManager.writeFramesToTmpFile(f);
-			isWriting = false;
 			if(samplingCounter++ == samplingFrames){
 				try {
 					sendGraphDataToActivity(f.an_in);
@@ -113,6 +112,7 @@ public class BiopluxService extends Service {
 				}
 			}	
 		}
+		isWriting = false;
 	}
 
 	private void getFrames(int nFrames) {

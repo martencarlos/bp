@@ -188,7 +188,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	public void onNegativeClick(View v) {
 		EditText editText = (EditText) recordingNameDialog.findViewById(R.id.dialog_txt_new_recording_name);
 		editText.setError(null);
-		recordingNameDialog.cancel();
+		recordingNameDialog.dismiss();
 	}
 	
 	
@@ -209,6 +209,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 							.get(currentConfigurationsPosition));
 			startActivity(intent);
 			overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+			recordingNameDialog.dismiss();
 		}
 	}
 }
