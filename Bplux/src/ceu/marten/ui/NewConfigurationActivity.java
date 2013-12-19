@@ -55,7 +55,7 @@ public class NewConfigurationActivity extends Activity {
 	String errorMessageChannelsToDisplayNumber= null;
 
 	Configuration newConfiguration;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);

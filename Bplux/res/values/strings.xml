@@ -111,6 +111,8 @@
     <string name="nr_bluetooth_dialog_paired">There are no Bioplux devices connected</string>
     <string name="nr_back_dialog_positive_button">Proceed</string>
     <string name="nr_bluetooth_dialog_positive_button">Connect</string>
+    <string name="nr_progress_dialog_title">Looking for Bioplux devices</string>
+    <string name="nr_progress_dialog_message">Trying to connect to devices in range</string>
     
     <!-- BIOPLUX SERVICE -->
     <string name="bs_header_name">Configuration name: </string>

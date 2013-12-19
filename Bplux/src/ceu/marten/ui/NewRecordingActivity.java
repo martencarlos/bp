@@ -12,6 +12,7 @@ import plux.android.bioplux.Device;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Context;
@@ -115,6 +116,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			graphs[i].getSerie().appendData(new GraphViewData(
 					(period * lastXValue),
 						data[currentConfiguration.getChannelsToDisplay().get(i)-1]), true, maxDataCount);
+	
 	}
 
 
@@ -392,16 +394,31 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		    	bluetoothConnectionDialog.show();
 		    	return false;
 		    }else{
-		    	// BIOPLUX CONNECTION TEST
-				try {
-					 Device.Create(currentConfiguration.getMacAddress());
-				} catch (BPException e) {
-					bluetoothConnectionDialog.setMessage(getResources().getString(R.string.nr_bluetooth_dialog_paired));
-					bluetoothConnectionDialog.show();
-					Log.e(TAG, "bioplux connection exception", e);
-					return false;
-				}
-		    	return true;
+		    	final ProgressDialog progress = ProgressDialog.show(this, getResources().getString(R.string.nr_progress_dialog_title),
+		    			getResources().getString(R.string.nr_progress_dialog_message), true);
+		    	new Thread(new Runnable() {
+		    		  @Override
+		    		  public void run()
+		    		  {
+		    			// BIOPLUX CONNECTION TEST
+		  				try {
+		  					 Device.Create(currentConfiguration.getMacAddress());
+		  				} catch (BPException e) {
+		  					Log.e(TAG, "bioplux connection exception", e);
+		  				}
+
+		    		    runOnUiThread(new Runnable() {
+		    		      @Override
+		    		      public void run()
+		    		      {
+		    		        progress.dismiss();
+		    		        bluetoothConnectionDialog.setMessage(getResources().getString(R.string.nr_bluetooth_dialog_paired));
+		  					bluetoothConnectionDialog.show();
+		    		      }
+		    		    });
+		    		  }
+		    		}).start();
+		    	return false;
 		    }
 		}
 	}

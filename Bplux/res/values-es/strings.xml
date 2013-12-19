@@ -108,6 +108,8 @@
     <string name="nr_bluetooth_dialog_message">Bluetooth tiene que estar encendido para la conexión con el dispositivo Bioplux</string>
     <string name="nr_back_dialog_positive_button">Proceder</string>
     <string name="nr_bluetooth_dialog_positive_button">Conectar</string>
+    <string name="nr_progress_dialog_title">Buscando dispositivos Bioplux</string>
+    <string name="nr_progress_dialog_message">Intentando establecer conexion</string>
     
      <!-- BIOPLUX SERVICE -->
     <string name="bs_header_name">Nombre de configuración: </string>
