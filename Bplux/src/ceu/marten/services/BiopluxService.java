@@ -33,11 +33,13 @@ public class BiopluxService extends Service {
 	public static final int MSG_UNREGISTER_CLIENT = 2;
 	public static final int MSG_RECORDING_DURATION = 3;
 	public static final int MSG_DATA = 4;
-
+	public static final int MSG_CONNECTION_ERROR = 5;
+	
 	static Messenger client = null;
 	private NotificationManager notificationManager;
 	private Timer timer = new Timer();
 	private boolean isWriting;
+	private boolean connectionError= false;
 	private static DataManager dataManager;
 
 	private String recordingName;
@@ -120,6 +122,9 @@ public class BiopluxService extends Service {
 			connection.GetFrames(nFrames, frames);
 		} catch (BPException e) {
 			Log.e(TAG, "exception getting frames", e);
+			connectionError = true;
+			stopService();
+			sendErrorNotificationToActivity(e.code);
 		}
 	}
 
@@ -184,14 +189,22 @@ public class BiopluxService extends Service {
 		}
 
 	}
+	
+	private void sendErrorNotificationToActivity(int errorCode) {
+		try {
+			client.send(Message.obtain(null, MSG_CONNECTION_ERROR, errorCode, 0));
+		} catch (RemoteException e) {
+			Log.e(TAG, "Exception sending error message to activity", e);
+		}
+
+	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		return START_NOT_STICKY; // run until explicitly stopped.
 	}
-
-	@Override
-	public void onDestroy() {
+	
+	private void stopService(){
 		notificationManager.cancel(R.string.service_id);
 		if (timer != null)
 			timer.cancel();
@@ -209,6 +222,12 @@ public class BiopluxService extends Service {
 		} catch (BPException e) {
 			Log.e(TAG, "error ending ACQ", e);
 		}
+	}
+
+	@Override
+	public void onDestroy() {
+		if(!connectionError)
+			stopService();
 		dataManager.saveFiles();
 		
 		Log.i(TAG, "service stopped");

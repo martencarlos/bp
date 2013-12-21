@@ -65,16 +65,25 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private String recordingName;
 	private String duration;
 	private Bundle extras;
+	
+	private static String errorMessageAddress;
+	private static String errorMessageDevice;
+	private static String errorMessageContacting;
+	private static String errorMessageAdapter;
+	private static String errorMessagePort;
 
 	private Messenger mService = null;
-	private static HRGraph[] graphs;
+	private static Graph[] graphs;
 	private static double lastXValue;
 	private static double period;
 	private boolean isServiceBounded;
-	private boolean bpError;
+	private static boolean serviceError = false;
+	private boolean connectionError;
+	private int bpErrorCode;
 	private Context context = this;
 	private AlertDialog backDialog;
 	private AlertDialog bluetoothConnectionDialog;
+	private static AlertDialog connectionErrorDialog;
 	private AlertDialog overwriteDialog;
 	private LayoutInflater inflater;
 	private final Messenger mActivity = new Messenger(new IncomingHandler());
@@ -85,6 +94,10 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			switch (msg.what) {
 			case BiopluxService.MSG_DATA:
 				appendDataToGraphs(msg.getData().getShortArray("frame"));
+				break;
+			case BiopluxService.MSG_CONNECTION_ERROR:
+				serviceError = true;
+				displayConnectionErrorDialog(msg.arg1);
 				break;
 			default:
 				super.handleMessage(msg);
@@ -112,13 +125,33 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	};
 
 	static void appendDataToGraphs(short[] data) {
-		lastXValue++;
-		for (int i = 0; i < graphs.length; i++)
-			graphs[i].getSerie().appendData(
-					new GraphViewData((period * lastXValue),
-							data[currentConfiguration.getChannelsToDisplay()
-									.get(i) - 1]), true, maxDataCount);
+		if(!serviceError){
+			lastXValue++;
+			for (int i = 0; i < graphs.length; i++)
+				graphs[i].getSerie().appendData(
+						new GraphViewData((period * lastXValue),
+								data[currentConfiguration.getChannelsToDisplay()
+										.get(i) - 1]), true, maxDataCount);
+		}
+	}
 
+	private void sendRecordingDuration() {
+		if (isServiceBounded) {
+			if (mService != null) {
+				try {
+					Message msg = Message.obtain(null,
+							BiopluxService.MSG_RECORDING_DURATION, 0, 0);
+					Bundle extras = new Bundle();
+					extras.putString("duration", duration);
+					msg.setData(extras);
+					msg.replyTo = mActivity;
+					mService.send(msg);
+	
+				} catch (RemoteException e) {
+					Log.e(TAG, "Error sending duration to service", e);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -142,16 +175,23 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		View graphsView;
 
 		// INIT GLOBAL VARIABLES
+		errorMessageAddress = getResources().getString(R.string.bp_address_incorrect);
+		errorMessageAdapter = getResources().getString(R.string.bp_adapter_not_found);
+		errorMessageDevice = getResources().getString(R.string.bp_device_not_found);
+		errorMessageContacting = getResources().getString(R.string.bp_contacting_device);
+		errorMessagePort = getResources().getString(R.string.bp_port_could_not_be_opened);
 		inflater = (LayoutInflater) getApplicationContext().getSystemService(
 				Context.LAYOUT_INFLATER_SERVICE);
 		maxDataCount = Integer.parseInt((getResources()
 				.getString(R.string.graph_max_data_count)));
 		period = samplingFrames * 1000d
 				/ currentConfiguration.getReceptionFrequency();
-		graphs = new HRGraph[numberOfChannelsToDisplay];
+		graphs = new Graph[numberOfChannelsToDisplay];
 		isChronometerRunning = false;
 		isServiceBounded = false;
+		bpErrorCode = 0;
 		lastXValue = 0;
+		
 
 		// INIT LAYOUT
 		graphParams = new LayoutParams(LayoutParams.MATCH_PARENT,
@@ -165,7 +205,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		@SuppressWarnings("deprecation")
 		final Object data = getLastNonConfigurationInstance();
 		if (data != null) {
-			graphs = (HRGraph[]) data;
+			graphs = (Graph[]) data;
 			for (int i = 0; i < graphs.length; i++) {
 				((ViewGroup) (graphs[i].getGraphView().getParent()))
 						.removeView(graphs[i].getGraphView());
@@ -175,7 +215,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			}
 		} else {
 			for (int i = 0; i < numberOfChannelsToDisplay; i++) {
-				graphs[i] = new HRGraph(this,
+				graphs[i] = new Graph(this,
 						getString(R.string.nc_dialog_channel)
 								+ " "
 								+ currentConfiguration.getChannelsToDisplay()
@@ -218,6 +258,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 		setupBackDialog();
 		setupBluetoothDialog();
+		setupConnectionErrorDialog();
 		setupOverwriteDialog();
 	}
 
@@ -281,6 +322,25 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 		bluetoothConnectionDialog = builder.create();
 	}
+	
+	private void setupConnectionErrorDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		TextView customTitleView = (TextView) inflater.inflate(R.layout.dialog_custom_title, null);
+		customTitleView.setText(R.string.nr_bluetooth_dialog_title);
+		customTitleView.setBackgroundColor(getResources().getColor(R.color.waring_dialog));
+		builder.setCustomTitle(customTitleView).setPositiveButton(
+				getString(R.string.bp_positive_button),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						if(serviceError){
+							new saveRecording().execute("");
+							uiStartStopbutton.setText(getString(R.string.nr_button_start));
+						}
+						
+					}
+				});
+		connectionErrorDialog = builder.create();
+	}
 
 	private void setupOverwriteDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -302,7 +362,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 									Log.e(TAG, "saving recording exception", e);
 								}
 
-								for (HRGraph graphTmp : graphs)
+								for (Graph graphTmp : graphs)
 									graphTmp.getGraphView().redrawAll();
 								startRecording();
 							}
@@ -375,27 +435,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		uiMacAddress = (TextView) findViewById(R.id.nr_txt_mac);
 	}
 
-	private void sendRecordingDuration() {
-		if (isServiceBounded) {
-			if (mService != null) {
-				try {
-					Message msg = Message.obtain(null,
-							BiopluxService.MSG_RECORDING_DURATION, 0, 0);
-					Bundle extras = new Bundle();
-					extras.putString("duration", duration);
-					msg.setData(extras);
-					msg.replyTo = mActivity;
-					mService.send(msg);
-
-				} catch (RemoteException e) {
-					Log.e(TAG, "Error sending duration to service", e);
-				}
-			}
-		}
-	}
-
 	public void onClickedStartStop(View view) {
-		
 		if (!isServiceRunning() && lastXValue == 0) {
 			checkBluetoothConnection();
 		} else if (!isServiceRunning() && lastXValue != 0) {
@@ -430,11 +470,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			bluetoothConnectionDialog.show();
 			return false;
 		}
-		progress = ProgressDialog.show(this,
-				getResources().getString(
-						R.string.nr_progress_dialog_title),
-				getResources().getString(
-						R.string.nr_progress_dialog_message), true);
+		progress = ProgressDialog.show(this,getResources().getString(R.string.nr_progress_dialog_title),getResources().getString(R.string.nr_progress_dialog_message), true);
 		
 		Thread connectionThread = new Thread(new Runnable() {
 			@Override
@@ -442,21 +478,21 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				try {
 					Device.Create(currentConfiguration.getMacAddress());
 				} catch (BPException e) {
-					bpError = true;
+					connectionError = true;
+					bpErrorCode = e.code;
 					Log.e(TAG, "bioplux connection exception", e);
 				}
 				runOnUiThread(new Runnable(){
 				    public void run(){
 				    	progress.dismiss();
-						if(bpError){
-							bluetoothConnectionDialog.setMessage(getResources().getString(R.string.nr_bluetooth_dialog_paired));
-							bluetoothConnectionDialog.show();
+						if(connectionError){
+							displayConnectionErrorDialog(bpErrorCode);
 						}else{
 							startRecording();
 						}
 				    }
+
 				});
-				
 			}
 		});
 		
@@ -464,6 +500,29 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			connectionThread.start();
 		}
 		return false;
+	}
+	
+	private static void displayConnectionErrorDialog(int errorCode) {
+		switch(errorCode){
+		case 1:
+			connectionErrorDialog.setMessage(errorMessageAddress);
+			break;
+		case 2:
+			connectionErrorDialog.setMessage(errorMessageAdapter);
+			break;
+		case 3:
+			connectionErrorDialog.setMessage(errorMessageDevice);
+			break;
+		case 4:
+			connectionErrorDialog.setMessage(errorMessageContacting);
+			break;
+		case 5:
+			connectionErrorDialog.setMessage(errorMessagePort);
+			break;
+		default:
+			break;
+		}
+		connectionErrorDialog.show();
 	}
 
 	private void displayInfoToast(String messageToDisplay) {

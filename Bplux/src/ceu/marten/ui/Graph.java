@@ -21,7 +21,7 @@ import com.jjoe64.graphview.LineGraphView;
  * Created by martencarlos on 25/07/13.
  */
 
-public class HRGraph implements Serializable{
+public class Graph implements Serializable{
 
 	private static final long serialVersionUID = -5122704369223869018L;
 
@@ -32,7 +32,7 @@ public class HRGraph implements Serializable{
 	private GraphView graphView;
 
 	@SuppressWarnings("deprecation")
-	public HRGraph(android.content.Context context, String title) {
+	public Graph(android.content.Context context, String title) {
 		// SET THE SERIE STYLE
 		style = new GraphViewSeriesStyle(randomColor(), 2); // 2 -> thickness
 		

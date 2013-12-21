@@ -108,11 +108,20 @@
     <string name="nr_overwrite_dialog_positive_button">Proceed</string>
     <string name="nr_back_dialog_message">If you wish to proceed, recording will be stopped and saved</string>
     <string name="nr_bluetooth_dialog_message">Bluetooth has to be enabled to connect to the Bioplux device</string>
-    <string name="nr_bluetooth_dialog_paired">There are no Bioplux devices connected</string>
     <string name="nr_back_dialog_positive_button">Proceed</string>
     <string name="nr_bluetooth_dialog_positive_button">Connect</string>
     <string name="nr_progress_dialog_title">Looking for Bioplux devices</string>
     <string name="nr_progress_dialog_message">Trying to connect to devices in range</string>
+    
+    <!-- BIOPLUX ERROR/WARNING MESSAGES -->
+    <string name="bp_address_incorrect">The specified MAC address is not correct</string>
+    <string name="bp_adapter_not_found">No bluetooth adapter was found. Verify if an adapter is connected and turned on</string>
+    <string name="bp_device_not_found">The Plux device could not be found. Verify that it is whithin range, turned on, and that the battery is OK (red led turned off)</string>
+    <string name="bp_contacting_device">Communication with the device was lost. Verify that the Plux device is within range, and that the battery is OK (red led turned off)</string>
+    <string name="bp_port_could_not_be_opened">The communication port does not exist or it is already being used</string>
+    <string name="bp_positive_button">Got it</string>
+    
+    
     
     <!-- BIOPLUX SERVICE -->
     <string name="bs_header_name">Configuration name: </string>

@@ -102,7 +102,6 @@
     <string name="nr_bluetooth_dialog_title">Problema con bluetooth</string>
     <string name="nr_overwrite_dialog_title">La grabación actual será sobrescrita</string>
     <string name="nr_overwrite_dialog_message">¿Desea continuar?</string>
-    <string name="nr_bluetooth_dialog_paired">No hay dispositivos Bioplux conectados</string>
     <string name="nr_back_dialog_message">Si procedes, la grabación será detenida y almacenada</string>
     <string name="nr_overwrite_dialog_positive_button">Continuar</string>
     <string name="nr_bluetooth_dialog_message">Bluetooth tiene que estar encendido para la conexión con el dispositivo Bioplux</string>
@@ -110,6 +109,14 @@
     <string name="nr_bluetooth_dialog_positive_button">Conectar</string>
     <string name="nr_progress_dialog_title">Buscando dispositivos Bioplux</string>
     <string name="nr_progress_dialog_message">Intentando establecer conexion</string>
+    
+    <!-- BIOPLUX NOTIFICATION MESSAGES -->
+    <string name="bp_address_incorrect">La dirección MAC especificada es sintaticamente incorrecta</string>
+    <string name="bp_adapter_not_found">No se encuentra ningún adaptador bluetooth. Verifica que el adaptador está conectado y encendido</string>
+    <string name="bp_device_not_found">El dispositivo Plux no se encuentra. Verifica que está al alcance, encendido y su batería esta bien (luz roja está apagada)</string>
+    <string name="bp_contacting_device">Se ha perdido la comunicación con el dispositivo Plux. Verifica que está al alcance, encendido y su batería esta bien (luz roja está apagada)</string>
+    <string name="bp_port_could_not_be_opened">El puerto de comunicación no existe o está siendo usado</string>
+    <string name="bp_positive_button">Entendido</string>
     
      <!-- BIOPLUX SERVICE -->
     <string name="bs_header_name">Nombre de configuración: </string>

@@ -4,5 +4,8 @@
     <color name="blue">#718FC7</color>
     <color name="grey">#5b5d5e</color>
     <color name="light_grey">#bababa</color>
+    
+    <color name="waring_dialog">#E0BE36</color>
+    
 
 </resources>
