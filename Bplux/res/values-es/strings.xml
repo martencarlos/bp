@@ -78,6 +78,7 @@
     <string name="nc_error_message_active_channels">Canales activos no seleccionados</string>
     <string name="nc_error_message_channels_to_display">Seleccione canales a mostrar</string>
     <string name="nc_info_created">Configuración creada</string>
+    <string name="nc_info_modified">Configuración modificada</string>
     <string name="nc_info_canceled">Configuración cancelada</string>
     <string name="nc_dialog_title_channels_to_display">  Seleccione los canales a mostrar</string>
     <string name="nc_dialog_title_channels_to_activate">  Seleccione los canales a activar</string>

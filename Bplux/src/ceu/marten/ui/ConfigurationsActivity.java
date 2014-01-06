@@ -15,12 +15,13 @@ import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import ceu.marten.bplux.R;
-import ceu.marten.model.Configuration;
+import ceu.marten.model.DeviceConfiguration;
 import ceu.marten.model.Recording;
 import ceu.marten.model.io.DatabaseHelper;
 import ceu.marten.ui.adapters.ConfigurationsListAdapter;
@@ -40,7 +41,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	private AlertDialog confirmationNameDialog;
 	private ListView configurationsListView;
 	private ConfigurationsListAdapter baseAdapter;
-	private ArrayList<Configuration> configurations = null;
+	private ArrayList<DeviceConfiguration> configurations = null;
 	private ArrayList<Recording> recordings = null;
 	private Context classContext = this;
 	private int currentConfigurationsPosition = 0;
@@ -73,11 +74,20 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		if (requestCode == 1) {
 			if (resultCode == RESULT_OK) {
 
-				Configuration configuration = ((Configuration) data
+				DeviceConfiguration newConfiguration = ((DeviceConfiguration) data
 						.getSerializableExtra("configuration"));
-				saveConfiguration(configuration);
-				loadConfigurations();
-				setupConfigurationsListView();
+				
+				if(data.getBooleanExtra("edited", false)){
+					DeviceConfiguration oldConfiguration = ((DeviceConfiguration) data
+							.getSerializableExtra("oldConfiguration"));
+					modifyConfiguration(oldConfiguration, newConfiguration);
+					loadConfigurations();
+					setupConfigurationsListView();
+				}else{
+					saveConfiguration(newConfiguration);
+					loadConfigurations();
+					setupConfigurationsListView();
+				}
 			}
 			if (resultCode == RESULT_CANCELED) {
 
@@ -109,7 +119,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 					public void onClick(DialogInterface dialog, int id) {
 						for (int position : reverseSortedPositions) {
 							baseAdapter.remove(position);
-							Dao<Configuration, Integer> dao = null;
+							Dao<DeviceConfiguration, Integer> dao = null;
 
 							try {
 								dao = getHelper().getDeviceConfigDao();
@@ -145,9 +155,25 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 
 			}
 		};
+		
+		final OnItemLongClickListener longPressListener = new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> adapterView, View view,
+					int position, long id) {
+				
+				Intent intent = new Intent(classContext, NewConfigurationActivity.class);
+				intent.putExtra("configurations", configurations);
+				intent.putExtra("position", position);
+				startActivityForResult(intent, 1);
+				overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_top);
+				return true;
+			}
+		};
 
 		configurationsListView = (ListView) findViewById(R.id.lvConfigs);
 		configurationsListView.setOnItemClickListener(shortPressListener);
+		configurationsListView.setOnItemLongClickListener(longPressListener);
 		configurationsListView
 				.setEmptyView(findViewById(R.id.empty_list_configurations));
 
@@ -181,9 +207,20 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 
 		infoToast.show();
 	}
+	
+	public void modifyConfiguration(DeviceConfiguration oldConfig, DeviceConfiguration newConfig) {
+		Dao<DeviceConfiguration, Integer> dao;
+		try {
+			dao = getHelper().getDeviceConfigDao();
+			dao.delete(oldConfig);
+			dao.create(newConfig);
+		} catch (SQLException e) {
+			Log.e(TAG, "exception saving configuration on database", e);
+		}
+	}
 
-	public void saveConfiguration(Configuration config) {
-		Dao<Configuration, Integer> dao;
+	public void saveConfiguration(DeviceConfiguration config) {
+		Dao<DeviceConfiguration, Integer> dao;
 		try {
 			dao = getHelper().getDeviceConfigDao();
 			dao.create(config);
@@ -193,13 +230,13 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	}
 
 	public void loadConfigurations() {
-		configurations = new ArrayList<Configuration>();
-		Dao<Configuration, Integer> dao;
+		configurations = new ArrayList<DeviceConfiguration>();
+		Dao<DeviceConfiguration, Integer> dao;
 		try {
 			dao = getHelper().getDeviceConfigDao();
-			QueryBuilder<Configuration, Integer> builder = dao.queryBuilder();
+			QueryBuilder<DeviceConfiguration, Integer> builder = dao.queryBuilder();
 			builder.orderBy("createDate", false).limit(30L);
-			configurations = (ArrayList<Configuration>) dao.query(builder
+			configurations = (ArrayList<DeviceConfiguration>) dao.query(builder
 					.prepare());
 		} catch (SQLException e) {
 			Log.e(TAG, "exception loading configurations from database ", e);

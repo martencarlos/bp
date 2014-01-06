@@ -21,7 +21,7 @@ import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import ceu.marten.bplux.R;
-import ceu.marten.model.Configuration;
+import ceu.marten.model.DeviceConfiguration;
 import ceu.marten.model.io.DataManager;
 import ceu.marten.ui.NewRecordingActivity;
 
@@ -45,7 +45,7 @@ public class BiopluxService extends Service {
 	private String recordingName;
 	private int samplingFrames;
 	private int samplingCounter;
-	private Configuration configuration;
+	private DeviceConfiguration configuration;
 	private ArrayList<Integer> activeChannels;
 
 	private Device connection;
@@ -122,15 +122,16 @@ public class BiopluxService extends Service {
 			connection.GetFrames(nFrames, frames);
 		} catch (BPException e) {
 			Log.e(TAG, "exception getting frames", e);
+			sendErrorNotificationToActivity(e.code);
 			connectionError = true;
 			stopService();
-			sendErrorNotificationToActivity(e.code);
+			
 		}
 	}
 
 	private void getInfoFromActivity(Intent intent) {
 		recordingName = intent.getStringExtra("recordingName").toString();
-		configuration = (Configuration) intent
+		configuration = (DeviceConfiguration) intent
 				.getSerializableExtra("configSelected");
 		activeChannels = configuration.getActiveChannels();
 		samplingFrames = configuration.getReceptionFrequency()/configuration.getSamplingFrequency();
@@ -219,6 +220,7 @@ public class BiopluxService extends Service {
 		dataManager.closeWriters();
 		try {
 			connection.EndAcq();
+			connection.Close();
 		} catch (BPException e) {
 			Log.e(TAG, "error ending ACQ", e);
 		}

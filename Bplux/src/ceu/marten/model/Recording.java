@@ -18,14 +18,14 @@ public class Recording implements Serializable {
 	@DatabaseField(canBeNull = true)
 	private String duration;
 	@DatabaseField(canBeNull = true, foreign = true)
-	private Configuration config;
+	private DeviceConfiguration config;
 
 	public Recording() {
 		// needed by OrmLite
 	}
 
 	public Recording(String initName, String initStartDate,
-			String initDuration, Configuration initConfig, String initDataId) {
+			String initDuration, DeviceConfiguration initConfig, String initDataId) {
 		super();
 		this.name = initName;
 		this.startDate = initStartDate;
@@ -57,11 +57,11 @@ public class Recording implements Serializable {
 		this.duration = duration;
 	}
 
-	public void setConfig(Configuration config) {
+	public void setConfig(DeviceConfiguration config) {
 		this.config = config;
 	}
 
-	public Configuration getConfig() {
+	public DeviceConfiguration getConfig() {
 		return config;
 	}
 

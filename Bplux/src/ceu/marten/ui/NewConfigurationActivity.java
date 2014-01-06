@@ -29,7 +29,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 import ceu.marten.bplux.R;
-import ceu.marten.model.Configuration;
+import ceu.marten.model.DeviceConfiguration;
 import ceu.marten.ui.adapters.ActiveChannelsListAdapter;
 import ceu.marten.ui.adapters.ChannelsToDisplayListAdapter;
 
@@ -45,17 +45,20 @@ public class NewConfigurationActivity extends Activity {
 
 	private SeekBar receptionfreqSeekbar;
 	private SeekBar samplingfreqSeekbar;
-	private EditText configurationName, macAddress, receptionFreqEditor, samplingFreqEditor;
+	private EditText configurationName, macAddress, receptionFreqEditor,
+			samplingFreqEditor;
 	private TextView activeChannels, channelsToDisplay;
 	private LayoutInflater inflater;
 
 	String[] channelsActivated = null;
-	ArrayList<Configuration> configurations;
+	ArrayList<DeviceConfiguration> configurations;
 	boolean[] channelsSelected = null;
-	String errorMessageChannelsToDisplayNumber= null;
+	boolean isEditingConfiguration = false;
+	String errorMessageChannelsToDisplayNumber = null;
 
-	Configuration newConfiguration;
-	
+	DeviceConfiguration newConfiguration;
+	DeviceConfiguration configurationToEdit;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -67,17 +70,18 @@ public class NewConfigurationActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
-	    super.onBackPressed();
-	    overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
-	    displayInfoToast(getString(R.string.nc_info_canceled));
+		super.onBackPressed();
+		overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
+		displayInfoToast(getString(R.string.nc_info_canceled));
 	}
 
 	private void initializeVariables() {
-		newConfiguration = new Configuration();
+		newConfiguration = new DeviceConfiguration();
 		newConfiguration.setReceptionFrequency(DEFAULT_RECEPTION_FREQ);
 		newConfiguration.setSamplingFrequency(DEFAULT_SAMPLING_FREQ);
 		newConfiguration.setNumberOfBits(DEFAULT_NUMBER_OF_BITS);
-		inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		inflater = (LayoutInflater) getApplicationContext().getSystemService(
+				Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	private void findViews() {
@@ -110,57 +114,61 @@ public class NewConfigurationActivity extends Activity {
 					public void onStopTrackingTouch(SeekBar seekBar) {
 					}
 				});
-		receptionFreqEditor.setOnEditorActionListener(new OnEditorActionListener() {
-			@Override
-			public boolean onEditorAction(TextView currentView, int actionId,
-					KeyEvent event) {
-				boolean handled = false;
+		receptionFreqEditor
+				.setOnEditorActionListener(new OnEditorActionListener() {
+					@Override
+					public boolean onEditorAction(TextView currentView,
+							int actionId, KeyEvent event) {
+						boolean handled = false;
 
-				if (actionId == EditorInfo.IME_ACTION_DONE) {
-					String frequencyString = currentView.getText().toString();
-					if(frequencyString.compareTo("")==0)
-						frequencyString="0";
-					int newFrequency = Integer.parseInt(frequencyString);
+						if (actionId == EditorInfo.IME_ACTION_DONE) {
+							String frequencyString = currentView.getText()
+									.toString();
+							if (frequencyString.compareTo("") == 0)
+								frequencyString = "0";
+							int newFrequency = Integer
+									.parseInt(frequencyString);
 
-					setFrequency(newFrequency);
-					closeKeyboardAndClearFocus();
-					handled = true;
-				}
-				return handled;
-			}
+							setReceptionFrequency(newFrequency);
+							closeKeyboardAndClearFocus();
+							handled = true;
+						}
+						return handled;
+					}
 
-			private void setFrequency(int newFrequency) {
-				if (newFrequency >= RECEPTION_FREQ_MIN
-						&& newFrequency <= RECEPTION_FREQ_MAX) {
-					receptionfreqSeekbar
-							.setProgress((newFrequency - RECEPTION_FREQ_MIN));
-					newConfiguration.setReceptionFrequency(newFrequency);
-				} else if (newFrequency > RECEPTION_FREQ_MAX) {
-					receptionfreqSeekbar.setProgress(RECEPTION_FREQ_MAX);
-					receptionFreqEditor.setText(String.valueOf(RECEPTION_FREQ_MAX));
-					newConfiguration.setReceptionFrequency(RECEPTION_FREQ_MAX);
-					displayErrorToast(getString(R.string.nc_error_max_frequency)+" "+RECEPTION_FREQ_MAX
-							+ "Hz");
-				} else {
-					receptionfreqSeekbar.setProgress(0);
-					receptionFreqEditor.setText(String.valueOf(RECEPTION_FREQ_MIN));
-					newConfiguration.setReceptionFrequency(RECEPTION_FREQ_MIN);
-					displayErrorToast(getString(R.string.nc_error_min_frequency)+" "+RECEPTION_FREQ_MIN
-							+ " Hz");
-				}
-			}
+					private void closeKeyboardAndClearFocus() {
+						receptionFreqEditor.clearFocus();
+						InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
-			private void closeKeyboardAndClearFocus() {
-				receptionFreqEditor.clearFocus();
-				InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+						inputManager.hideSoftInputFromWindow(getCurrentFocus()
+								.getWindowToken(),
+								InputMethodManager.HIDE_NOT_ALWAYS);
 
-				inputManager.hideSoftInputFromWindow(getCurrentFocus()
-						.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-
-			}
-		});
+					}
+				});
 	}
-	
+
+	private void setReceptionFrequency(int newFrequency) {
+		if (newFrequency >= RECEPTION_FREQ_MIN
+				&& newFrequency <= RECEPTION_FREQ_MAX) {
+			receptionfreqSeekbar
+					.setProgress((newFrequency - RECEPTION_FREQ_MIN));
+			newConfiguration.setReceptionFrequency(newFrequency);
+		} else if (newFrequency > RECEPTION_FREQ_MAX) {
+			receptionfreqSeekbar.setProgress(RECEPTION_FREQ_MAX);
+			receptionFreqEditor.setText(String.valueOf(RECEPTION_FREQ_MAX));
+			newConfiguration.setReceptionFrequency(RECEPTION_FREQ_MAX);
+			displayErrorToast(getString(R.string.nc_error_max_frequency) + " "
+					+ RECEPTION_FREQ_MAX + "Hz");
+		} else {
+			receptionfreqSeekbar.setProgress(0);
+			receptionFreqEditor.setText(String.valueOf(RECEPTION_FREQ_MIN));
+			newConfiguration.setReceptionFrequency(RECEPTION_FREQ_MIN);
+			displayErrorToast(getString(R.string.nc_error_min_frequency) + " "
+					+ RECEPTION_FREQ_MIN + " Hz");
+		}
+	}
+
 	private void initializeSamplingFrequencyComponents() {
 		samplingfreqSeekbar
 				.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -180,53 +188,63 @@ public class NewConfigurationActivity extends Activity {
 					public void onStopTrackingTouch(SeekBar seekBar) {
 					}
 				});
-		
-		samplingFreqEditor.setOnEditorActionListener(new OnEditorActionListener() {
-			@Override
-			public boolean onEditorAction(TextView currentView, int actionId,
-					KeyEvent event) {
-				boolean handled = false;
 
-				if (actionId == EditorInfo.IME_ACTION_DONE) {
-					String frequencyString = currentView.getText().toString();
-					if(frequencyString.compareTo("")==0)
-						frequencyString="0";
-					int newFrequency = Integer.parseInt(frequencyString);
+		samplingFreqEditor
+				.setOnEditorActionListener(new OnEditorActionListener() {
+					@Override
+					public boolean onEditorAction(TextView currentView,
+							int actionId, KeyEvent event) {
+						boolean handled = false;
 
-					setFrequency(newFrequency);
-					closeKeyboardAndClearFocus();
-					handled = true;
-				}
-				return handled;
-			}
+						if (actionId == EditorInfo.IME_ACTION_DONE) {
+							String frequencyString = currentView.getText()
+									.toString();
+							if (frequencyString.compareTo("") == 0)
+								frequencyString = "0";
+							int newFrequency = Integer
+									.parseInt(frequencyString);
 
-			private void setFrequency(int newFrequency) {
-				if (newFrequency >= SAMPLING_FREQ_MIN && newFrequency <= SAMPLING_FREQ_MAX) {
-					samplingfreqSeekbar.setProgress((newFrequency - SAMPLING_FREQ_MIN));
-					newConfiguration.setSamplingFrequency(newFrequency);
-				} else if (newFrequency > SAMPLING_FREQ_MAX) {
-					samplingfreqSeekbar.setProgress(SAMPLING_FREQ_MAX);
-					samplingFreqEditor.setText(String.valueOf(SAMPLING_FREQ_MAX));
-					newConfiguration.setSamplingFrequency(SAMPLING_FREQ_MAX);
-					displayErrorToast(getString(R.string.nc_error_max_frequency)+" "+SAMPLING_FREQ_MAX
-							+ "Hz");
-				} else {
-					samplingfreqSeekbar.setProgress(0);
-					samplingFreqEditor.setText(String.valueOf(SAMPLING_FREQ_MIN));
-					newConfiguration.setSamplingFrequency(SAMPLING_FREQ_MIN);
-					displayErrorToast(getString(R.string.nc_error_min_frequency)+" "+SAMPLING_FREQ_MIN
-							+ " Hz");
-				}
-			}
+							setFrequency(newFrequency);
+							closeKeyboardAndClearFocus();
+							handled = true;
+						}
+						return handled;
+					}
 
-			private void closeKeyboardAndClearFocus() {
-				samplingFreqEditor.clearFocus();
-				InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+					private void setFrequency(int newFrequency) {
+						if (newFrequency >= SAMPLING_FREQ_MIN
+								&& newFrequency <= SAMPLING_FREQ_MAX) {
+							samplingfreqSeekbar
+									.setProgress((newFrequency - SAMPLING_FREQ_MIN));
+							newConfiguration.setSamplingFrequency(newFrequency);
+						} else if (newFrequency > SAMPLING_FREQ_MAX) {
+							samplingfreqSeekbar.setProgress(SAMPLING_FREQ_MAX);
+							samplingFreqEditor.setText(String
+									.valueOf(SAMPLING_FREQ_MAX));
+							newConfiguration
+									.setSamplingFrequency(SAMPLING_FREQ_MAX);
+							displayErrorToast(getString(R.string.nc_error_max_frequency)
+									+ " " + SAMPLING_FREQ_MAX + "Hz");
+						} else {
+							samplingfreqSeekbar.setProgress(0);
+							samplingFreqEditor.setText(String
+									.valueOf(SAMPLING_FREQ_MIN));
+							newConfiguration
+									.setSamplingFrequency(SAMPLING_FREQ_MIN);
+							displayErrorToast(getString(R.string.nc_error_min_frequency)
+									+ " " + SAMPLING_FREQ_MIN + " Hz");
+						}
+					}
 
-				inputManager.hideSoftInputFromWindow(getCurrentFocus()
-						.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-			}
-		});
+					private void closeKeyboardAndClearFocus() {
+						samplingFreqEditor.clearFocus();
+						InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+						inputManager.hideSoftInputFromWindow(getCurrentFocus()
+								.getWindowToken(),
+								InputMethodManager.HIDE_NOT_ALWAYS);
+					}
+				});
 	}
 
 	private void setupActiveChannelsDialog() {
@@ -240,19 +258,19 @@ public class NewConfigurationActivity extends Activity {
 		AlertDialog.Builder activeChannelsBuilder;
 		AlertDialog activeChannelsDialog;
 		ListView activeChannelsListView;
-		
-		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
+
+		TextView customTitleView = (TextView) inflater.inflate(
+				R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.nc_dialog_title_channels_to_activate);
 
 		// ACTIVE CHANNELS BUILDER
 		activeChannelsBuilder = new AlertDialog.Builder(this);
-		activeChannelsBuilder
-				.setCustomTitle(customTitleView)
-				.setView(
-						getLayoutInflater().inflate(
-								R.layout.dialog_channels_listview, null));
+		activeChannelsBuilder.setCustomTitle(customTitleView).setView(
+				getLayoutInflater().inflate(R.layout.dialog_channels_listview,
+						null));
 
-		activeChannelsBuilder.setPositiveButton(getString(R.string.nc_dialog_positive_button),
+		activeChannelsBuilder.setPositiveButton(
+				getString(R.string.nc_dialog_positive_button),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -269,8 +287,10 @@ public class NewConfigurationActivity extends Activity {
 					private void printActivatedChannels(
 							String[] channelsActivated) {
 						activeChannels.setError(null);
-						activeChannels.setTextColor(getResources().getColor(R.color.blue));
-						activeChannels.setText(getString(R.string.nc_channels_to_activate));
+						activeChannels.setTextColor(getResources().getColor(
+								R.color.blue));
+						activeChannels
+								.setText(getString(R.string.nc_channels_to_activate));
 						String si = "";
 						for (int i = 0; i < channelsActivated.length; i++) {
 							if (channelsActivated[i] != null)
@@ -282,7 +302,8 @@ public class NewConfigurationActivity extends Activity {
 					}
 
 				});
-		activeChannelsBuilder.setNegativeButton(getString(R.string.nc_dialog_negative_button),
+		activeChannelsBuilder.setNegativeButton(
+				getString(R.string.nc_dialog_negative_button),
 				new DialogInterface.OnClickListener() {
 
 					@Override
@@ -294,7 +315,8 @@ public class NewConfigurationActivity extends Activity {
 		activeChannelsDialog = activeChannelsBuilder.create();
 		activeChannelsDialog.show();
 
-		activeChannelsListView = (ListView) activeChannelsDialog.findViewById(R.id.lv_channelsSelection);
+		activeChannelsListView = (ListView) activeChannelsDialog
+				.findViewById(R.id.lv_channelsSelection);
 		activeChannelsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		activeChannelsListView.setItemsCanFocus(false);
 		activeChannelsListView.setAdapter(activeChannelsListAdapter);
@@ -321,7 +343,8 @@ public class NewConfigurationActivity extends Activity {
 		for (int i = 0; i < newConfiguration.getActiveChannelsWithNullFill().length; i++) {
 			if (newConfiguration.getActiveChannelsWithNullFill()[i]
 					.compareTo("null") != 0) {
-				channels.add(getString(R.string.nc_dialog_channel) +" "+ (i + 1));
+				channels.add(getString(R.string.nc_dialog_channel) + " "
+						+ (i + 1));
 				sensors.add(newConfiguration.getActiveChannelsWithNullFill()[i]);
 			}
 		}
@@ -331,34 +354,43 @@ public class NewConfigurationActivity extends Activity {
 		AlertDialog.Builder channelsToDisplayBuilder;
 		AlertDialog channelsToDisplayDialog;
 
-		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
+		TextView customTitleView = (TextView) inflater.inflate(
+				R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.nc_dialog_title_channels_to_display);
-		
+
 		// BUILDER
 		channelsToDisplayBuilder = new AlertDialog.Builder(this);
-		channelsToDisplayBuilder.setCustomTitle(customTitleView)
-								.setView(getLayoutInflater().inflate(
-										R.layout.dialog_channels_listview, null));
+		channelsToDisplayBuilder.setCustomTitle(customTitleView).setView(
+				getLayoutInflater().inflate(R.layout.dialog_channels_listview,
+						null));
 
-		channelsToDisplayBuilder.setPositiveButton(getString(R.string.nc_dialog_positive_button),
+		channelsToDisplayBuilder.setPositiveButton(
+				getString(R.string.nc_dialog_positive_button),
 				new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						channelsSelected = channelsToDisplayListAdapter.getChecked();
+						channelsSelected = channelsToDisplayListAdapter
+								.getChecked();
 						boolean[] channelsToDisplayArray = new boolean[8];
 
-						if (numberOfChannelsSelected(channelsSelected) != 0){
+						if (numberOfChannelsSelected(channelsSelected) != 0) {
 							channelsToDisplay.setError(null);
-							channelsToDisplay.setTextColor(getResources().getColor(R.color.blue));
-							channelsToDisplay.setText(R.string.nc_channels_to_display);
-							printChannelsToDisplay(channelsToDisplayArray,channelsSelected);
-							newConfiguration.setChannelsToDisplay(channelsToDisplayArray);
+							channelsToDisplay.setTextColor(getResources()
+									.getColor(R.color.blue));
+							channelsToDisplay
+									.setText(R.string.nc_channels_to_display);
+							printChannelsToDisplay(channelsToDisplayArray,
+									channelsSelected);
+							newConfiguration
+									.setChannelsToDisplay(channelsToDisplayArray);
 						}
 
 					}
 
-					private void printChannelsToDisplay(boolean[] channelsToDisplayArray, boolean[] channelsSelected) {
+					private void printChannelsToDisplay(
+							boolean[] channelsToDisplayArray,
+							boolean[] channelsSelected) {
 						String si = "";
 						for (int i = 0; i < channelsSelected.length; i++) {
 							if (channelsSelected[i]) {
@@ -367,9 +399,12 @@ public class NewConfigurationActivity extends Activity {
 										.get(i).toString().length() - 1)) - 1);
 								channelsToDisplayArray[in] = true;
 
-								si = si + "\n\t" + channels.get(i).toString()+" "
+								si = si
+										+ "\n\t"
+										+ channels.get(i).toString()
+										+ " "
 										+ getString(R.string.nc_dialog_with_sensor)
-										+" "+sensors.get(i).toString();
+										+ " " + sensors.get(i).toString();
 							}
 						}
 						channelsToDisplay.append(si);
@@ -377,7 +412,8 @@ public class NewConfigurationActivity extends Activity {
 					}
 
 				});
-		channelsToDisplayBuilder.setNegativeButton(getString(R.string.nc_dialog_negative_button),
+		channelsToDisplayBuilder.setNegativeButton(
+				getString(R.string.nc_dialog_negative_button),
 				new DialogInterface.OnClickListener() {
 
 					@Override
@@ -429,9 +465,11 @@ public class NewConfigurationActivity extends Activity {
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 
-		newConfiguration = (Configuration) savedInstanceState.getSerializable("configuration");
+		newConfiguration = (DeviceConfiguration) savedInstanceState
+				.getSerializable("configuration");
 		activeChannels.setText(savedInstanceState.getString("activeChannels"));
-		channelsToDisplay.setText(savedInstanceState.getString("channelsToDisplay"));
+		channelsToDisplay.setText(savedInstanceState
+				.getString("channelsToDisplay"));
 	}
 
 	private void displayErrorToast(String messageToDisplay) {
@@ -440,7 +478,8 @@ public class NewConfigurationActivity extends Activity {
 		LayoutInflater inflater = getLayoutInflater();
 		View toastView = inflater.inflate(R.layout.toast_error, null);
 		errorToast.setView(toastView);
-		((TextView) toastView.findViewById(R.id.display_text)).setText(messageToDisplay);
+		((TextView) toastView.findViewById(R.id.display_text))
+				.setText(messageToDisplay);
 
 		errorToast.show();
 	}
@@ -459,23 +498,41 @@ public class NewConfigurationActivity extends Activity {
 
 	public void onClickedSubmit(View view) {
 
-		DateFormat dateFormat = DateFormat.getDateTimeInstance();
+		
+		if(!isEditingConfiguration){
+			DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		Date date = new Date();
 
-		newConfiguration.setCreateDate(dateFormat.format(date));
+		newConfiguration.setCreateDate(dateFormat.format(date));}
 		newConfiguration.setName(configurationName.getText().toString());
 		newConfiguration.setMacAddress(macAddress.getText().toString());
+		newConfiguration.setReceptionFrequency(Integer
+				.parseInt(receptionFreqEditor.getText().toString()));
+		newConfiguration.setSamplingFrequency(Integer
+				.parseInt(samplingFreqEditor.getText().toString()));
+		
+		
+		
+
 		if (validateFields()) {
 			Intent returnIntent = new Intent();
 			returnIntent.putExtra("configuration", newConfiguration);
+			
+			
+			if(!isEditingConfiguration)
+				displayInfoToast(getString(R.string.nc_info_created));
+			else{
+				returnIntent.putExtra("edited", true);
+				returnIntent.putExtra("oldConfiguration",configurationToEdit);
+				displayInfoToast(getString(R.string.nc_info_modified));
+			}
 			setResult(RESULT_OK, returnIntent);
 			finish();
-			overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
-			displayInfoToast(getString(R.string.nc_info_created));
+			overridePendingTransition(R.anim.slide_in_top,
+					R.anim.slide_out_bottom);
 		}
-
 	}
-	
+
 	public void onClickedCancel(View view) {
 		finish();
 		overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
@@ -522,20 +579,22 @@ public class NewConfigurationActivity extends Activity {
 
 	private boolean validateFields() {
 		boolean validated = true;
-		
-		// VALIDATE NAME FIELD ALREADY EXISTS
-		for(Configuration c : configurations){
-			if(c.getName().compareTo(configurationName.getText().toString())==0){
-				configurationName.setError(getString(R.string.nc_error_message_name_duplicate));
-				configurationName.requestFocus();
-				validated = false;
+
+		// VALIDATE NAME FIELD ALREADY EXISTS 
+			for (DeviceConfiguration c : configurations) {
+				if (c.getName().compareTo(configurationName.getText().toString()) == 0) {
+					configurationName
+							.setError(getString(R.string.nc_error_message_name_duplicate));
+					configurationName.requestFocus();
+					validated = false;
+				}
 			}
-		}
 		
 		// VALIDATE NAME FIELD IS NOT NULL
 		if (configurationName.getText().toString() == null
 				|| configurationName.getText().toString().compareTo("") == 0) {
-			configurationName.setError(getString(R.string.nc_error_message_name_null));
+			configurationName
+					.setError(getString(R.string.nc_error_message_name_null));
 			configurationName.requestFocus();
 			validated = false;
 		}
@@ -547,16 +606,39 @@ public class NewConfigurationActivity extends Activity {
 				|| !macAddress.getText().toString().matches(regex)
 				&& macAddress.getText().toString().compareTo("test") != 0) {
 			macAddress.setError(getString(R.string.nc_error_message_mac));
-			if(validated)
+			if (validated)
 				macAddress.requestFocus();
 			validated = false;
 		}
-
+		
+		// VALIDATE FREQUENCIES
+		if (receptionFreqEditor.getText().toString() == null || 
+				receptionFreqEditor.getText().toString().compareTo("") == 0 
+				|| Integer.parseInt(receptionFreqEditor.getText().toString()) < RECEPTION_FREQ_MIN
+				|| Integer.parseInt(receptionFreqEditor.getText().toString()) > RECEPTION_FREQ_MAX) {
+			receptionFreqEditor.setError("invalid frequency");
+			if (validated)
+				receptionFreqEditor.requestFocus();
+			validated = false;
+		}
+		
+		if (samplingFreqEditor.getText().toString() == null || 
+				receptionFreqEditor.getText().toString().compareTo("") == 0 
+				|| Integer.parseInt(samplingFreqEditor.getText().toString()) < SAMPLING_FREQ_MIN
+				|| Integer.parseInt(samplingFreqEditor.getText().toString()) > SAMPLING_FREQ_MAX) {
+			samplingFreqEditor.setError("invalid frequency");
+			if (validated)
+				samplingFreqEditor.requestFocus();
+			validated = false;
+		}
+			
 		// VALIDATE ACTIVE CHANNELS
 		if (channelsActivated == null || noChannelsActivated(channelsActivated)) {
 			activeChannels.setError("");
 			activeChannels.setTextColor(Color.RED);
-			activeChannels.setText(getString(R.string.nc_error_message_active_channels)+"  ");
+			activeChannels
+					.setText(getString(R.string.nc_error_message_active_channels)
+							+ "  ");
 			validated = false;
 		}
 
@@ -565,7 +647,9 @@ public class NewConfigurationActivity extends Activity {
 				|| numberOfChannelsSelected(channelsSelected) == 0) {
 			channelsToDisplay.setError("");
 			channelsToDisplay.setTextColor(Color.RED);
-			channelsToDisplay.setText(getString(R.string.nc_error_message_channels_to_display)+"  ");
+			channelsToDisplay
+					.setText(getString(R.string.nc_error_message_channels_to_display)
+							+ "  ");
 			validated = false;
 		}
 		return validated;
@@ -573,22 +657,50 @@ public class NewConfigurationActivity extends Activity {
 
 	private class InitActivity extends AsyncTask<String, Void, String> {
 
+		private int configurationToEditPosition = 0;
 		@SuppressWarnings("unchecked")
 		@Override
 		protected String doInBackground(String... params) {
-			configurations= new ArrayList<Configuration>();
-			configurations = (ArrayList<Configuration>) getIntent().getExtras().getSerializable("configurations");
+			configurations = new ArrayList<DeviceConfiguration>();
+			configurations = (ArrayList<DeviceConfiguration>) getIntent()
+					.getExtras().getSerializable("configurations");
 			initializeVariables();
 			findViews();
 			errorMessageChannelsToDisplayNumber = getString(R.string.nc_error_channels_to_display);
 			initializeReceptionFrequencyComponents();
 			initializeSamplingFrequencyComponents();
+			configurationToEditPosition = getIntent().getExtras().getInt("position");
+			configurationToEdit = configurations.get(configurationToEditPosition);
+			if(getIntent().getExtras().containsKey("position"))
+				isEditingConfiguration = true;
 			return "execuded";
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
-
+			if(isEditingConfiguration){
+				//FILL FIELDS WITH CURRENT CONFIGURATION DETAILS
+				configurationName.setText(configurationToEdit.getName());
+				macAddress.setText(configurationToEdit.getMacAddress());
+				receptionfreqSeekbar.setProgress(configurationToEdit.getReceptionFrequency()- RECEPTION_FREQ_MIN);
+				receptionFreqEditor.setText(String.valueOf(configurationToEdit.getReceptionFrequency()));
+				samplingfreqSeekbar.setProgress(configurationToEdit.getSamplingFrequency());
+				samplingFreqEditor.setText(String.valueOf(configurationToEdit.getSamplingFrequency()));
+				activeChannels.setText(getString(R.string.nc_channels_to_activate)+" "+configurationToEdit.getActiveChannels());
+				channelsToDisplay.setText(getString(R.string.nc_channels_to_display)+" "+configurationToEdit.getChannelsToDisplay());
+				
+				if(configurationToEdit.getNumberOfBits() == 12){
+					((RadioButton)findViewById(R.id.radioBttn12)).setChecked(true);
+					((RadioButton)findViewById(R.id.radioBttn8)).setChecked(false);
+				}
+				
+				//MODIFY VARIABLES FOR VALIDATION PURPOSES
+				channelsActivated = configurationToEdit.getActiveChannelsWithNullFill();
+				boolean[] boolArray = {true};
+				channelsSelected = boolArray;
+				configurations.remove(configurationToEditPosition);
+				newConfiguration = configurationToEdit;
+			}
 		}
 
 		@Override

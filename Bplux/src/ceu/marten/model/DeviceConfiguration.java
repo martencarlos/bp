@@ -13,7 +13,7 @@ import com.j256.ormlite.table.DatabaseTable;
  */
 
 @DatabaseTable(tableName = "deviceConfigurations")
-public class Configuration implements Serializable {
+public class DeviceConfiguration implements Serializable {
 
 	private static final long serialVersionUID = -4487071327586521666L;
 	@DatabaseField(generatedId = true)
@@ -38,7 +38,7 @@ public class Configuration implements Serializable {
 	@DatabaseField(dataType = DataType.BYTE_ARRAY)
 	private byte[] channelsToDisplay = null;
 
-	public Configuration() {
+	public DeviceConfiguration() {
 		// needed for the OrmLite to generate object when query invoked
 	}
 

@@ -16,7 +16,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import ceu.marten.bplux.R;
-import ceu.marten.model.Configuration;
+import ceu.marten.model.DeviceConfiguration;
 
 import plux.android.bioplux.Device.Frame;
 import android.content.Context;
@@ -36,11 +36,11 @@ public class DataManager {
 	private Context context;
 	private ArrayList<Integer> activeChannels;
 	private String recordingName;
-	private Configuration configuration;
+	private DeviceConfiguration configuration;
 	private String duration;
 	
 	
-	public DataManager(Context serviceContext, ArrayList<Integer> _activeChannels,String _recordingName, Configuration _configuration) {
+	public DataManager(Context serviceContext, ArrayList<Integer> _activeChannels,String _recordingName, DeviceConfiguration _configuration) {
 		this.context = serviceContext;
 		this.activeChannels = _activeChannels;
 		this.recordingName = _recordingName;

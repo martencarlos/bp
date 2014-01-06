@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import ceu.marten.model.Configuration;
+import ceu.marten.model.DeviceConfiguration;
 import ceu.marten.model.Recording;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -25,7 +25,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final String DATABASE_NAME = "model.db";
 	private static final int DATABASE_VERSION = 1;
 
-	private Dao<Configuration, Integer> deviceConfigDao;
+	private Dao<DeviceConfiguration, Integer> deviceConfigDao;
 	private Dao<Recording, Integer> sessionDao;
 
 	public DatabaseHelper(Context context) {
@@ -36,7 +36,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public void onCreate(SQLiteDatabase sqliteDatabase,
 			ConnectionSource connectionSource) {
 		try {
-			TableUtils.createTable(connectionSource, Configuration.class);
+			TableUtils.createTable(connectionSource, DeviceConfiguration.class);
 			TableUtils.createTable(connectionSource, Recording.class);
 		} catch (SQLException e) {
 			Log.e(TAG, "Unable to create datbase", e);
@@ -47,7 +47,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public void onUpgrade(SQLiteDatabase sqliteDatabase,
 			ConnectionSource connectionSource, int oldVer, int newVer) {
 		try {
-			TableUtils.dropTable(connectionSource, Configuration.class, true);
+			TableUtils.dropTable(connectionSource, DeviceConfiguration.class, true);
 			TableUtils.dropTable(connectionSource, Recording.class, true);
 			onCreate(sqliteDatabase, connectionSource);
 		} catch (SQLException e) {
@@ -56,9 +56,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
-	public Dao<Configuration, Integer> getDeviceConfigDao() throws SQLException {
+	public Dao<DeviceConfiguration, Integer> getDeviceConfigDao() throws SQLException {
 		if (deviceConfigDao == null) {
-			deviceConfigDao = getDao(Configuration.class);
+			deviceConfigDao = getDao(DeviceConfiguration.class);
 		}
 		return deviceConfigDao;
 	}

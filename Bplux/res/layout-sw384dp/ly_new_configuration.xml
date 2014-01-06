@@ -79,7 +79,6 @@
                         android:layout_width="195dip"
                         android:layout_height="wrap_content"
                         android:hint="@string/nc_mac_address_hint"
-                        android:inputType="text"
                         android:maxLength="17"
                         android:singleLine="true"
                         android:textColor="@color/grey"

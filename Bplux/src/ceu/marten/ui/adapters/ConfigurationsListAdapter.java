@@ -8,16 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import ceu.marten.bplux.R;
-import ceu.marten.model.Configuration;
+import ceu.marten.model.DeviceConfiguration;
 
 import com.haarman.listviewanimations.ArrayAdapter;
 
-public class ConfigurationsListAdapter extends ArrayAdapter<Configuration> {
+public class ConfigurationsListAdapter extends ArrayAdapter<DeviceConfiguration> {
 
 	private final Context context;
 
 	public ConfigurationsListAdapter(Context context,
-			ArrayList<Configuration> loadedDevices) {
+			ArrayList<DeviceConfiguration> loadedDevices) {
 		super(loadedDevices);
 		this.context = context;
 	}
@@ -42,7 +42,7 @@ public class ConfigurationsListAdapter extends ArrayAdapter<Configuration> {
 		TextView channelsToDisplay = (TextView) rowView
 				.findViewById(R.id.dli_channels_to_display);
 
-		Configuration configuration = getItem(position);
+		DeviceConfiguration configuration = getItem(position);
 
 		name.setText(configuration.getName());
 		receptionFreq.setText(String.valueOf(configuration.getReceptionFrequency()) + " Hz");

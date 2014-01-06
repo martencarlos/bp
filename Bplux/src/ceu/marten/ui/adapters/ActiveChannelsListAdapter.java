@@ -22,12 +22,14 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 	private final Context context;
 	private List<String> strings;
 	private String[] sensorsChecked = null;
+	private boolean[] checkedStatus;
 
 	public ActiveChannelsListAdapter(Context context, List<String> strings) {
 		super(context, 0, 0, strings);
 		this.context = context;
 		this.strings = strings;
 		this.sensorsChecked = new String[strings.size()];
+		this.checkedStatus = new boolean[strings.size()];
 	}
 
 	@Override
@@ -44,6 +46,11 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 		cb.setTag(R.id.TAG_POSITION, position);
 		cb.setTag(R.id.TAG_SENSORS, rowView.findViewById(R.id.li_ac_sensors));
 		cb.setOnCheckedChangeListener(this);
+		if(checkedStatus[position] == true) {
+			 cb.setChecked(true);
+			 } else {
+				 cb.setChecked(false);
+			}
 
 		Spinner spinner = (Spinner) rowView.findViewById(R.id.li_ac_sensors);
 		spinner.setTag(position);
@@ -61,11 +68,13 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		if (isChecked) {
 			int position = (Integer) buttonView.getTag(R.id.TAG_POSITION);
+			checkedStatus[position]=true;
 			Spinner sp = (Spinner) buttonView.getTag(R.id.TAG_SENSORS);
 			sensorsChecked[position] = sp.getSelectedItem().toString();
 
 		} else {
 			int position = (Integer) buttonView.getTag(R.id.TAG_POSITION);
+			checkedStatus[position]=false;
 			sensorsChecked[position] = null;
 		}
 

@@ -39,7 +39,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import ceu.marten.bplux.R;
-import ceu.marten.model.Configuration;
+import ceu.marten.model.DeviceConfiguration;
 import ceu.marten.model.Recording;
 import ceu.marten.model.io.DatabaseHelper;
 import ceu.marten.services.BiopluxService;
@@ -60,7 +60,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static Chronometer chronometer;
 	private boolean isChronometerRunning;
 
-	private static Configuration currentConfiguration;
+	private static DeviceConfiguration currentConfiguration;
 	private Recording recording;
 	private String recordingName;
 	private String duration;
@@ -162,7 +162,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 		// GETTING EXTRA INFO FROM INTENT
 		extras = getIntent().getExtras();
-		currentConfiguration = (Configuration) extras
+		currentConfiguration = (DeviceConfiguration) extras
 				.getSerializable("configSelected");
 		recordingName = extras.getString("recordingName").toString();
 
@@ -213,7 +213,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				((ViewGroup) graph).addView(graphs[i].getGraphView());
 				((ViewGroup) graphsView).addView(graph, graphParams);
 			}
-		} else {
+		}
+		// ELSE, NORMAL GRAPHS INITIALIZATION
+		else {
 			for (int i = 0; i < numberOfChannelsToDisplay; i++) {
 				graphs[i] = new Graph(this,
 						getString(R.string.nc_dialog_channel)
@@ -233,6 +235,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		uiStartStopbutton = (Button) findViewById(R.id.nr_bttn_StartPause);
 		chronometer = (Chronometer) findViewById(R.id.nr_chronometer);
 
+		// IF ONE CHANNEL IS BEING DISPLAY SHOW ITS DETAILS
 		if (numberOfChannelsToDisplay == 1) {
 			View details = inflater.inflate(R.layout.in_ly_graph_details, null);
 			((ViewGroup) graphsView).addView(details, detailParameters);
@@ -420,7 +423,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 		recording = (Recording) savedInstanceState.getSerializable("recording");
 		lastXValue = savedInstanceState.getDouble("xcounter");
-		currentConfiguration = (Configuration) savedInstanceState
+		currentConfiguration = (DeviceConfiguration) savedInstanceState
 				.getSerializable("configSelected");
 		recordingName = savedInstanceState.getString("recordingName")
 				.toString();
@@ -448,7 +451,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	
 
 	private void startRecording() {
-		startService(new Intent(NewRecordingActivity.this,BiopluxService.class));
+		startService(new Intent(context,BiopluxService.class));
 		bindToService();
 		displayInfoToast(getString(R.string.nr_info_started));
 		uiStartStopbutton.setText(getString(R.string.nr_button_stop));
@@ -460,9 +463,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				.getDefaultAdapter();
 		final ProgressDialog progress;
 		
-		
 		if (mBluetoothAdapter == null) {
-			// Device does not support Bluetooth
+			displayInfoToast("bluetooth not supported");
 			return false;
 		}
 		if (!mBluetoothAdapter.isEnabled()){
@@ -471,17 +473,18 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			return false;
 		}
 		progress = ProgressDialog.show(this,getResources().getString(R.string.nr_progress_dialog_title),getResources().getString(R.string.nr_progress_dialog_message), true);
-		
 		Thread connectionThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					Device.Create(currentConfiguration.getMacAddress());
+					Device connectionTest = Device.Create(currentConfiguration.getMacAddress());
+					connectionTest.Close();
 				} catch (BPException e) {
 					connectionError = true;
 					bpErrorCode = e.code;
 					Log.e(TAG, "bioplux connection exception", e);
 				}
+				
 				runOnUiThread(new Runnable(){
 				    public void run(){
 				    	progress.dismiss();
@@ -584,7 +587,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	void bindToService() {
-		Intent intent = new Intent(this, BiopluxService.class);
+		Intent intent = new Intent(context, BiopluxService.class);
 		intent.putExtra("recordingName", recordingName);
 		intent.putExtra("configSelected", currentConfiguration);
 		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
