@@ -7,7 +7,7 @@
         android:id="@+id/dialog_txt_new_recording_name"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:hint="@string/dn_hint"
+        android:hint="@string/d_hint"
         android:maxLength="12"
         android:maxLines="1"
         android:paddingTop="20dp"

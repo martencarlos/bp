@@ -20,6 +20,7 @@ public class ChannelsToDisplayListAdapter extends ArrayAdapter<String>
 	private boolean[] channelsToDisplay;
 	private ArrayList<String> channels;
 	private ArrayList<String> sensors;
+	private boolean[] checkedStatus;
 
 	public ChannelsToDisplayListAdapter(Context context,
 			ArrayList<String> channels, ArrayList<String> sensors) {
@@ -27,6 +28,7 @@ public class ChannelsToDisplayListAdapter extends ArrayAdapter<String>
 		this.context = context;
 		this.channels = channels;
 		this.sensors = sensors;
+		this.checkedStatus = new boolean[channels.size()];
 		this.channelsToDisplay = new boolean[channels.size()];
 		for (int i = 0; i < channelsToDisplay.length; i++)
 			channelsToDisplay[i] = false;
@@ -51,7 +53,11 @@ public class ChannelsToDisplayListAdapter extends ArrayAdapter<String>
 		// SETUP CHECK BOX
 		cb.setTag(R.id.TAG_POSITION, position);
 		cb.setOnCheckedChangeListener(this);
-
+		if(checkedStatus[position] == true) {
+			 cb.setChecked(true);
+			 } else {
+				 cb.setChecked(false);
+			}
 		// SETUP CHANNEL NUMBER
 		channelNumber.setText(channels.get(position));
 
@@ -65,10 +71,12 @@ public class ChannelsToDisplayListAdapter extends ArrayAdapter<String>
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		if (isChecked) {
 			int position = (Integer) buttonView.getTag(R.id.TAG_POSITION);
+			checkedStatus[position]=true;
 			channelsToDisplay[position] = true;
 
 		} else {
 			int position = (Integer) buttonView.getTag(R.id.TAG_POSITION);
+			checkedStatus[position] = false;
 			channelsToDisplay[position] = false;
 		}
 	}

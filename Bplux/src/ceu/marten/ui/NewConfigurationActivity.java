@@ -670,7 +670,8 @@ public class NewConfigurationActivity extends Activity {
 			initializeReceptionFrequencyComponents();
 			initializeSamplingFrequencyComponents();
 			configurationToEditPosition = getIntent().getExtras().getInt("position");
-			configurationToEdit = configurations.get(configurationToEditPosition);
+			if(!configurations.isEmpty())
+				configurationToEdit = configurations.get(configurationToEditPosition);
 			if(getIntent().getExtras().containsKey("position"))
 				isEditingConfiguration = true;
 			return "execuded";

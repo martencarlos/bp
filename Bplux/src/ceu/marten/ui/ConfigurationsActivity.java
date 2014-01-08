@@ -7,7 +7,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -47,6 +50,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	private int currentConfigurationsPosition = 0;
 	private int[] reverseSortedPositions;
 	private LayoutInflater inflater;
+	private SharedPreferences.Editor prefEditor=null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -110,10 +114,15 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	
 	private void setupConfirmationDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		
 		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.ca_confirm_dialog_title);
+		
+		View contentView = inflater.inflate(R.layout.dialog_confirmation_content, null);
+		((TextView)contentView.findViewById(R.id.confirmation_message)).setText(getResources().getString(R.string.ca_confirm_dialog_message));
+		
 		builder.setCustomTitle(customTitleView)
-		.setMessage(R.string.ca_confirm_dialog_message)
+		.setView(contentView)
 		.setPositiveButton(getString(R.string.ca_confirm_dialog_positive),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -130,6 +139,11 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 							}
 							configurations.remove(position);
 						}
+						if(prefEditor!=null){
+							prefEditor.commit();
+							setupConfirmationDialog();
+							prefEditor = null;
+						}
 						displayInfoToast(getString(R.string.ca_configuration_removed));
 					}
 				});
@@ -137,6 +151,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						setupConfigurationsListView();
+						setupConfirmationDialog();
 					}
 				});
 
@@ -193,7 +208,29 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	@Override
 	public void onDismiss(AbsListView listView, int[] reverseSortedPositions) {
 		this.reverseSortedPositions = reverseSortedPositions;
-		confirmationNameDialog.show();
+		boolean dontAskForConfrmation = false;
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		dontAskForConfrmation = sharedPref.getBoolean(SettingsActivity.KEY_PREF_CONF_CONFIG, false);
+		
+		if(!dontAskForConfrmation){
+			confirmationNameDialog.show();
+		}else{
+			for (int position : reverseSortedPositions) {
+				baseAdapter.remove(position);
+				Dao<DeviceConfiguration, Integer> dao = null;
+
+				try {
+					dao = getHelper().getDeviceConfigDao();
+					dao.delete(configurations.get(position));
+				} catch (SQLException e) {
+					Log.e(TAG,"exception removing configuration from database by swiping",
+							e);
+				}
+				configurations.remove(position);
+			}
+			displayInfoToast(getString(R.string.ca_configuration_removed));
+		}
+		
 	}
 
 	private void displayInfoToast(String messageToDisplay) {
@@ -270,6 +307,18 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		EditText editText = (EditText) recordingNameDialog.findViewById(R.id.dialog_txt_new_recording_name);
 		editText.setError(null);
 		recordingNameDialog.dismiss();
+	}
+	
+	public void onDialogCheckBoxClicked(View v) {
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		prefEditor = sharedPref.edit();
+		
+		if(((CheckBox)v).isChecked())
+			prefEditor.putBoolean(SettingsActivity.KEY_PREF_CONF_CONFIG, true);
+		else{
+			prefEditor.putBoolean(SettingsActivity.KEY_PREF_CONF_CONFIG, false);
+			prefEditor=null;
+		}
 	}
 	
 	

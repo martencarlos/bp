@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
     <item android:id="@+id/gm_settings"
           android:title="settings" >
     </item>
     
      <item android:id="@+id/gm_help"
           android:title="help" >
+    </item>
+    
+     <item android:id="@+id/gm_about"
+          android:title="about" >
     </item>
 </menu>

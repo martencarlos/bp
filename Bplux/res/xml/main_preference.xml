@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen  xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- opens a subscreen of settings -->
-    <PreferenceScreen
-        android:key="button_voicemail_category_key"
-        android:title="graph settings"
-        android:persistent="false">
-        <!-- opens another nested subscreen -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <PreferenceCategory
+        android:key="pref_key_dialogs"
+        android:title="DIALOGS" >
         <CheckBoxPreference
-            android:key="screen_rotation"
-            android:title="rotate the screen"/>
-        
-    </PreferenceScreen>
+            android:key="ask_confirmation_configuration"
+            android:defaultValue="false"
+            android:title="config. deleting confirmation"
+            android:summary="Never ask again for confirmation when deleting a configuration by swiping" />
+        <CheckBoxPreference
+            android:key="ask_confirmation_recording"
+            android:defaultValue="false"
+            android:title="rec. deleting confirmation"
+            android:summary="Never ask again for confirmation when deleting a recording by swiping" />
+    </PreferenceCategory>
 </PreferenceScreen>

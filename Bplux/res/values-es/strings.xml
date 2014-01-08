@@ -129,7 +129,8 @@
     
     
     <!-- DIALOG NAME -->
-    <string name="dn_hint">Grabación 1</string>
+    <string name="d_hint">Grabación 1</string>
+    <string name="d_confirmationCheck">Omitir dialogo de confirmación </string>
     
     
     <!-- ATTRIBUTES -->

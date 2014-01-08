@@ -123,7 +123,6 @@
     <string name="bp_positive_button">Got it</string>
     
     
-    
     <!-- BIOPLUX SERVICE -->
     <string name="bs_header_name">Configuration name: </string>
     <string name="bs_header_date">Start date: </string>
@@ -132,8 +131,9 @@
     <string name="bs_header_duration">Duration: </string>
     <string name="bs_header_active_channels">Active channels: </string>
     
-    <!-- DIALOG NAME -->
-    <string name="dn_hint">Recording 1</string>
+    <!-- DIALOGS -->
+    <string name="d_hint">Recording 1</string>
+    <string name="d_confirmationCheck">Never ask for confirmation again </string>
     
     
     <!-- ATTRIBUTES -->

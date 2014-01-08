@@ -5,12 +5,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +45,7 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	private RecordingsListAdapter baseAdapter;
 	private ArrayList<Recording> recordingsArrayList = null;
 	private int[] reverseSortedPositions;
+	private SharedPreferences.Editor prefEditor = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +65,16 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	
 	private void setupConfirmationDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = this.getLayoutInflater();
+		
 		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.ra_confirm_dialog_title);
+		
+		View contentView = inflater.inflate(R.layout.dialog_confirmation_content, null);
+		((TextView)contentView.findViewById(R.id.confirmation_message)).setText(getResources().getString(R.string.ra_confirm_dialog_message));
+		
 		builder.setCustomTitle(customTitleView)
-		.setMessage(R.string.ra_confirm_dialog_message)
+		.setView(contentView)
 		.setPositiveButton(getString(R.string.ra_confirm_dialog_positive),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -88,6 +96,11 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 							file.delete();
 							recordingsArrayList.remove(position);
 						}
+						if(prefEditor!=null){
+							prefEditor.commit();
+							setupConfirmationDialog();
+							prefEditor = null;
+						}
 						displayInfoToast(getString(R.string.ra_recording_removed));
 					}
 				});
@@ -95,6 +108,7 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						 setupRecordingListView();
+						 setupConfirmationDialog();
 					}
 				});
 
@@ -151,13 +165,36 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		lvRecordings.setAdapter(baseAdapter);
 	}
 
-	
-
-
 	@Override
 	public void onDismiss(AbsListView listView, int[] reverseSortedPositions) {
 		this.reverseSortedPositions = reverseSortedPositions;
-		confirmDialog.show();
+		boolean dontAskForConfrmation = false;
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		dontAskForConfrmation = sharedPref.getBoolean(SettingsActivity.KEY_PREF_CONF_REC, false);
+		
+		if(!dontAskForConfrmation){
+			confirmDialog.show();
+		}else{
+			for (int position : reverseSortedPositions) {
+				baseAdapter.remove(position);
+				Dao<Recording, Integer> dao = null;
+
+				try {
+					dao = getHelper().getRecordingDao();
+					dao.delete(recordingsArrayList.get(position));
+				} catch (SQLException e) {
+					Log.e(TAG, "Exception removing recording from database ", e);
+				}
+				
+				File root = Environment.getExternalStorageDirectory();
+				recordingName = recordingsArrayList.get(position).getName();
+				String appDirectory="/Bioplux/";
+				File file = new File(root + appDirectory + recordingName + ".zip");
+				file.delete();
+				recordingsArrayList.remove(position);
+			}
+			displayInfoToast(getString(R.string.ra_recording_removed));
+		}
 	}
 
 	public void loadRecordings() {
@@ -173,5 +210,18 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 			Log.e(TAG, "exception loading recordings from database ", e);
 		}
 	}
+	
+	public void onDialogCheckBoxClicked(View v) {
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		prefEditor = sharedPref.edit();
+		
+		if(((CheckBox)v).isChecked())
+			prefEditor.putBoolean(SettingsActivity.KEY_PREF_CONF_REC, true);
+		else{
+			prefEditor.putBoolean(SettingsActivity.KEY_PREF_CONF_REC, false);
+			prefEditor=null;
+		}
+	}
+	
 
 }

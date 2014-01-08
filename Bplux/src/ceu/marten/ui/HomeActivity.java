@@ -30,6 +30,7 @@ public class HomeActivity extends Activity {
 	        	Toast.makeText(this, "Help menu is under construction", Toast.LENGTH_LONG).show();
 	            return true;
 	        default:
+	        	Toast.makeText(this, "About menu is under construction", Toast.LENGTH_LONG).show();
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
