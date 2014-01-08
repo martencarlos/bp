@@ -69,6 +69,7 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		
 		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.ra_confirm_dialog_title);
+		customTitleView.setBackgroundColor(getResources().getColor(R.color.waring_dialog));
 		
 		View contentView = inflater.inflate(R.layout.dialog_confirmation_content, null);
 		((TextView)contentView.findViewById(R.id.confirmation_message)).setText(getResources().getString(R.string.ra_confirm_dialog_message));

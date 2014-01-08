@@ -12,7 +12,7 @@
         <CheckBoxPreference
             android:key="ask_confirmation_recording"
             android:defaultValue="false"
-            android:title="rec. deleting confirmation"
+            android:title="record. deleting confirmation"
             android:summary="Never ask again for confirmation when deleting a recording by swiping" />
     </PreferenceCategory>
 </PreferenceScreen>

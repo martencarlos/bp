@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import android.graphics.Color;
+import android.content.Context;
 import android.graphics.Paint.Align;
 import ceu.marten.bplux.R;
 
@@ -21,11 +21,10 @@ import com.jjoe64.graphview.LineGraphView;
  * Created by martencarlos on 25/07/13.
  */
 
-public class Graph implements Serializable{
+public class Graph implements Serializable {
 
 	private static final long serialVersionUID = -5122704369223869018L;
 
-	
 	private GraphViewSeries serie;
 	private GraphViewSeriesStyle style;
 	private double xValue;
@@ -34,8 +33,10 @@ public class Graph implements Serializable{
 	@SuppressWarnings("deprecation")
 	public Graph(android.content.Context context, String title) {
 		// SET THE SERIE STYLE
-		style = new GraphViewSeriesStyle(randomColor(), 2); // 2 -> thickness
-		
+		style = new GraphViewSeriesStyle(getChannelColor(
+				Integer.parseInt(title.charAt(title.length() - 1) + ""),
+				context), 2); // 2 -> thickness
+
 		// INIT SERIE DATA
 		serie = new GraphViewSeries(title, style, new GraphViewData[] {
 				new GraphViewData(1.0, 125), new GraphViewData(1.5, 10) });
@@ -44,53 +45,85 @@ public class Graph implements Serializable{
 
 		// ADD SERIES TO GRAPHVIEW and SET SCROLLABLE
 		graphView.addSeries(serie);
-		graphView.setViewPort(2, Double.parseDouble(context.getResources().getString(R.string.graph_viewport_size)));
+		graphView.setViewPort(
+				2,
+				Double.parseDouble(context.getResources().getString(
+						R.string.graph_viewport_size)));
 		graphView.setScalable(true);
-		graphView.setCustomLabelFormatter(new CustomLabelFormatter() {  
-			   @Override  
-			   public String formatLabel(double value, boolean isValueX) {  
-			      if (isValueX) {
-			    	  if(value<0)
-			    		  return "00:00:00";
-			    	  String strValue = String.format(Locale.getDefault(),"%02d:%02d:%02d", 
-			    			  TimeUnit.MILLISECONDS.toHours((long)value),
-			    			  TimeUnit.MILLISECONDS.toMinutes((long)value),
-			    			  TimeUnit.MILLISECONDS.toSeconds((long)value) - 
-			    			  TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long)value)));
+		graphView.setCustomLabelFormatter(new CustomLabelFormatter() {
+			@Override
+			public String formatLabel(double value, boolean isValueX) {
+				if (isValueX) {
+					if (value < 0)
+						return "00:00:00";
+					String strValue = String.format(
+							Locale.getDefault(),
+							"%02d:%02d:%02d",
+							TimeUnit.MILLISECONDS.toHours((long) value),
+							TimeUnit.MILLISECONDS.toMinutes((long) value),
+							TimeUnit.MILLISECONDS.toSeconds((long) value)
+									- TimeUnit.MINUTES
+											.toSeconds(TimeUnit.MILLISECONDS
+													.toMinutes((long) value)));
 
-			    			  return strValue;
-			      }
-			      else
-			    	  return String.valueOf(((Double)value).intValue()); //vertical labels value
-			   }  
-		}); 
-		
+					return strValue;
+				} else
+					return String.valueOf(((Double) value).intValue()); // vertical
+																		// labels
+																		// value
+			}
+		});
+
 		// SET THE GRAPH VIEW STYLE
-		GraphViewStyle graphStyle= new GraphViewStyle();
-		graphStyle.setNumHorizontalLabels(Integer.parseInt(context.getResources().getString(R.string.graph_numberof_horizontal_labels)));
+		GraphViewStyle graphStyle = new GraphViewStyle();
+		graphStyle.setNumHorizontalLabels(Integer.parseInt(context
+				.getResources().getString(
+						R.string.graph_numberof_horizontal_labels)));
 		graphStyle.setVerticalLabelsAlign(Align.LEFT);
-		graphStyle.setGridColor(context.getResources().getColor(R.color.light_grey));
-		graphStyle.setHorizontalLabelsColor(context.getResources().getColor(R.color.grey));
-		graphStyle.setVerticalLabelsColor(context.getResources().getColor(R.color.grey));
-		graphStyle.setTextSize(Float.parseFloat(context.getResources().getString(R.string.graph_labels_text_size)));
-		graphStyle.setVerticalLabelsWidth(Integer.parseInt((context.getResources().getString(R.string.graph_vertical_labels_width))));
+		graphStyle.setGridColor(context.getResources().getColor(
+				R.color.light_grey));
+		graphStyle.setHorizontalLabelsColor(context.getResources().getColor(
+				R.color.grey));
+		graphStyle.setVerticalLabelsColor(context.getResources().getColor(
+				R.color.grey));
+		graphStyle.setTextSize(Float.parseFloat(context.getResources()
+				.getString(R.string.graph_labels_text_size)));
+		graphStyle
+				.setVerticalLabelsWidth(Integer.parseInt((context
+						.getResources()
+						.getString(R.string.graph_vertical_labels_width))));
 
 		graphView.setGraphViewStyle(graphStyle);
-		
+
 		// SET THE LEGEND
-		graphView.setLegendWidth((Integer.parseInt((context.getResources().getString(R.string.graph_legend_width)))));
+		graphView.setLegendWidth((Integer.parseInt((context.getResources()
+				.getString(R.string.graph_legend_width)))));
 		graphView.setLegendAlign(LegendAlign.BOTTOM);
 		graphView.setShowLegend(true);
 	}
-	
-	private int randomColor() {
-		int min = 100, max = 180;
-		int r = 10 + (int)(Math.random()*50);
-		int g = min + (int)(Math.random()*max); 
-		int b = min + (int)(Math.random()*max); 
-		return Color.rgb(r, g, b);
+
+	private int getChannelColor(int channelNumber, Context context) {
+		switch (channelNumber) {
+		default:
+			return context.getResources().getColor(R.color.default_channel);
+		case 2:
+			return context.getResources().getColor(R.color.channel2);
+		case 3:
+			return context.getResources().getColor(R.color.channel3);
+		case 4:
+			return context.getResources().getColor(R.color.channel4);
+		case 5:
+			return context.getResources().getColor(R.color.channel5);
+		case 6:
+			return context.getResources().getColor(R.color.channel6);
+		case 7:
+			return context.getResources().getColor(R.color.channel7);
+		case 8:
+			return context.getResources().getColor(R.color.channel8);
+		}
+
 	}
-	
+
 	public GraphView getGraphView() {
 		return graphView;
 	}

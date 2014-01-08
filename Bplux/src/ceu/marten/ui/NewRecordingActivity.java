@@ -270,6 +270,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		TextView customTitleView = (TextView) inflater.inflate(
 				R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.nr_back_dialog_title);
+		customTitleView.setBackgroundColor(getResources().getColor(R.color.waring_dialog));
 		builder.setCustomTitle(customTitleView)
 				.setView(
 						inflater.inflate(
@@ -305,6 +306,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		TextView customTitleView = (TextView) inflater.inflate(
 				R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.nr_bluetooth_dialog_title);
+		customTitleView.setBackgroundColor(getResources().getColor(R.color.error_dialog));
 		builder.setCustomTitle(customTitleView).setPositiveButton(
 				getString(R.string.nr_bluetooth_dialog_positive_button),
 				new DialogInterface.OnClickListener() {
@@ -330,7 +332,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		TextView customTitleView = (TextView) inflater.inflate(R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.nr_bluetooth_dialog_title);
-		customTitleView.setBackgroundColor(getResources().getColor(R.color.waring_dialog));
+		customTitleView.setBackgroundColor(getResources().getColor(R.color.error_dialog));
 		builder.setCustomTitle(customTitleView).setPositiveButton(
 				getString(R.string.bp_positive_button),
 				new DialogInterface.OnClickListener() {
@@ -350,6 +352,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		TextView customTitleView = (TextView) inflater.inflate(
 				R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.nr_overwrite_dialog_title);
+		customTitleView.setBackgroundColor(getResources().getColor(R.color.waring_dialog));
 		builder.setCustomTitle(customTitleView)
 				.setMessage(R.string.nr_overwrite_dialog_message)
 				.setPositiveButton(
