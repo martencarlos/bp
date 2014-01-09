@@ -6,8 +6,8 @@ import android.preference.PreferenceActivity;
 
 public class SettingsActivity extends PreferenceActivity {
 	
-	public static final String KEY_PREF_CONF_CONFIG= "ask_confirmation_configuration";
-	public static final String KEY_PREF_CONF_REC= "ask_confirmation_recording";
+	public static final String KEY_PREF_CONF_CONFIG = "ask_confirmation_configuration";
+	public static final String KEY_PREF_CONF_REC = "ask_confirmation_recording";
 	
     @SuppressWarnings("deprecation")
 	@Override

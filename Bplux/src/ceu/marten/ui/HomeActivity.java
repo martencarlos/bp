@@ -8,7 +8,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.Toast;
 import ceu.marten.bplux.R;
 
 public class HomeActivity extends Activity {
@@ -26,15 +25,25 @@ public class HomeActivity extends Activity {
 	        case R.id.gm_settings:
 	        	startActivity(new Intent(this, SettingsActivity.class));
 	            return true;
+	            
 	        case R.id.gm_help:
-	        	Toast.makeText(this, "Help menu is under construction", Toast.LENGTH_LONG).show();
+	        	HelpDialog help = new HelpDialog(this);
+	        	help.setTitle("Tips & tricks");
+	        	help.setCanceledOnTouchOutside(true);
+	        	help.show();
+	        	return true;
+	        case R.id.gm_about:
+	        	AboutDialog about = new AboutDialog(this);
+	        	about.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	        	about.setCanceledOnTouchOutside(true);
+	        	about.show();
 	            return true;
+	        
 	        default:
-	        	Toast.makeText(this, "About menu is under construction", Toast.LENGTH_LONG).show();
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
