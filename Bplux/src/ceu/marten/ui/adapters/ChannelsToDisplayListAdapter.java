@@ -5,16 +5,15 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 import ceu.marten.bplux.R;
 
 public class ChannelsToDisplayListAdapter extends ArrayAdapter<String>
-		implements OnCheckedChangeListener {
+		implements OnClickListener {
 
 	private final Context context;
 	private boolean[] channelsToDisplay;
@@ -52,7 +51,7 @@ public class ChannelsToDisplayListAdapter extends ArrayAdapter<String>
 
 		// SETUP CHECK BOX
 		cb.setTag(R.id.TAG_POSITION, position);
-		cb.setOnCheckedChangeListener(this);
+		cb.setOnClickListener(this);
 		if(checkedStatus[position] == true) {
 			 cb.setChecked(true);
 			 } else {
@@ -68,14 +67,15 @@ public class ChannelsToDisplayListAdapter extends ArrayAdapter<String>
 	}
 
 	@Override
-	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-		if (isChecked) {
-			int position = (Integer) buttonView.getTag(R.id.TAG_POSITION);
+	public void onClick(View view) {
+		CheckBox checkbox = (CheckBox)view;
+		if (checkbox.isChecked()) {
+			int position = (Integer) checkbox.getTag(R.id.TAG_POSITION);
 			checkedStatus[position]=true;
 			channelsToDisplay[position] = true;
 
 		} else {
-			int position = (Integer) buttonView.getTag(R.id.TAG_POSITION);
+			int position = (Integer) checkbox.getTag(R.id.TAG_POSITION);
 			checkedStatus[position] = false;
 			channelsToDisplay[position] = false;
 		}

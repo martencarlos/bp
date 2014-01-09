@@ -28,7 +28,7 @@
     <string name="ca_dialog_null_name">Nombre de grabación es obligatorio</string>
     <string name="ca_dialog_duplicate_name">Nombre de grabación ya existe</string>
     <string name="ca_confirm_dialog_title">Estas seguro?</string>
-    <string name="ca_confirm_dialog_message">La configuración será borrada</string>
+    <string name="ca_confirm_dialog_message">La configuración seleccionada será borrada del dispositivo</string>
     <string name="ca_confirm_dialog_positive">Confirmar</string>
     <string name="ca_confirm_dialog_negative">Cancelar</string>
     

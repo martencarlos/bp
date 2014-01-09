@@ -25,7 +25,7 @@
     <string name="ca_info_recording_canceled">Recording canceled</string>
     <string name="ca_name_dialog_title">New recording name</string>
     <string name="ca_confirm_dialog_title">Are you sure?</string>
-    <string name="ca_confirm_dialog_message">The configuration will be deleted</string>
+    <string name="ca_confirm_dialog_message">The configuration selected will be deleted from your phone</string>
     <string name="ca_confirm_dialog_positive">Confirm</string>
     <string name="ca_confirm_dialog_negative">Cancel</string>
     

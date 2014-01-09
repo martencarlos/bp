@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="TAG_POSITION" type="id">33543545</item>
-    <item name="TAG_SENSORS" type="id">4234234</item>
+    <item name="TAG_SPINNER" type="id">4234234</item>
 </resources>

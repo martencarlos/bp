@@ -251,9 +251,8 @@ public class NewConfigurationActivity extends Activity {
 
 		String[] myResArray = getResources().getStringArray(R.array.channels);
 		List<String> myResArrayList = Arrays.asList(myResArray);
-
 		final ActiveChannelsListAdapter activeChannelsListAdapter = new ActiveChannelsListAdapter(
-				this, myResArrayList);
+				this, myResArrayList, newConfiguration.getActiveChannelsWithNullFill());
 
 		AlertDialog.Builder activeChannelsBuilder;
 		AlertDialog activeChannelsDialog;
@@ -279,8 +278,10 @@ public class NewConfigurationActivity extends Activity {
 								.getChecked();
 
 						newConfiguration.setActiveChannels(channelsActivated);
-
-						if (!noChannelsActivated(channelsActivated))
+						
+						if (noChannelsActivated(channelsActivated))
+							activeChannels.setText("");
+						else
 							printActivatedChannels(channelsActivated);
 					}
 
@@ -339,8 +340,9 @@ public class NewConfigurationActivity extends Activity {
 		final ArrayList<String> channels = new ArrayList<String>();
 		final ArrayList<String> sensors = new ArrayList<String>();
 
+		String[] debug = newConfiguration.getActiveChannelsWithNullFill();
 		// FILL THE TWO ARRAYS
-		for (int i = 0; i < newConfiguration.getActiveChannelsWithNullFill().length; i++) {
+		for (int i = 0; i < debug.length; i++) {
 			if (newConfiguration.getActiveChannelsWithNullFill()[i]
 					.compareTo("null") != 0) {
 				channels.add(getString(R.string.nc_dialog_channel) + " "
@@ -374,7 +376,9 @@ public class NewConfigurationActivity extends Activity {
 								.getChecked();
 						boolean[] channelsToDisplayArray = new boolean[8];
 
-						if (numberOfChannelsSelected(channelsSelected) != 0) {
+						if (numberOfChannelsSelected(channelsSelected) == 0) 
+							channelsToDisplay.setText("");
+							else{
 							channelsToDisplay.setError(null);
 							channelsToDisplay.setTextColor(getResources()
 									.getColor(R.color.blue));
