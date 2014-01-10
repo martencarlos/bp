@@ -28,6 +28,10 @@
     <string name="ca_confirm_dialog_message">The configuration selected will be deleted from your phone</string>
     <string name="ca_confirm_dialog_positive">Confirm</string>
     <string name="ca_confirm_dialog_negative">Cancel</string>
+    <string name="ca_error_dialog_title">An error occurred</string>
+    <string name="ca_error_saving_configs_message">There was a problem saving configurations to the internal database</string>
+    <string name="ca_error_loading_configs_message">There was a problem loading configurations</string>
+    <string name="ca_error_loading_recordings_message">There was a problem loading recordings</string>
     
     <string name="ca_empty_list">There are no configurations\nTo add one, press the button below</string>
     
@@ -50,6 +54,8 @@
     <string name="ra_confirm_dialog_message">The recording will be deleted</string>
     <string name="ra_confirm_dialog_positive">Confirm</string>
     <string name="ra_confirm_dialog_negative">Cancel</string>
+    <string name="ra_error_message_deleting_recording_from_database">There was a problem deleting the recording from the data base</string>
+    <string name="ra_error_message_deleting_recording_from_filesystem">There was a problem deleting the recording from the file system</string>
     
     <!-- NEW CONFIGURATION ACTIVITY -->
     <string name="nc_header_title">New configuration</string>
@@ -120,6 +126,8 @@
     <string name="bp_device_not_found">The Plux device could not be found. Verify that it is whithin range, turned on, and that the battery is OK (red led turned off)</string>
     <string name="bp_contacting_device">Communication with the device was lost. Verify that the Plux device is within range, and that the battery is OK (red led turned off)</string>
     <string name="bp_port_could_not_be_opened">The communication port does not exist or it is already being used</string>
+    <string name="bp_error_processing_frames">An error occurred processing the frames</string>
+    <string name="bp_error_saving_recording">An error occurred saving the recording</string>
     <string name="bp_positive_button">Got it</string>
     
     

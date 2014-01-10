@@ -38,10 +38,9 @@ import com.j256.ormlite.stmt.QueryBuilder;
 public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		implements OnDismissCallback {
 
+	// CONSTANTS
 	private static final String TAG = ConfigurationsActivity.class.getName();
 
-	private AlertDialog recordingNameDialog;
-	private AlertDialog confirmationNameDialog;
 	private ListView configurationsListView;
 	private ConfigurationsListAdapter baseAdapter;
 	private ArrayList<DeviceConfiguration> configurations = null;
@@ -50,7 +49,10 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	private int currentConfigurationsPosition = 0;
 	private int[] reverseSortedPositions;
 	private LayoutInflater inflater;
-	private SharedPreferences.Editor prefEditor=null;
+	private SharedPreferences.Editor prefEditor = null;
+
+	// DIALOGS
+	private AlertDialog recordingNameDialog, confirmationDialog, errorDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,20 +60,21 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_configurations);
 		inflater = this.getLayoutInflater();
-		loadConfigurations();
-		setupConfigurationsListView();
-		setupRecordingNameDialog();
-		setupConfirmationDialog();
+		if (loadConfigurations()) {
+			setupConfigurationsListView();
+			setupRecordingNameDialog();
+			setupConfirmationDialog();
+		}
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		Intent backIntent = new Intent(this, HomeActivity.class);
-		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	    startActivity(backIntent);
-	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right );
-	    super.onBackPressed();
+		startActivity(backIntent);
+		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+		super.onBackPressed();
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -80,17 +83,19 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 
 				DeviceConfiguration newConfiguration = ((DeviceConfiguration) data
 						.getSerializableExtra("configuration"));
-				
-				if(data.getBooleanExtra("edited", false)){
+
+				if (data.getBooleanExtra("edited", false)) {
 					DeviceConfiguration oldConfiguration = ((DeviceConfiguration) data
 							.getSerializableExtra("oldConfiguration"));
 					modifyConfiguration(oldConfiguration, newConfiguration);
-					loadConfigurations();
-					setupConfigurationsListView();
-				}else{
-					saveConfiguration(newConfiguration);
-					loadConfigurations();
-					setupConfigurationsListView();
+					if (loadConfigurations())
+						setupConfigurationsListView();
+				} else {
+					if (saveConfiguration(newConfiguration)) {
+						if (loadConfigurations())
+							setupConfigurationsListView();
+					}
+
 				}
 			}
 			if (resultCode == RESULT_CANCELED) {
@@ -100,55 +105,64 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	}
 
 	private void setupRecordingNameDialog() {
-		
+
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		
-		
-		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
+
+		TextView customTitleView = (TextView) inflater.inflate(
+				R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.ca_name_dialog_title);
-		builder.setView(inflater.inflate(R.layout.dialog_recording_name_content, null))
+		builder.setView(
+				inflater.inflate(R.layout.dialog_recording_name_content, null))
 				.setCustomTitle(customTitleView);
 		recordingNameDialog = builder.create();
-		
+
 	}
-	
+
 	private void setupConfirmationDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		
-		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
-		customTitleView.setText(R.string.ca_confirm_dialog_title);
-		customTitleView.setBackgroundColor(getResources().getColor(R.color.waring_dialog));
-		
-		View contentView = inflater.inflate(R.layout.dialog_confirmation_content, null);
-		((TextView)contentView.findViewById(R.id.confirmation_message)).setText(getResources().getString(R.string.ca_confirm_dialog_message));
-		
-		builder.setCustomTitle(customTitleView)
-		.setView(contentView)
-		.setPositiveButton(getString(R.string.ca_confirm_dialog_positive),
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						for (int position : reverseSortedPositions) {
-							baseAdapter.remove(position);
-							Dao<DeviceConfiguration, Integer> dao = null;
 
-							try {
-								dao = getHelper().getDeviceConfigDao();
-								dao.delete(configurations.get(position));
-							} catch (SQLException e) {
-								Log.e(TAG,"exception removing configuration from database by swiping",
-										e);
+		TextView customTitleView = (TextView) inflater.inflate(
+				R.layout.dialog_custom_title, null);
+		customTitleView.setText(R.string.ca_confirm_dialog_title);
+		customTitleView.setBackgroundColor(getResources().getColor(
+				R.color.waring_dialog));
+
+		View contentView = inflater.inflate(
+				R.layout.dialog_confirmation_content, null);
+		((TextView) contentView.findViewById(R.id.confirmation_message))
+				.setText(getResources().getString(
+						R.string.ca_confirm_dialog_message));
+
+		builder.setCustomTitle(customTitleView)
+				.setView(contentView)
+				.setPositiveButton(
+						getString(R.string.ca_confirm_dialog_positive),
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								for (int position : reverseSortedPositions) {
+									baseAdapter.remove(position);
+									Dao<DeviceConfiguration, Integer> dao = null;
+
+									try {
+										dao = getHelper().getDeviceConfigDao();
+										dao.delete(configurations.get(position));
+									} catch (SQLException e) {
+										Log.e(TAG,
+												"exception removing configuration from database by swiping",
+												e);
+									}
+									configurations.remove(position);
+								}
+								if (prefEditor != null) {
+									prefEditor.commit();
+									setupConfirmationDialog();
+									prefEditor = null;
+								}
+								displayInfoToast(getString(R.string.ca_configuration_removed));
 							}
-							configurations.remove(position);
-						}
-						if(prefEditor!=null){
-							prefEditor.commit();
-							setupConfirmationDialog();
-							prefEditor = null;
-						}
-						displayInfoToast(getString(R.string.ca_configuration_removed));
-					}
-				});
-		builder.setNegativeButton(getString(R.string.ca_confirm_dialog_negative),
+						});
+		builder.setNegativeButton(
+				getString(R.string.ca_confirm_dialog_negative),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						setupConfigurationsListView();
@@ -156,10 +170,36 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 					}
 				});
 
-		confirmationNameDialog = builder.create();
-		confirmationNameDialog.setCanceledOnTouchOutside(false);
+		confirmationDialog = builder.create();
+		confirmationDialog.setCanceledOnTouchOutside(false);
 	}
-	
+
+	private void setupErrorDialog(String errorMessage) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+		TextView customTitleView = (TextView) inflater.inflate(
+				R.layout.dialog_custom_title, null);
+		customTitleView.setText(R.string.ca_error_dialog_title);
+		customTitleView.setBackgroundColor(getResources().getColor(
+				R.color.error_dialog));
+
+		View contentView = inflater.inflate(
+				R.layout.dialog_confirmation_content, null);
+		((TextView) contentView.findViewById(R.id.confirmation_message))
+				.setText(errorMessage);
+
+		builder.setCustomTitle(customTitleView)
+				.setView(contentView)
+				.setPositiveButton(getString(R.string.bp_positive_button),
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+
+							}
+						});
+		errorDialog = builder.create();
+		errorDialog.setCanceledOnTouchOutside(false);
+	}
+
 	private void setupConfigurationsListView() {
 
 		final OnItemClickListener shortPressListener = new OnItemClickListener() {
@@ -171,18 +211,20 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 
 			}
 		};
-		
+
 		final OnItemLongClickListener longPressListener = new OnItemLongClickListener() {
 
 			@Override
-			public boolean onItemLongClick(AdapterView<?> adapterView, View view,
-					int position, long id) {
-				
-				Intent intent = new Intent(classContext, NewConfigurationActivity.class);
+			public boolean onItemLongClick(AdapterView<?> adapterView,
+					View view, int position, long id) {
+
+				Intent intent = new Intent(classContext,
+						NewConfigurationActivity.class);
 				intent.putExtra("configurations", configurations);
 				intent.putExtra("position", position);
 				startActivityForResult(intent, 1);
-				overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_top);
+				overridePendingTransition(R.anim.slide_in_bottom,
+						R.anim.slide_out_top);
 				return true;
 			}
 		};
@@ -210,12 +252,14 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	public void onDismiss(AbsListView listView, int[] reverseSortedPositions) {
 		this.reverseSortedPositions = reverseSortedPositions;
 		boolean dontAskForConfrmation = false;
-		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		dontAskForConfrmation = sharedPref.getBoolean(SettingsActivity.KEY_PREF_CONF_CONFIG, false);
-		
-		if(!dontAskForConfrmation){
-			confirmationNameDialog.show();
-		}else{
+		SharedPreferences sharedPref = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		dontAskForConfrmation = sharedPref.getBoolean(
+				SettingsActivity.KEY_PREF_CONF_CONFIG, false);
+
+		if (!dontAskForConfrmation) {
+			confirmationDialog.show();
+		} else {
 			for (int position : reverseSortedPositions) {
 				baseAdapter.remove(position);
 				Dao<DeviceConfiguration, Integer> dao = null;
@@ -224,14 +268,15 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 					dao = getHelper().getDeviceConfigDao();
 					dao.delete(configurations.get(position));
 				} catch (SQLException e) {
-					Log.e(TAG,"exception removing configuration from database by swiping",
+					Log.e(TAG,
+							"exception removing configuration from database by swiping",
 							e);
 				}
 				configurations.remove(position);
 			}
 			displayInfoToast(getString(R.string.ca_configuration_removed));
 		}
-		
+
 	}
 
 	private void displayInfoToast(String messageToDisplay) {
@@ -245,8 +290,9 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 
 		infoToast.show();
 	}
-	
-	public void modifyConfiguration(DeviceConfiguration oldConfig, DeviceConfiguration newConfig) {
+
+	public void modifyConfiguration(DeviceConfiguration oldConfig,
+			DeviceConfiguration newConfig) {
 		Dao<DeviceConfiguration, Integer> dao;
 		try {
 			dao = getHelper().getDeviceConfigDao();
@@ -257,42 +303,51 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		}
 	}
 
-	public void saveConfiguration(DeviceConfiguration config) {
+	public boolean saveConfiguration(DeviceConfiguration config) {
 		Dao<DeviceConfiguration, Integer> dao;
 		try {
 			dao = getHelper().getDeviceConfigDao();
 			dao.create(config);
 		} catch (SQLException e) {
 			Log.e(TAG, "exception saving configuration on database", e);
+			setupErrorDialog(getResources().getString(R.string.ca_error_saving_configs_message));
+			return false;
 		}
+		return true;
 	}
 
-	public void loadConfigurations() {
+	public boolean loadConfigurations() {
 		configurations = new ArrayList<DeviceConfiguration>();
 		Dao<DeviceConfiguration, Integer> dao;
 		try {
 			dao = getHelper().getDeviceConfigDao();
-			QueryBuilder<DeviceConfiguration, Integer> builder = dao.queryBuilder();
+			QueryBuilder<DeviceConfiguration, Integer> builder = dao
+					.queryBuilder();
 			builder.orderBy("createDate", false).limit(30L);
 			configurations = (ArrayList<DeviceConfiguration>) dao.query(builder
 					.prepare());
 		} catch (SQLException e) {
 			Log.e(TAG, "exception loading configurations from database ", e);
+			setupErrorDialog(getResources().getString(R.string.ca_error_loading_configs_message));
+			return false;
 		}
+		return true;
 	}
-	
-	public void loadRecordings() {
+
+	public boolean loadRecordings() {
 		Dao<Recording, Integer> dao;
-		recordings= new ArrayList<Recording>();
+		recordings = new ArrayList<Recording>();
 		try {
 			dao = getHelper().getRecordingDao();
 			QueryBuilder<Recording, Integer> builder = dao.queryBuilder();
 			builder.orderBy("startDate", false).limit(30L);
-			recordings = (ArrayList<Recording>) dao.query(builder
-					.prepare());
+			recordings = (ArrayList<Recording>) dao.query(builder.prepare());
 		} catch (SQLException e) {
 			Log.e(TAG, "exception loading recordings from database ", e);
+			setupErrorDialog(getResources().getString(R.string.ca_error_loading_recordings_message));
+			return false;
 		}
+		return true;
 	}
 
 	/* BUTTON EVENTS */
@@ -303,49 +358,56 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		startActivityForResult(intent, 1);
 		overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_top);
 	}
-	
+
 	public void onNegativeClick(View v) {
-		EditText editText = (EditText) recordingNameDialog.findViewById(R.id.dialog_txt_new_recording_name);
+		EditText editText = (EditText) recordingNameDialog
+				.findViewById(R.id.dialog_txt_new_recording_name);
 		editText.setError(null);
 		recordingNameDialog.dismiss();
 	}
-	
+
 	public void onDialogCheckBoxClicked(View v) {
-		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences sharedPref = PreferenceManager
+				.getDefaultSharedPreferences(this);
 		prefEditor = sharedPref.edit();
-		
-		if(((CheckBox)v).isChecked())
+
+		if (((CheckBox) v).isChecked())
 			prefEditor.putBoolean(SettingsActivity.KEY_PREF_CONF_CONFIG, true);
-		else{
+		else {
 			prefEditor.putBoolean(SettingsActivity.KEY_PREF_CONF_CONFIG, false);
-			prefEditor=null;
+			prefEditor = null;
 		}
 	}
-	
-	
+
 	public void onPositiveClick(View v) {
-		EditText editText = (EditText) recordingNameDialog.findViewById(R.id.dialog_txt_new_recording_name);
+		EditText editText = (EditText) recordingNameDialog
+				.findViewById(R.id.dialog_txt_new_recording_name);
 		String newRecordingName = editText.getText().toString();
-		loadRecordings();
-		boolean recordingNameExists = false;
-		if(recordings!=null){
-			for(Recording r : recordings){
-				if(r.getName().compareTo(newRecordingName)==0)
-					recordingNameExists = true;
+		if (loadRecordings()) {
+			boolean recordingNameExists = false;
+			if (recordings != null) {
+				for (Recording r : recordings) {
+					if (r.getName().compareTo(newRecordingName) == 0)
+						recordingNameExists = true;
+				}
+			}
+
+			if (newRecordingName == null || newRecordingName.compareTo("") == 0) {
+				editText.setError(getString(R.string.ca_dialog_null_name));
+			} else if (recordingNameExists) {
+				editText.setError(getString(R.string.ca_dialog_duplicate_name));
+			} else {
+				Intent intent = new Intent(classContext,
+						NewRecordingActivity.class);
+				intent.putExtra("recordingName", newRecordingName);
+				intent.putExtra("configSelected",
+						configurations.get(currentConfigurationsPosition));
+				startActivity(intent);
+				overridePendingTransition(R.anim.slide_in_right,
+						R.anim.slide_out_left);
+				recordingNameDialog.dismiss();
 			}
 		}
-		
-		if (newRecordingName == null || newRecordingName.compareTo("") == 0) {
-			editText.setError(getString(R.string.ca_dialog_null_name));
-		}else if(recordingNameExists){
-			editText.setError(getString(R.string.ca_dialog_duplicate_name));
-		}else{
-			Intent intent = new Intent(classContext,NewRecordingActivity.class);
-			intent.putExtra("recordingName",newRecordingName);
-			intent.putExtra("configSelected",configurations.get(currentConfigurationsPosition));
-			startActivity(intent);
-			overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-			recordingNameDialog.dismiss();
-		}
+
 	}
 }

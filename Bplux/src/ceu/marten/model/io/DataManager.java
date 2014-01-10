@@ -62,7 +62,7 @@ public class DataManager {
 	}
 	
 
-	public void writeFramesToTmpFile(Frame f) {
+	public boolean writeFramesToTmpFile(Frame f) {
 		frameCounter++;
 		int index = 0;
 		for (int i = 0; i < activeChannels.size(); i++) {
@@ -77,11 +77,13 @@ public class DataManager {
 					String.valueOf(frameTmp[6]), String.valueOf(frameTmp[7])));
 		} catch (IOException e) {
 			Log.e(TAG, "Exception while writing frame row", e);
+			return false;
 		}
+		return true;
 		
 	}
 	
-	private void compressFile() {
+	private boolean compressFile(){
 		BufferedInputStream origin = null;
 		ZipOutputStream out = null;
 		try {
@@ -113,6 +115,7 @@ public class DataManager {
 
 		} catch (Exception e) {
 			Log.e(TAG, "exception while zipping", e);
+			return false;
 		}
 		finally{
 			try {
@@ -120,18 +123,20 @@ public class DataManager {
 				out.close();
 			} catch (IOException e) {
 				Log.e(TAG, "Exception while closing streams", e);
-			}
-			
+				return false;
+			}	
 		}
+		return true;
 	}
 	
-	private void writeTextFile() {
+	private boolean writeTextFile() {
 
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();		
 		Date date = new Date();
 		OutputStreamWriter out = null;
 		BufferedInputStream origin = null;
 		BufferedOutputStream dest = null;
+		FileInputStream fi = null;
 		try {
 			out = new OutputStreamWriter(context.openFileOutput(
 					recordingName + ".txt", Context.MODE_PRIVATE));
@@ -156,7 +161,7 @@ public class DataManager {
 			FileOutputStream outBytes = new FileOutputStream(context.getFilesDir()
 					+ "/" + recordingName + ".txt", true);
 			dest = new BufferedOutputStream(outBytes);
-			FileInputStream fi = new FileInputStream(context.getFilesDir() + "/"
+			fi = new FileInputStream(context.getFilesDir() + "/"
 					+ "tmp.txt");
 			 
 			origin = new BufferedInputStream(fi, 1000);
@@ -168,35 +173,44 @@ public class DataManager {
 
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "file to write header on, not found", e);
+			return false;
 		} catch (IOException e) {
 			Log.e(TAG, "write header stream exception", e);
+			return false;
 		}
 		finally{
 			try {
+				fi.close();
 				out.close();
 				origin.close();
 				dest.close();
 				context.deleteFile("tmp.txt");
 			} catch (IOException e) {
 				Log.e(TAG, "closing streams exception", e);
+				return false;
 			}
-			
 		}
+		return true;
 	}
 	
-	public void closeWriters(){
+	public boolean closeWriters(){
 		try {
 			bufferedWriter.flush();
 			bufferedWriter.close();
 			outStreamWriter.close();
 		} catch (IOException e1) {
 			Log.e(TAG, "Exception while closing StreamWriter", e1);
+			return false;
 		}
+		return true;
 	}
 	
-	public void saveFiles(){
-		writeTextFile();
-		compressFile();
+	public boolean saveFiles(){
+		if(!writeTextFile())
+			return false;
+		if(!compressFile())
+			return false;
+		return true;
 	}
 
 	public void setDuration(String _duration) {

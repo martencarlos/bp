@@ -16,6 +16,8 @@ import com.j256.ormlite.table.DatabaseTable;
 public class DeviceConfiguration implements Serializable {
 
 	private static final long serialVersionUID = -4487071327586521666L;
+	private static final String splitPattern = "\\*\\.\\*";
+	
 	@DatabaseField(generatedId = true)
 	private Integer id;
 
@@ -113,7 +115,7 @@ public class DeviceConfiguration implements Serializable {
 
 	public ArrayList<Integer> getChannelsToDisplay() {
 		String entire = new String(this.channelsToDisplay);
-		String[] channelsToDisplay = entire.split("\\*\\.\\*");
+		String[] channelsToDisplay = entire.split(splitPattern);
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		int channelNumber = 1;
 		for (String s : channelsToDisplay) {
@@ -127,7 +129,7 @@ public class DeviceConfiguration implements Serializable {
 	public int getNumberOfChannelsToDisplay() {
 		int numberOfChannelsToDisplay = 0;
 		String entire = new String(this.channelsToDisplay);
-		String[] channelsToDisplay = entire.split("\\*\\.\\*");
+		String[] channelsToDisplay = entire.split(splitPattern);
 		for (String s : channelsToDisplay) {
 			if (s.equalsIgnoreCase("true"))
 				numberOfChannelsToDisplay++;
@@ -149,7 +151,7 @@ public class DeviceConfiguration implements Serializable {
 	public String[] getActiveChannelsWithNullFill() {
 		if (this.activeChannels != null) {
 			String entire = new String(this.activeChannels);
-			return entire.split("\\*\\.\\*");
+			return entire.split(splitPattern);
 		} else
 			return null;
 	}
@@ -159,7 +161,7 @@ public class DeviceConfiguration implements Serializable {
 		String[] arrayStrings;
 		if (this.activeChannels != null) {
 			String entire = new String(this.activeChannels);
-			arrayStrings = entire.split("\\*\\.\\*");
+			arrayStrings = entire.split(splitPattern);
 			for (int i = 0; i < arrayStrings.length; i++) {
 				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
 					activeChannels += (" " + String.valueOf(i + 1) + ",");
@@ -176,7 +178,7 @@ public class DeviceConfiguration implements Serializable {
 		String[] arrayStrings;
 		if (this.activeChannels != null) {
 			String entire = new String(this.activeChannels);
-			arrayStrings = entire.split("\\*\\.\\*");
+			arrayStrings = entire.split(splitPattern);
 			for (int i = 0; i < arrayStrings.length; i++) {
 				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
 					activatedChannels.add(i + 1);
@@ -191,7 +193,7 @@ public class DeviceConfiguration implements Serializable {
 		String[] arrayStrings;
 		if (this.activeChannels != null) {
 			String entire = new String(this.activeChannels);
-			arrayStrings = entire.split("\\*\\.\\*");
+			arrayStrings = entire.split(splitPattern);
 			for (int i = 0; i < arrayStrings.length; i++) {
 				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
 					activeChannels += Math.pow(2, i);
@@ -208,7 +210,7 @@ public class DeviceConfiguration implements Serializable {
 		int numberOfChannels = 0;
 		if (this.activeChannels != null) {
 			String entire = new String(this.activeChannels);
-			String[] arrayStrings = entire.split("\\*\\.\\*");
+			String[] arrayStrings = entire.split(splitPattern);
 			for (int i = 0; i < arrayStrings.length; i++) {
 				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
 					numberOfChannels++;

@@ -71,6 +71,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static String errorMessageContacting;
 	private static String errorMessageAdapter;
 	private static String errorMessagePort;
+	private static String errorMessageProcessingFrames;
+	private static String errorMessageSavingRecording;
 
 	private Messenger mService = null;
 	private static Graph[] graphs;
@@ -180,6 +182,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		errorMessageDevice = getResources().getString(R.string.bp_device_not_found);
 		errorMessageContacting = getResources().getString(R.string.bp_contacting_device);
 		errorMessagePort = getResources().getString(R.string.bp_port_could_not_be_opened);
+		errorMessageProcessingFrames = getResources().getString(R.string.bp_error_processing_frames);
+		errorMessageSavingRecording = getResources().getString(R.string.bp_error_saving_recording);
 		inflater = (LayoutInflater) getApplicationContext().getSystemService(
 				Context.LAYOUT_INFLATER_SERVICE);
 		maxDataCount = Integer.parseInt((getResources()
@@ -524,7 +528,14 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		case 5:
 			connectionErrorDialog.setMessage(errorMessagePort);
 			break;
+		case 6:
+			connectionErrorDialog.setMessage(errorMessageProcessingFrames);
+			break;
+		case 7:
+			connectionErrorDialog.setMessage(errorMessageSavingRecording);
+			break;
 		default:
+			connectionErrorDialog.setMessage("FATAL ERROR");
 			break;
 		}
 		connectionErrorDialog.show();

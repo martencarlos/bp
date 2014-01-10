@@ -50,14 +50,13 @@ public class NewConfigurationActivity extends Activity {
 	private TextView activeChannels, channelsToDisplay;
 	private LayoutInflater inflater;
 
-	String[] channelsActivated = null;
-	ArrayList<DeviceConfiguration> configurations;
-	boolean[] channelsSelected = null;
-	boolean isEditingConfiguration = false;
-	String errorMessageChannelsToDisplayNumber = null;
+	private String[] channelsActivated = null;
+	private ArrayList<DeviceConfiguration> configurations;
+	private boolean[] channelsSelected = null;
+	private boolean isEditingConfiguration = false;
 
-	DeviceConfiguration newConfiguration;
-	DeviceConfiguration configurationToEdit;
+	private DeviceConfiguration newConfiguration;
+	private DeviceConfiguration configurationToEdit;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -667,7 +666,6 @@ public class NewConfigurationActivity extends Activity {
 					.getExtras().getSerializable("configurations");
 			initializeVariables();
 			findViews();
-			errorMessageChannelsToDisplayNumber = getString(R.string.nc_error_channels_to_display);
 			initializeReceptionFrequencyComponents();
 			initializeSamplingFrequencyComponents();
 			configurationToEditPosition = getIntent().getExtras().getInt("position");
@@ -707,7 +705,6 @@ public class NewConfigurationActivity extends Activity {
 
 		@Override
 		protected void onPreExecute() {
-
 		}
 
 		@Override

@@ -1,5 +1,6 @@
 package ceu.marten.services;
 
+
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -35,11 +36,21 @@ public class BiopluxService extends Service {
 	public static final int MSG_DATA = 4;
 	public static final int MSG_CONNECTION_ERROR = 5;
 	
+	public static final int ERROR_PROCESSING_FRAMES = 6;
+	public static final int ERROR_SAVING_RECORDING = 7;
+	
+	//Get 80 frames every 50 miliseconds
+	public static final int NUMBER_OF_FRAMES = 80; 
+	public static final long TIMER_TIME = 50L;
+	
+	//Used to synchronize threads
+	private static final Object writingLock = new Object();
+	private boolean isWriting;
+	
 	static Messenger client = null;
 	private NotificationManager notificationManager;
 	private Timer timer = new Timer();
-	private boolean isWriting;
-	private boolean connectionError= false;
+	private boolean forceStopError= false;
 	private static DataManager dataManager;
 
 	private String recordingName;
@@ -83,38 +94,55 @@ public class BiopluxService extends Service {
 	public IBinder onBind(Intent intent) {
 		getInfoFromActivity(intent);
 		samplingCounter=0;
-		frames = new Device.Frame[80];
+		frames = new Device.Frame[NUMBER_OF_FRAMES];
 		for (int i = 0; i < frames.length; i++)
 			frames[i] = new Frame();
-		connectToBiopluxDevice();
-		dataManager = new DataManager(this, activeChannels, recordingName,
-				configuration);
-		showNotification(intent);
+		
+		if(connectToBiopluxDevice()){
+			dataManager = new DataManager(this, activeChannels, recordingName,
+					configuration);
+			showNotification(intent);
 
-		timer.schedule(new TimerTask() {
-			public void run() {
-				processFrames();
-			}
-		}, 0, 50L);
-
+			timer.schedule(new TimerTask() {
+				public void run() {
+					processFrames();
+				}
+			}, 0, TIMER_TIME);
+		}
+		
 		return mMessenger.getBinder();
 	}
 	
 	private void processFrames() {
-		isWriting = true;
-		getFrames(80);
+		
+		synchronized (writingLock) {
+			isWriting = true;
+		}
+		getFrames(NUMBER_OF_FRAMES);
+		loop:
 		for (Frame f : frames) {
-			dataManager.writeFramesToTmpFile(f);
+			if(!dataManager.writeFramesToTmpFile(f)){
+				sendErrorNotificationToActivity(ERROR_PROCESSING_FRAMES);
+				forceStopError = true;
+				stopService();
+				break loop;
+			}
 			if(samplingCounter++ == samplingFrames){
 				try {
 					sendGraphDataToActivity(f.an_in);
 					samplingCounter = 0;
 				} catch (Throwable t) {
 					Log.e(TAG, "error processing frames", t);
+					sendErrorNotificationToActivity(ERROR_PROCESSING_FRAMES);
+					forceStopError = true;
+					stopService();
 				}
 			}	
 		}
-		isWriting = false;
+		synchronized (writingLock) {
+			isWriting = false;
+		}
+		
 	}
 
 	private void getFrames(int nFrames) {
@@ -123,7 +151,7 @@ public class BiopluxService extends Service {
 		} catch (BPException e) {
 			Log.e(TAG, "exception getting frames", e);
 			sendErrorNotificationToActivity(e.code);
-			connectionError = true;
+			forceStopError = true;
 			stopService();
 		}
 	}
@@ -136,7 +164,7 @@ public class BiopluxService extends Service {
 		samplingFrames = configuration.getReceptionFrequency()/configuration.getSamplingFrequency();
 	}
 
-	private void connectToBiopluxDevice() {
+	private boolean connectToBiopluxDevice() {
 
 		// BIOPLUX INITIALIZATION
 		try {
@@ -150,9 +178,18 @@ public class BiopluxService extends Service {
 				connection.Close();
 			} catch (BPException e1) {
 				Log.e(TAG, "bioplux close connection exception", e1);
+				sendErrorNotificationToActivity(e1.code);
+				forceStopError = true;
+				stopService();
+				return false;
 			}
 			Log.e(TAG, "bioplux connection exception", e);
+			sendErrorNotificationToActivity(e.code);
+			forceStopError = true;
+			stopService();
+			return false;
 		}
+		return true;
 	}
 
 	private void showNotification(Intent parentIntent) {
@@ -206,7 +243,7 @@ public class BiopluxService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		return START_NOT_STICKY; // run until explicitly stopped.
+		return START_NOT_STICKY; 
 	}
 	
 	private void stopService(){
@@ -221,20 +258,24 @@ public class BiopluxService extends Service {
 				Log.e(TAG, "Exception thread is sleeping", e2);
 			}
 		}
-		dataManager.closeWriters();
+		if(!dataManager.closeWriters())
+			sendErrorNotificationToActivity(ERROR_SAVING_RECORDING);
 		try {
 			connection.EndAcq();
 			connection.Close();
 		} catch (BPException e) {
 			Log.e(TAG, "error ending ACQ", e);
+			sendErrorNotificationToActivity(e.code);
 		}
 	}
 
 	@Override
 	public void onDestroy() {
-		if(!connectionError)
+		if(!forceStopError)
 			stopService();
-		dataManager.saveFiles();
+		
+		if(!dataManager.saveFiles())
+			sendErrorNotificationToActivity(ERROR_SAVING_RECORDING);
 		
 		Log.i(TAG, "service stopped");
 		super.onDestroy();

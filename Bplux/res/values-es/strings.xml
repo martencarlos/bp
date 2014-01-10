@@ -31,6 +31,10 @@
     <string name="ca_confirm_dialog_message">La configuración seleccionada será borrada del dispositivo</string>
     <string name="ca_confirm_dialog_positive">Confirmar</string>
     <string name="ca_confirm_dialog_negative">Cancelar</string>
+    <string name="ca_error_dialog_title">Ha habido un error</string>
+    <string name="ca_error_saving_configs_message">La configuración no se ha almacenado debido a un problema con la base de datos interna</string>
+    <string name="ca_error_loading_configs_message">No se han podido cargar las configuraciones de la base de datos interna</string>
+    <string name="ca_error_loading_recordings_message">No se han podido cargar las grabaciones de la base de datos interna</string>
     
     <!-- CONFIGURATION LIST ADAPTER -->
     <string name="cl_active">Activos</string>
@@ -47,6 +51,8 @@
     <string name="ra_confirm_dialog_message">La grabación será borrada</string>
     <string name="ra_confirm_dialog_positive">Confirmar</string>
     <string name="ra_confirm_dialog_negative">Cancelar</string>
+    <string name="ra_error_message_deleting_recording_from_database">Hubo un problema al borrar la grabación de la base de datos</string>
+    <string name="ra_error_message_deleting_recording_from_filesystem">Hubo un problema al borrar la grabación de la memoria interna de su dispositivo</string>
     
     <!-- NEW CONFIGURATION ACTIVITY -->
     <string name="nc_header_title">Nueva configuración</string>
@@ -117,6 +123,8 @@
     <string name="bp_device_not_found">El dispositivo Plux no se encuentra. Verifica que está al alcance, encendido y su batería esta bien (luz roja está apagada)</string>
     <string name="bp_contacting_device">Se ha perdido la comunicación con el dispositivo Plux. Verifica que está al alcance, encendido y su batería esta bien (luz roja está apagada)</string>
     <string name="bp_port_could_not_be_opened">El puerto de comunicación no existe o está siendo usado</string>
+    <string name="bp_error_processing_frames">Hubo un error procesando las muestras</string>
+    <string name="bp_error_saving_recording">Hubo un error mientras se almacenaba la grabación</string>
     <string name="bp_positive_button">Entendido</string>
     
      <!-- BIOPLUX SERVICE -->
