@@ -389,7 +389,6 @@ public class NewConfigurationActivity extends Activity {
 							newConfiguration
 									.setChannelsToDisplay(channelsToDisplayArray);
 						}
-
 					}
 
 					private void printChannelsToDisplay(
@@ -402,7 +401,6 @@ public class NewConfigurationActivity extends Activity {
 										.get(i).toString().charAt(channels
 										.get(i).toString().length() - 1)) - 1);
 								channelsToDisplayArray[in] = true;
-
 								si = si
 										+ "\n\t"
 										+ channels.get(i).toString()
@@ -412,7 +410,6 @@ public class NewConfigurationActivity extends Activity {
 							}
 						}
 						channelsToDisplay.append(si);
-
 					}
 
 				});

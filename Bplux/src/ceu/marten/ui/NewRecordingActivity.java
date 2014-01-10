@@ -642,6 +642,15 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			isServiceBounded = false;
 		}
 	}
+	
+	public void zoomIn(View view){
+		for (int i = 0; i < graphs.length; i++)
+			graphs[i].getGraphView().zoomIn(300);
+	}
+	public void zoomOut(View view){
+		for (int i = 0; i < graphs.length; i++)
+			graphs[i].getGraphView().zoomOut(300);
+	}
 
 	@Override
 	protected void onDestroy() {

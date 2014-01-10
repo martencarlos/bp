@@ -40,7 +40,6 @@ public class ChannelsToDisplayListAdapter extends ArrayAdapter<String>
 		if (rowView == null) {
 			rowView = (ViewGroup) LayoutInflater.from(context).inflate(
 					R.layout.li_channels_to_display, parent, false);
-
 		}
 
 		// GET VIEWS

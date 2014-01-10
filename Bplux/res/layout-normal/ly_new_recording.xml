@@ -74,10 +74,12 @@
             android:src="?android:attr/listDivider" />
 
         <LinearLayout
-            android:id="@+id/buttons"
+           android:id="@+id/buttons"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:paddingBottom="2dp"
             android:paddingTop="5dip" >
 
@@ -91,6 +93,24 @@
                 android:text="@string/nr_button_start"
                 android:textSize="16sp"
                 android:textColor="@android:color/white" />
+            
+            <ImageButton
+                android:contentDescription="@string/divider_image_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:onClick="zoomOut"
+                android:background="@drawable/button_zoom_out"
+                android:src="@drawable/zoom_out"/>
+            
+            <ImageButton
+                android:contentDescription="@string/divider_image_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:onClick="zoomIn"
+                android:background="@drawable/button_zoom_in"
+                android:src="@drawable/zoom_in"/>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
