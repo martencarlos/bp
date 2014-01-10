@@ -497,7 +497,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 							startRecording();
 						}
 				    }
-
 				});
 			}
 		});

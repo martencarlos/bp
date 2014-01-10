@@ -125,7 +125,6 @@ public class BiopluxService extends Service {
 			sendErrorNotificationToActivity(e.code);
 			connectionError = true;
 			stopService();
-			
 		}
 	}
 
@@ -147,6 +146,11 @@ public class BiopluxService extends Service {
 					configuration.getActiveChannelsAsInteger(),
 					configuration.getNumberOfBits());
 		} catch (BPException e) {
+			try {
+				connection.Close();
+			} catch (BPException e1) {
+				Log.e(TAG, "bioplux close connection exception", e1);
+			}
 			Log.e(TAG, "bioplux connection exception", e);
 		}
 	}
