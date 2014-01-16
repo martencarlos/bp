@@ -21,21 +21,37 @@ public class ChannelsToDisplayListAdapter extends ArrayAdapter<String>
 	private ArrayList<String> sensors;
 	private boolean[] checkedStatus;
 
+	//CONSTRUCTOR 
 	public ChannelsToDisplayListAdapter(Context context,
-			ArrayList<String> channels, ArrayList<String> sensors) {
+			ArrayList<String> channels, ArrayList<String> sensors, ArrayList<Integer> channelsToDisplayChecked) {
 		super(context, 0, 0, channels);
 		this.context = context;
 		this.channels = channels;
 		this.sensors = sensors;
 		this.checkedStatus = new boolean[channels.size()];
 		this.channelsToDisplay = new boolean[channels.size()];
+		
+		//INIT ALL CHANNELSTODISPLAY VARIABLE TO FALSE
 		for (int i = 0; i < channelsToDisplay.length; i++)
 			channelsToDisplay[i] = false;
+		
+		//CHECK ALL THE CHECKBOXES THAT WERE CHECKED BEFORE
+		if(channelsToDisplayChecked!=null){
+			for(int i=0;i < channelsToDisplayChecked.size();i++){
+				for(int j=0; j< channels.size();j++)
+					if(channels.get(j).contains(String.valueOf(channelsToDisplayChecked.get(i)))){
+						checkedStatus[j]=true;
+						channelsToDisplay[j]=true;
+					}
+			}
+		}
+		
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 
+		//INFLATE ROW VIEW XML
 		ViewGroup rowView = (ViewGroup) convertView;
 		if (rowView == null) {
 			rowView = (ViewGroup) LayoutInflater.from(context).inflate(

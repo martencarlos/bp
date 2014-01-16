@@ -53,6 +53,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static final String TAG = NewRecordingActivity.class.getName();
 	private static int maxDataCount = 0;
 
+	//UI COMPONENTS
 	private TextView uiRecordingName, uiConfigurationName, uiNumberOfBits,
 			uiReceptionFrequency, uiSamplingFrequency, uiActiveChannels,
 			uiMacAddress;
@@ -66,6 +67,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private String duration;
 	private Bundle extras;
 	
+	//ERROR MESSAGES
 	private static String errorMessageAddress;
 	private static String errorMessageDevice;
 	private static String errorMessageContacting;
@@ -74,6 +76,11 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static String errorMessageProcessingFrames;
 	private static String errorMessageSavingRecording;
 
+	//DIALOGS
+	private AlertDialog backDialog, bluetoothConnectionDialog, overwriteDialog;
+	private static AlertDialog connectionErrorDialog;
+	private ProgressDialog savingDialog;
+	
 	private Messenger mService = null;
 	private static Graph[] graphs;
 	private static double lastXValue;
@@ -83,10 +90,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private boolean connectionError;
 	private int bpErrorCode;
 	private Context context = this;
-	private AlertDialog backDialog;
-	private AlertDialog bluetoothConnectionDialog;
-	private static AlertDialog connectionErrorDialog;
-	private AlertDialog overwriteDialog;
 	private LayoutInflater inflater;
 	private final Messenger mActivity = new Messenger(new IncomingHandler());
 
@@ -371,9 +374,46 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 								} catch (SQLException e) {
 									Log.e(TAG, "saving recording exception", e);
 								}
+								
+								//RESET GRAPHS AND GRAPH VIEWS
+								LayoutParams graphParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+										Integer.parseInt((getResources()
+												.getString(R.string.graph_height))));
+								LayoutParams detailParameters = new LayoutParams(LayoutParams.MATCH_PARENT,
+										LayoutParams.WRAP_CONTENT);
+								
+								View graphsView = findViewById(R.id.nr_graphs);
+								((ViewGroup) graphsView).removeAllViews();
+								for (int i = 0; i < graphs.length; i++) {
+									graphs[i] = new Graph(context,
+											getString(R.string.nc_dialog_channel)
+													+ " "
+													+ currentConfiguration.getChannelsToDisplay()
+															.get(i).toString());
+									LinearLayout graph = (LinearLayout) inflater.inflate(
+											R.layout.in_ly_graph, null);
+									((ViewGroup) graph).addView(graphs[i].getGraphView());
+									((ViewGroup) graphsView).addView(graph, graphParams);
+								}
+							
+								if (currentConfiguration
+										.getNumberOfChannelsToDisplay() == 1) {
+									View details = inflater.inflate(R.layout.in_ly_graph_details, null);
+									((ViewGroup) graphsView).addView(details, detailParameters);
+									findDetailViews();
 
-								for (Graph graphTmp : graphs)
-									graphTmp.getGraphView().redrawAll();
+									uiConfigurationName.setText(currentConfiguration.getName());
+									uiReceptionFrequency.setText(String.valueOf(currentConfiguration
+											.getReceptionFrequency()) + " Hz");
+									uiSamplingFrequency.setText(String.valueOf(currentConfiguration
+											.getSamplingFrequency()) + " Hz");
+									uiNumberOfBits.setText(String.valueOf(currentConfiguration
+											.getNumberOfBits()) + " bits");
+									uiMacAddress.setText(currentConfiguration.getMacAddress());
+									uiActiveChannels.setText(currentConfiguration
+											.getActiveChannelsAsString());
+								}
+									
 								startRecording();
 							}
 						});
@@ -609,6 +649,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private class saveRecording extends AsyncTask<String, Void, String> {
 
+		
 		@Override
 		protected String doInBackground(String... params) {
 			stopChronometer();
@@ -617,17 +658,24 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			unbindOfService();
 			stopService(new Intent(NewRecordingActivity.this,
 					BiopluxService.class));
+			
 			return "executed";
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
+			savingDialog.dismiss();
 			displayInfoToast(getString(R.string.nr_info_rec_saved));
 		}
 
 		@Override
 		protected void onPreExecute() {
-
+			savingDialog = new ProgressDialog(context);
+			savingDialog.setTitle("Processing...");
+			savingDialog.setMessage("Please wait.");
+			savingDialog.setCancelable(false);
+			savingDialog.setIndeterminate(true);
+			savingDialog.show();
 		}
 
 		@Override

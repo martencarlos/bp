@@ -119,6 +119,7 @@ public class BiopluxService extends Service {
 			isWriting = true;
 		}
 		getFrames(NUMBER_OF_FRAMES);
+		//getFrames(samplingFrames);
 		loop:
 		for (Frame f : frames) {
 			if(!dataManager.writeFramesToTmpFile(f)){
@@ -229,9 +230,8 @@ public class BiopluxService extends Service {
 			Log.e(TAG, "client is dead. Client removed", e);
 			client = null;
 		}
-
 	}
-	
+
 	private void sendErrorNotificationToActivity(int errorCode) {
 		try {
 			client.send(Message.obtain(null, MSG_CONNECTION_ERROR, errorCode, 0));

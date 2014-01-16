@@ -17,11 +17,11 @@ public class DeviceConfiguration implements Serializable {
 
 	private static final long serialVersionUID = -4487071327586521666L;
 	private static final String splitPattern = "\\*\\.\\*";
-	
+
 	@DatabaseField(generatedId = true)
 	private Integer id;
 
-	@DatabaseField(unique=true, canBeNull = true)
+	@DatabaseField(unique = true, canBeNull = true)
 	private String name = null;
 	@DatabaseField(canBeNull = true)
 	private String macAddress = null;
@@ -114,16 +114,21 @@ public class DeviceConfiguration implements Serializable {
 	}
 
 	public ArrayList<Integer> getChannelsToDisplay() {
-		String entire = new String(this.channelsToDisplay);
-		String[] channelsToDisplay = entire.split(splitPattern);
-		ArrayList<Integer> result = new ArrayList<Integer>();
-		int channelNumber = 1;
-		for (String s : channelsToDisplay) {
-			if (s.equalsIgnoreCase("true"))
-				result.add(channelNumber);
-			channelNumber++;
+		if (this.channelsToDisplay == null)
+			return null;
+		else {
+			String entire = new String(this.channelsToDisplay);
+			String[] channelsToDisplay = entire.split(splitPattern);
+			ArrayList<Integer> result = new ArrayList<Integer>();
+			int channelNumber = 1;
+			for (String s : channelsToDisplay) {
+				if (s.equalsIgnoreCase("true"))
+					result.add(channelNumber);
+				channelNumber++;
+			}
+			return result;
 		}
-		return result;
+
 	}
 
 	public int getNumberOfChannelsToDisplay() {
@@ -223,7 +228,7 @@ public class DeviceConfiguration implements Serializable {
 
 	@Override
 	public String toString() {
-		return "name " + name + "; " + "freq " + receptionFrequency + "; " + "nBits "
-				+ numberOfBits + "; " + "\n Active channels ";
+		return "name " + name + "; " + "freq " + receptionFrequency + "; "
+				+ "nBits " + numberOfBits + "; " + "\n Active channels ";
 	}
 }

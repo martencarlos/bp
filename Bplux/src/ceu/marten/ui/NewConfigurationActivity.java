@@ -351,7 +351,7 @@ public class NewConfigurationActivity extends Activity {
 		}
 
 		final ChannelsToDisplayListAdapter channelsToDisplayListAdapter = new ChannelsToDisplayListAdapter(
-				this, channels, sensors);
+				this, channels, sensors, newConfiguration.getChannelsToDisplay());
 		AlertDialog.Builder channelsToDisplayBuilder;
 		AlertDialog channelsToDisplayDialog;
 
@@ -559,22 +559,11 @@ public class NewConfigurationActivity extends Activity {
 	}
 
 	public void onClickedChannelDisplayPickDialog(View view) {
-		String[] channelsActivated = newConfiguration
-				.getActiveChannelsWithNullFill();
-		if (channelsActivated != null) {
-			int counter = 0;
-			for (int i = 0; i < channelsActivated.length; i++) {
-				if (channelsActivated[i].compareTo("null") != 0) {
-					counter++;
-				}
-			}
-
-			if (counter != 0)
-				setupChannelsToDisplay();
+		//CHECK IF CHANNELS TO ACTIVATE ARE FILLED ALREADY
+		if(newConfiguration.getActiveChannelsWithNullFill() !=null && newConfiguration.getNumberOfChannelsActivated() !=0)
+			setupChannelsToDisplay();
 			else
 				displayErrorToast(getString(R.string.nc_error_button_channels_to_display));
-		} else
-			displayErrorToast(getString(R.string.nc_error_button_channels_to_display));
 	}
 
 	private boolean validateFields() {
