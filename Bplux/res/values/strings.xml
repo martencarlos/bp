@@ -56,6 +56,9 @@
     <string name="ra_confirm_dialog_negative">Cancel</string>
     <string name="ra_error_message_deleting_recording_from_database">There was a problem deleting the recording from the data base</string>
     <string name="ra_error_message_deleting_recording_from_filesystem">There was a problem deleting the recording from the file system</string>
+    <string name="ra_display_path_dialog_title">The recording file is too big</string>
+    <string name="ra_display_path_dialog_message">The file size is larger than 20MB and therefore cannot be sent via email.\nTo transfer the file, connect the device via usb to a pc and go to Bioplux folder</string>
+    
     
     <!-- NEW CONFIGURATION ACTIVITY -->
     <string name="nc_header_title">New configuration</string>

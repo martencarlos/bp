@@ -10,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -27,25 +26,23 @@ public class DataManager {
 	
 	private static final String TAG = DataManager.class.getName();
 	
-	private String formatFileCollectedData = "%-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-4s%n";
+	private String channelFormat = "%-4s ";
 	private OutputStreamWriter outStreamWriter;
 	private BufferedWriter bufferedWriter;
-	private short[] frameTmp;
 	private int frameCounter;
 	
 	private Context context;
-	private ArrayList<Integer> activeChannels;
 	private String recordingName;
 	private DeviceConfiguration configuration;
+	private int numberOfChannelsActivated;
 	private String duration;
 	
 	
-	public DataManager(Context serviceContext, ArrayList<Integer> _activeChannels,String _recordingName, DeviceConfiguration _configuration) {
+	public DataManager(Context serviceContext,String _recordingName, DeviceConfiguration _configuration) {
 		this.context = serviceContext;
-		this.activeChannels = _activeChannels;
 		this.recordingName = _recordingName;
 		this.configuration = _configuration;
-		frameTmp = new short[8];
+		this.numberOfChannelsActivated = configuration.getNumberOfChannelsActivated();
 		frameCounter = 0;
 		
 		try {
@@ -61,22 +58,27 @@ public class DataManager {
 		this.context = context;  
 	}
 	
-
+	//WRITES A ROW ON THE TEXT FILE THAT WILL GO AFTER THE HEADER
 	public boolean writeFramesToTmpFile(Frame f) {
 		frameCounter++;
-		int index = 0;
-		for (int i = 0; i < activeChannels.size(); i++) {
-			index = activeChannels.get(i) - 1;
-			frameTmp[index] = f.an_in[i];
-		}
+
 		try {
-			bufferedWriter.write(String.format(formatFileCollectedData, frameCounter,
-					String.valueOf(frameTmp[0]), String.valueOf(frameTmp[1]),
-					String.valueOf(frameTmp[2]), String.valueOf(frameTmp[3]),
-					String.valueOf(frameTmp[4]), String.valueOf(frameTmp[5]),
-					String.valueOf(frameTmp[6]), String.valueOf(frameTmp[7])));
+			//WRITE THE FIRST COLUMN (THE FRAME COUNTER)
+			bufferedWriter.write(String.format(channelFormat, frameCounter));
+			//WRITE THE DATA OF ACTIVE CHANNELS ONLY
+			for(int i=0; i< numberOfChannelsActivated;i++){
+				bufferedWriter.write(String.format(channelFormat, f.an_in[i]));
+			}
+			//WRITE A NEW LINE
+			bufferedWriter.write("\n");
+			
 		} catch (IOException e) {
 			Log.e(TAG, "Exception while writing frame row", e);
+			try {
+				bufferedWriter.close();
+			} catch (IOException e1) {
+				Log.e(TAG, "Exception while closing bufferedWriter", e1);
+			}
 			return false;
 		}
 		return true;
@@ -152,8 +154,11 @@ public class DataManager {
 					+ " seconds"));
 			out.write(String.format("%-10s %-14s%n%n", "# "+context.getString(R.string.bs_header_active_channels),
 					configuration.getActiveChannelsAsString()));
-			out.write(String.format(formatFileCollectedData, "#num", "ch 1",
-					"ch 2", "ch 3", "ch 4", "ch 5", "ch 6", "ch 7", "ch 8"));
+			
+			out.write("#num ");
+			for(int i: configuration.getActiveChannels())
+				out.write("ch "+i+" ");
+			out.write("\n");
 			out.flush();
 			out.close();
 

@@ -115,6 +115,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 				inflater.inflate(R.layout.dialog_recording_name_content, null))
 				.setCustomTitle(customTitleView);
 		recordingNameDialog = builder.create();
+		recordingNameDialog.setCanceledOnTouchOutside(false);
 
 	}
 

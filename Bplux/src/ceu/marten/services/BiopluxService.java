@@ -1,7 +1,6 @@
 package ceu.marten.services;
 
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -57,7 +56,6 @@ public class BiopluxService extends Service {
 	private int samplingFrames;
 	private int samplingCounter;
 	private DeviceConfiguration configuration;
-	private ArrayList<Integer> activeChannels;
 
 	private Device connection;
 	private Device.Frame[] frames;
@@ -99,7 +97,7 @@ public class BiopluxService extends Service {
 			frames[i] = new Frame();
 		
 		if(connectToBiopluxDevice()){
-			dataManager = new DataManager(this, activeChannels, recordingName,
+			dataManager = new DataManager(this, recordingName,
 					configuration);
 			showNotification(intent);
 
@@ -161,7 +159,6 @@ public class BiopluxService extends Service {
 		recordingName = intent.getStringExtra("recordingName").toString();
 		configuration = (DeviceConfiguration) intent
 				.getSerializableExtra("configSelected");
-		activeChannels = configuration.getActiveChannels();
 		samplingFrames = configuration.getReceptionFrequency()/configuration.getSamplingFrequency();
 	}
 

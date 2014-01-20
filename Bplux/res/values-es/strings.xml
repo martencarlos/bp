@@ -53,6 +53,9 @@
     <string name="ra_confirm_dialog_negative">Cancelar</string>
     <string name="ra_error_message_deleting_recording_from_database">Hubo un problema al borrar la grabación de la base de datos</string>
     <string name="ra_error_message_deleting_recording_from_filesystem">Hubo un problema al borrar la grabación de la memoria interna de su dispositivo</string>
+    <string name="ra_display_path_dialog_title">El tamaño de la grabación es muy grande</string>
+    <string name="ra_display_path_dialog_message">Su tamaño es mayor que 20MB y no puede ser enviado por email.\nPara transferir la grabación, conecte el dispositivo con cable USB al PC y acceda a la carpeta Bioplux</string>
+    
     
     <!-- NEW CONFIGURATION ACTIVITY -->
     <string name="nc_header_title">Nueva configuración</string>

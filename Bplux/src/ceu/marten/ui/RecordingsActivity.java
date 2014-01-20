@@ -150,6 +150,29 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		errorDialog = builder.create();
 		errorDialog.setCanceledOnTouchOutside(false);
 	}
+	
+	private void showFilePathDialog() {
+		
+		//FILE PATH DIALOG BUILDER
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		TextView customTitleView = (TextView) inflater.inflate(
+				R.layout.dialog_custom_title, null);
+		customTitleView.setText(R.string.ra_display_path_dialog_title);
+		customTitleView.setBackgroundColor(getResources().getColor(
+				R.color.error_dialog));
+
+		builder.setCustomTitle(customTitleView)
+				.setMessage(R.string.ra_display_path_dialog_message)
+				.setPositiveButton(getString(R.string.bp_positive_button),
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								//JUST CLOSES THE DIALOG
+							}
+						});
+		errorDialog = builder.create();
+		errorDialog.setCanceledOnTouchOutside(false);
+		errorDialog.show();
+	}
 
 	private void setupRecordingListView() {
 
@@ -159,7 +182,10 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 					int position, long id) {
 				recordingName = ((TextView) v.findViewById(R.id.dli_name))
 						.getText().toString();
-				sendDataViaEmail();
+				if(fileSizeBiggerThan20Mb())
+					showFilePathDialog();
+				else
+					sendDataViaEmail();
 			}
 		};
 		lvRecordings = (ListView) findViewById(R.id.lvSessions);
@@ -180,6 +206,17 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		startActivity(Intent.createChooser(i, getString(R.string.ra_dialog_email)));
 
 	}
+	
+	public boolean fileSizeBiggerThan20Mb() {
+		File root = Environment.getExternalStorageDirectory();
+		String appDirectory="/Bioplux/";
+		File zipFile = new File(root + appDirectory + recordingName + ".zip");
+		if((zipFile.length()/1024d)/1024d > 20.0d)
+			return true;
+		else
+			return false;
+	}
+	
 
 	private void displayInfoToast(String messageToDisplay) {
 		Toast infoToast = new Toast(getApplicationContext());
