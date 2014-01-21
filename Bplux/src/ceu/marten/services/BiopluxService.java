@@ -53,8 +53,8 @@ public class BiopluxService extends Service {
 	private static DataManager dataManager;
 
 	private String recordingName;
-	private int samplingFrames;
-	private int samplingCounter;
+	private double samplingFrames;
+	private double samplingCounter;
 	private DeviceConfiguration configuration;
 
 	private Device connection;
@@ -126,10 +126,10 @@ public class BiopluxService extends Service {
 				stopService();
 				break loop;
 			}
-			if(samplingCounter++ == samplingFrames){
+			if(samplingCounter++ >= samplingFrames){
 				try {
 					sendGraphDataToActivity(f.an_in);
-					samplingCounter = 0;
+					samplingCounter -= samplingFrames;
 				} catch (Throwable t) {
 					Log.e(TAG, "error processing frames", t);
 					sendErrorNotificationToActivity(ERROR_PROCESSING_FRAMES);

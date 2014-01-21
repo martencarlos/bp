@@ -132,11 +132,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	static void appendDataToGraphs(short[] data) {
 		if(!serviceError){
 			lastXValue++;
-			for (int i = 0; i < graphs.length; i++)
+			
+			for (int i = 0; i < graphs.length; i++) {
 				graphs[i].getSerie().appendData(
-						new GraphViewData((period * lastXValue),
+						new GraphViewData(lastXValue * period,
 								data[currentConfiguration.getChannelsToDisplay()
 										.get(i) - 1]), true, maxDataCount);
+			}
 		}
 	}
 
@@ -172,8 +174,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		recordingName = extras.getString("recordingName").toString();
 
 		// INIT LOCAL VARIABLES
-		int samplingFrames = currentConfiguration.getReceptionFrequency()
-				/ currentConfiguration.getSamplingFrequency();
 		int numberOfChannelsToDisplay = currentConfiguration
 				.getNumberOfChannelsToDisplay();
 		LayoutParams graphParams, detailParameters;
@@ -191,8 +191,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				Context.LAYOUT_INFLATER_SERVICE);
 		maxDataCount = Integer.parseInt((getResources()
 				.getString(R.string.graph_max_data_count)));
-		period = samplingFrames * 1000d
-				/ currentConfiguration.getReceptionFrequency();
+		period = currentConfiguration.getReceptionFrequency()
+				/ currentConfiguration.getSamplingFrequency();
 		graphs = new Graph[numberOfChannelsToDisplay];
 		isChronometerRunning = false;
 		isServiceBounded = false;
