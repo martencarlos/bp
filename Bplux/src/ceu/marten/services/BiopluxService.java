@@ -53,8 +53,8 @@ public class BiopluxService extends Service {
 	private static DataManager dataManager;
 
 	private String recordingName;
-	private double samplingFrames;
-	private double samplingCounter;
+	private long samplingFrames;
+	private long samplingCounter;
 	private DeviceConfiguration configuration;
 
 	private Device connection;
@@ -116,8 +116,9 @@ public class BiopluxService extends Service {
 		synchronized (writingLock) {
 			isWriting = true;
 		}
+	
 		getFrames(NUMBER_OF_FRAMES);
-		//getFrames(samplingFrames);
+		
 		loop:
 		for (Frame f : frames) {
 			if(!dataManager.writeFramesToTmpFile(f)){
@@ -127,21 +128,13 @@ public class BiopluxService extends Service {
 				break loop;
 			}
 			if(samplingCounter++ >= samplingFrames){
-				try {
-					sendGraphDataToActivity(f.an_in);
-					samplingCounter -= samplingFrames;
-				} catch (Throwable t) {
-					Log.e(TAG, "error processing frames", t);
-					sendErrorNotificationToActivity(ERROR_PROCESSING_FRAMES);
-					forceStopError = true;
-					stopService();
-				}
+				sendGraphDataToActivity(f.an_in);
+				samplingCounter -= samplingFrames;
 			}	
 		}
 		synchronized (writingLock) {
 			isWriting = false;
 		}
-		
 	}
 
 	private void getFrames(int nFrames) {
@@ -167,7 +160,6 @@ public class BiopluxService extends Service {
 		// BIOPLUX INITIALIZATION
 		try {
 			connection = Device.Create(configuration.getMacAddress());
-			// MAC EXAMPLE 00:07:80:4C:2A:FB
 			connection.BeginAcq(configuration.getReceptionFrequency(),
 					configuration.getActiveChannelsAsInteger(),
 					configuration.getNumberOfBits());
@@ -216,7 +208,6 @@ public class BiopluxService extends Service {
 	}
 
 	private void sendGraphDataToActivity(short[] data) {
-
 		Bundle b = new Bundle();
         b.putShortArray("frame", data);
         Message message = Message.obtain(null, MSG_DATA);
@@ -225,6 +216,8 @@ public class BiopluxService extends Service {
 			client.send(message);
 		} catch (RemoteException e) {
 			Log.e(TAG, "client is dead. Client removed", e);
+			forceStopError = true;
+			stopService();
 			client = null;
 		}
 	}
@@ -235,7 +228,6 @@ public class BiopluxService extends Service {
 		} catch (RemoteException e) {
 			Log.e(TAG, "Exception sending error message to activity", e);
 		}
-
 	}
 
 	@Override

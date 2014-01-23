@@ -1,10 +1,8 @@
 package ceu.marten.ui;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.graphics.Paint.Align;
@@ -56,16 +54,19 @@ public class Graph implements Serializable {
 			@Override
 			public String formatLabel(double value, boolean isValueX) {
 				if (isValueX) {
-                    if (value < 0) {
-                        return "00:00:00";
-                    }
-                        
-					// converts the current time from milliseconds into the desired string format (HH:mm:ss) 
-					Date currentTime = new Date((long) value);
-					DateFormat df = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-					String formattedTime = df.format(currentTime);
-					
-					return formattedTime;
+					if (value < 0)
+						return "00:00:00";
+					String strValue = String.format(
+							Locale.getDefault(),
+							"%02d:%02d:%02d",
+							TimeUnit.MILLISECONDS.toHours((long) value),
+							TimeUnit.MILLISECONDS.toMinutes((long) value),
+							TimeUnit.MILLISECONDS.toSeconds((long) value)
+									- TimeUnit.MINUTES
+											.toSeconds(TimeUnit.MILLISECONDS
+													.toMinutes((long) value)));
+
+					return strValue;
 				} else
 					return String.valueOf(((Double) value).intValue()); // vertical
 																		// labels

@@ -81,10 +81,10 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static AlertDialog connectionErrorDialog;
 	private ProgressDialog savingDialog;
 	
+	private static long startTime = 0;
 	private Messenger mService = null;
 	private static Graph[] graphs;
-	private static double lastXValue;
-	private static double period;
+	private static long timeValue;
 	private boolean isServiceBounded;
 	private static boolean serviceError = false;
 	private boolean connectionError;
@@ -131,11 +131,10 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	static void appendDataToGraphs(short[] data) {
 		if(!serviceError){
-			lastXValue++;
-			
+			timeValue = SystemClock.elapsedRealtime() - startTime;
 			for (int i = 0; i < graphs.length; i++) {
 				graphs[i].getSerie().appendData(
-						new GraphViewData(lastXValue * period,
+						new GraphViewData(timeValue,
 								data[currentConfiguration.getChannelsToDisplay()
 										.get(i) - 1]), true, maxDataCount);
 			}
@@ -187,17 +186,14 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		errorMessagePort = getResources().getString(R.string.bp_port_could_not_be_opened);
 		errorMessageProcessingFrames = getResources().getString(R.string.bp_error_processing_frames);
 		errorMessageSavingRecording = getResources().getString(R.string.bp_error_saving_recording);
-		inflater = (LayoutInflater) getApplicationContext().getSystemService(
-				Context.LAYOUT_INFLATER_SERVICE);
+		inflater = (LayoutInflater) getLayoutInflater();
 		maxDataCount = Integer.parseInt((getResources()
 				.getString(R.string.graph_max_data_count)));
-		period = currentConfiguration.getReceptionFrequency()
-				/ currentConfiguration.getSamplingFrequency();
 		graphs = new Graph[numberOfChannelsToDisplay];
 		isChronometerRunning = false;
 		isServiceBounded = false;
 		bpErrorCode = 0;
-		lastXValue = 0;
+		timeValue = 0;
 		
 
 		// INIT LAYOUT
@@ -346,7 +342,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 					public void onClick(DialogInterface dialog, int id) {
 						if(serviceError){
 							new saveRecording().execute("");
-							uiStartStopbutton.setText(getString(R.string.nr_button_start));
+							Intent backIntent = new Intent(context,
+									ConfigurationsActivity.class);
+							startActivity(backIntent);
+							overridePendingTransition(R.anim.slide_in_left,
+									R.anim.slide_out_right);
+							finish();
 						}
 						
 					}
@@ -366,7 +367,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 						getString(R.string.nr_overwrite_dialog_positive_button),
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
-								lastXValue = 0;
+								timeValue = 0;
 								try {
 									Dao<Recording, Integer> dao = getHelper()
 											.getRecordingDao();
@@ -451,7 +452,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		} else
 			extras.putLong("chronometerBase", 0);
 		extras.putSerializable("recording", recording);
-		extras.putDouble("xcounter", lastXValue);
+		extras.putLong("xcounter", timeValue);
 		savedInstanceState.putAll(extras);
 	}
 
@@ -469,7 +470,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			isChronometerRunning = true;
 		}
 		recording = (Recording) savedInstanceState.getSerializable("recording");
-		lastXValue = savedInstanceState.getDouble("xcounter");
+		timeValue = savedInstanceState.getLong("xcounter");
 		currentConfiguration = (DeviceConfiguration) savedInstanceState
 				.getSerializable("configSelected");
 		recordingName = savedInstanceState.getString("recordingName")
@@ -486,9 +487,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	public void onClickedStartStop(View view) {
-		if (!isServiceRunning() && lastXValue == 0) {
+		if (!isServiceRunning() && timeValue == 0) {
 			checkBluetoothConnection();
-		} else if (!isServiceRunning() && lastXValue != 0) {
+		} else if (!isServiceRunning() && timeValue != 0) {
 			overwriteDialog.show();
 		} else if (isServiceRunning()) {
 			new saveRecording().execute("");
@@ -507,18 +508,20 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private boolean checkBluetoothConnection() {
 		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter
-				.getDefaultAdapter();
-		final ProgressDialog progress;
+					.getDefaultAdapter();
+			final ProgressDialog progress;
+		if(currentConfiguration.getMacAddress().compareTo("test")!=0){
+			if (mBluetoothAdapter == null) {
+				displayInfoToast("bluetooth not supported");
+				return false;
+			}
+			if (!mBluetoothAdapter.isEnabled()){
+				bluetoothConnectionDialog.setMessage(getResources().getString(R.string.nr_bluetooth_dialog_message));
+				bluetoothConnectionDialog.show();
+				return false;
+			}
+		}
 		
-		if (mBluetoothAdapter == null) {
-			displayInfoToast("bluetooth not supported");
-			return false;
-		}
-		if (!mBluetoothAdapter.isEnabled()){
-			bluetoothConnectionDialog.setMessage(getResources().getString(R.string.nr_bluetooth_dialog_message));
-			bluetoothConnectionDialog.show();
-			return false;
-		}
 		progress = ProgressDialog.show(this,getResources().getString(R.string.nr_progress_dialog_title),getResources().getString(R.string.nr_progress_dialog_message), true);
 		Thread connectionThread = new Thread(new Runnable() {
 			@Override
@@ -545,9 +548,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			}
 		});
 		
-		if(mBluetoothAdapter.isEnabled() && !isServiceRunning() && lastXValue == 0) {
+		if(currentConfiguration.getMacAddress().compareTo("test")==0 && !isServiceRunning() && timeValue == 0)
+			connectionThread.start();
+		else if(mBluetoothAdapter.isEnabled() && !isServiceRunning() && timeValue == 0) {
 			connectionThread.start();
 		}
+		
 		return false;
 	}
 	
@@ -582,7 +588,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	private void displayInfoToast(String messageToDisplay) {
-		Toast infoToast = new Toast(getApplicationContext());
+		Toast infoToast = new Toast(context);
 
 		LayoutInflater inflater = getLayoutInflater();
 		View toastView = inflater.inflate(R.layout.toast_info, null);
@@ -595,6 +601,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private void startChronometer() {
 		chronometer.setBase(SystemClock.elapsedRealtime());
+		startTime = SystemClock.elapsedRealtime();
 		chronometer.start();
 		isChronometerRunning = true;
 	}
