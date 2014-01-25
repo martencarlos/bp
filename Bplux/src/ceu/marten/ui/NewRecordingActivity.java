@@ -81,10 +81,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static AlertDialog connectionErrorDialog;
 	private ProgressDialog savingDialog;
 	
-	private static long startTime = 0;
 	private Messenger mService = null;
 	private static Graph[] graphs;
-	private static long timeValue;
+	private static double timeValue;
 	private boolean isServiceBounded;
 	private static boolean serviceError = false;
 	private boolean connectionError;
@@ -131,12 +130,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	static void appendDataToGraphs(short[] data) {
 		if(!serviceError){
-			timeValue = SystemClock.elapsedRealtime() - startTime;
+			timeValue++;
 			for (int i = 0; i < graphs.length; i++) {
 				graphs[i].getSerie().appendData(
-						new GraphViewData(timeValue,
+						new GraphViewData(timeValue / currentConfiguration.getSamplingFrequency()*1000,
 								data[currentConfiguration.getChannelsToDisplay()
 										.get(i) - 1]), true, maxDataCount);
+				
 			}
 		}
 	}
@@ -452,7 +452,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		} else
 			extras.putLong("chronometerBase", 0);
 		extras.putSerializable("recording", recording);
-		extras.putLong("xcounter", timeValue);
+		extras.putDouble("xcounter", timeValue);
 		savedInstanceState.putAll(extras);
 	}
 
@@ -470,7 +470,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			isChronometerRunning = true;
 		}
 		recording = (Recording) savedInstanceState.getSerializable("recording");
-		timeValue = savedInstanceState.getLong("xcounter");
 		currentConfiguration = (DeviceConfiguration) savedInstanceState
 				.getSerializable("configSelected");
 		recordingName = savedInstanceState.getString("recordingName")
@@ -601,7 +600,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private void startChronometer() {
 		chronometer.setBase(SystemClock.elapsedRealtime());
-		startTime = SystemClock.elapsedRealtime();
 		chronometer.start();
 		isChronometerRunning = true;
 	}

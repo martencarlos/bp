@@ -53,8 +53,8 @@ public class BiopluxService extends Service {
 	private static DataManager dataManager;
 
 	private String recordingName;
-	private long samplingFrames;
-	private long samplingCounter;
+	private double samplingFrames;
+	private double samplingCounter;
 	private DeviceConfiguration configuration;
 
 	private Device connection;
@@ -116,7 +116,7 @@ public class BiopluxService extends Service {
 		synchronized (writingLock) {
 			isWriting = true;
 		}
-	
+		
 		getFrames(NUMBER_OF_FRAMES);
 		
 		loop:
@@ -152,7 +152,7 @@ public class BiopluxService extends Service {
 		recordingName = intent.getStringExtra("recordingName").toString();
 		configuration = (DeviceConfiguration) intent
 				.getSerializableExtra("configSelected");
-		samplingFrames = configuration.getReceptionFrequency()/configuration.getSamplingFrequency();
+		samplingFrames = (double)configuration.getReceptionFrequency()/configuration.getSamplingFrequency();
 	}
 
 	private boolean connectToBiopluxDevice() {
