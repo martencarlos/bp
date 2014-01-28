@@ -41,13 +41,9 @@
             android:name="ceu.marten.ui.NewRecordingActivity"
             android:label="@string/new_recordings_label"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan" 
             android:parentActivityName="ceu.marten.ui.ConfigurationsActivity">
-            <!-- The meta-data element is needed for versions lower than 4.1 -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.myfirstapp.MainActivity" />
         </activity>
         <activity
             android:name="ceu.marten.ui.NewConfigurationActivity"
