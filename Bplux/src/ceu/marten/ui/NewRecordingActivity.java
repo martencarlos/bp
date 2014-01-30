@@ -136,7 +136,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 						new GraphViewData(timeValue / currentConfiguration.getSamplingFrequency()*1000,
 								data[currentConfiguration.getChannelsToDisplay()
 										.get(i) - 1]), true, maxDataCount);
-				
 			}
 		}
 	}
@@ -652,9 +651,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		isServiceBounded = true;
 	}
 
-	private class saveRecording extends AsyncTask<String, Void, String> {
+	private class saveRecording extends AsyncTask<String, Integer, String> {
 
-		
 		@Override
 		protected String doInBackground(String... params) {
 			stopChronometer();
@@ -684,7 +682,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 
 		@Override
-		protected void onProgressUpdate(Void... values) {
+		protected void onProgressUpdate(Integer... values) {
 		}
 	}
 

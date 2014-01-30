@@ -95,7 +95,7 @@ abstract public class GraphView extends LinearLayout {
 			if (labelTextHeight == null || horLabelTextWidth == null) {
 				paint.setTextSize(getGraphViewStyle().getTextSize());
 				double testX = ((getMaxX(true)-getMinX(true))*0.783)+getMinX(true);
-				String testLabel = formatLabel(testX, true);
+				String testLabel = formatLabel((long)testX, true);
 				paint.getTextBounds(testLabel, 0, testLabel.length(), textBounds);
 				labelTextHeight = (textBounds.height());
 				horLabelTextWidth = (textBounds.width());
@@ -267,7 +267,7 @@ abstract public class GraphView extends LinearLayout {
 			if (labelTextHeight == null || verLabelTextWidth == null) {
 				paint.setTextSize(getGraphViewStyle().getTextSize());
 				double testY = ((getMaxY()-getMinY())*0.783)+getMinY();
-				String testLabel = formatLabel(testY, false);
+				String testLabel = formatLabel((long)testY, false);
 				paint.getTextBounds(testLabel, 0, testLabel.length(), textBounds);
 				labelTextHeight = (textBounds.height());
 				verLabelTextWidth = (textBounds.width());
@@ -478,7 +478,7 @@ abstract public class GraphView extends LinearLayout {
 	 * @return value to display
 	 */
 	@Deprecated
-	protected String formatLabel(double value, boolean isValueX) {
+	protected String formatLabel(long value, boolean isValueX) {
 		if (customLabelFormatter != null) {
 			String label = customLabelFormatter.formatLabel(value, isValueX);
 			if (label != null) {
@@ -515,7 +515,7 @@ abstract public class GraphView extends LinearLayout {
 		double min = getMinX(false);
 		double max = getMaxX(false);
 		for (int i=0; i<=numLabels; i++) {
-			labels[i] = formatLabel(min + ((max-min)*i/numLabels), true);
+			labels[i] = formatLabel((long)(min + ((max-min)*i/numLabels)), true);
 		}
 		return labels;
 	}
@@ -544,7 +544,7 @@ abstract public class GraphView extends LinearLayout {
 		}
 
 		for (int i=0; i<=numLabels; i++) {
-			labels[numLabels-i] = formatLabel(min + ((max-min)*i/numLabels), false);
+			labels[numLabels-i] = formatLabel((long)(min + ((max-min)*i/numLabels)), false);
 		}
 		return labels;
 	}

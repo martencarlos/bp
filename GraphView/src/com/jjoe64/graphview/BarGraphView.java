@@ -100,7 +100,7 @@ public class BarGraphView extends GraphView {
 				if (top<=border) top+=border+4;
 				paint.setTextAlign(Align.CENTER);
 				paint.setColor(valuesOnTopColor );
-				canvas.drawText(formatLabel(values[i].getY(), false), (left+right)/2, top, paint);
+				canvas.drawText(formatLabel((long)(values[i].getY()), false), (left+right)/2, top, paint);
 			}
 		}
 	}

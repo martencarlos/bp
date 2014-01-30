@@ -7,7 +7,7 @@
     <uses-sdk
         android:maxSdkVersion="19"
         android:minSdkVersion="8"
-        android:targetSdkVersion="8" />
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -66,7 +66,11 @@
         </intent-filter>
 </activity>
 
-        <service android:name="ceu.marten.services.BiopluxService" />
+        <service 
+            android:name="ceu.marten.services.BiopluxService"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":BpluxService" />
     </application>
 
 </manifest>

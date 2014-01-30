@@ -1,9 +1,8 @@
 package ceu.marten.ui;
 
 import java.io.Serializable;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Paint.Align;
 import ceu.marten.bplux.R;
@@ -51,26 +50,15 @@ public class Graph implements Serializable {
 						R.string.graph_viewport_size)));
 		graphView.setScalable(true);
 		graphView.setCustomLabelFormatter(new CustomLabelFormatter() {
+			@SuppressLint("DefaultLocale")
 			@Override
-			public String formatLabel(double value, boolean isValueX) {
+			public String formatLabel(long value, boolean isValueX) {
 				if (isValueX) {
-					if (value < 0)
+					if (value < 0.000)
 						return "00:00:00";
-					String strValue = String.format(
-							Locale.getDefault(),
-							"%02d:%02d:%02d",
-							TimeUnit.MILLISECONDS.toHours((long) value),
-							TimeUnit.MILLISECONDS.toMinutes((long) value),
-							TimeUnit.MILLISECONDS.toSeconds((long) value)
-									- TimeUnit.MINUTES
-											.toSeconds(TimeUnit.MILLISECONDS
-													.toMinutes((long) value)));
-
-					return strValue;
+					return String.format("%02d:%02d:%02d",(int) ((value / (1000*60*60)) % 24), (int) ((value / (1000*60)) % 60), (int) (value / 1000) % 60);
 				} else
-					return String.valueOf(((Double) value).intValue()); // vertical
-																		// labels
-																		// value
+					return String.valueOf((int)(value)); // vertical labels value
 			}
 		});
 

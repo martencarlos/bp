@@ -49,6 +49,6 @@ public interface CustomLabelFormatter {
 	 * @param isValueX true if value is a x-value, false if otherwise
 	 * @return the string that will be displayed. return null if you want graphview to generate the label for you.
 	 */
-	String formatLabel(double value, boolean isValueX);
+	String formatLabel(long value, boolean isValueX);
 
 }
