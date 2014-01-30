@@ -7,6 +7,7 @@ import java.util.TimerTask;
 import plux.android.bioplux.BPException;
 import plux.android.bioplux.Device;
 import plux.android.bioplux.Device.Frame;
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -25,16 +26,17 @@ import ceu.marten.model.DeviceConfiguration;
 import ceu.marten.model.io.DataManager;
 import ceu.marten.ui.NewRecordingActivity;
 
+
 public class BiopluxService extends Service {
 
 	private static final String TAG = BiopluxService.class.getName();
 
 	public static final int MSG_REGISTER_CLIENT = 1;
-	public static final int MSG_UNREGISTER_CLIENT = 2;
+	public static final int MSG_DATA = 2;
 	public static final int MSG_RECORDING_DURATION = 3;
-	public static final int MSG_DATA = 4;
-	public static final int MSG_CONNECTION_ERROR = 5;
+	public static final int MSG_SAVED = 4;
 	
+	public static final int MSG_CONNECTION_ERROR = 5;
 	public static final int ERROR_PROCESSING_FRAMES = 6;
 	public static final int ERROR_SAVING_RECORDING = 7;
 	
@@ -42,15 +44,14 @@ public class BiopluxService extends Service {
 	public static final int NUMBER_OF_FRAMES = 80; 
 	public static final long TIMER_TIME = 50L;
 	
-	//Used to synchronize threads
+	//Used to synchronize timer and main thread
 	private static final Object writingLock = new Object();
 	private boolean isWriting;
 	
-	static Messenger client = null;
 	private NotificationManager notificationManager;
 	private Timer timer = new Timer();
-	private boolean forceStopError= false;
-	private static DataManager dataManager;
+	private boolean forceStopError = false;
+	private DataManager dataManager;
 
 	private String recordingName;
 	private double samplingFrames;
@@ -60,17 +61,31 @@ public class BiopluxService extends Service {
 	private Device connection;
 	private Device.Frame[] frames;
 
+	/**
+	 * Target we publish for clients to send messages to IncomingHandler
+	 */
 	private final Messenger mMessenger = new Messenger(new IncomingHandler());
-
-	static class IncomingHandler extends Handler {
+	
+	/**
+	 * Messenger with interface for sending messages from the service
+	 */
+	private Messenger client = null;
+	
+	/**
+     * Handler of incoming messages from clients.
+     */
+	@SuppressLint("HandlerLeak")
+	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_REGISTER_CLIENT:
 				client = msg.replyTo;
-				break;
-			case MSG_UNREGISTER_CLIENT:
-				//client = null
+				timer.schedule(new TimerTask() {
+					public void run() {
+						processFrames();
+					}
+				}, 0, TIMER_TIME);
 				break;
 			case MSG_RECORDING_DURATION:
 				dataManager.setDuration(msg.getData().getString("duration"));
@@ -83,31 +98,29 @@ public class BiopluxService extends Service {
 
 	@Override
 	public void onCreate() {
-		
-		Log.i(TAG, "Service created");
 		super.onCreate();
-	}
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		getInfoFromActivity(intent);
-		samplingCounter=0;
+		
+		//INIT SERVICE VARIABLES
+		samplingCounter = 0;
 		frames = new Device.Frame[NUMBER_OF_FRAMES];
 		for (int i = 0; i < frames.length; i++)
 			frames[i] = new Frame();
 		
-		if(connectToBiopluxDevice()){
-			dataManager = new DataManager(this, recordingName,
-					configuration);
-			showNotification(intent);
+		Log.i(TAG, "Service created");
+	}
 
-			timer.schedule(new TimerTask() {
-				public void run() {
-					processFrames();
-				}
-			}, 0, TIMER_TIME);
-		}
+	/**
+     * When binding to the service, we return an interface to our messenger
+     * for sending messages to the service.
+     */
+	@Override
+	public IBinder onBind(Intent intent) {
+		getInfoFromActivity(intent);
 		
+		if(connectToBiopluxDevice()){
+			dataManager = new DataManager(this, recordingName, configuration);
+			showNotification(intent);
+		}
 		return mMessenger.getBinder();
 	}
 	
@@ -150,8 +163,7 @@ public class BiopluxService extends Service {
 
 	private void getInfoFromActivity(Intent intent) {
 		recordingName = intent.getStringExtra("recordingName").toString();
-		configuration = (DeviceConfiguration) intent
-				.getSerializableExtra("configSelected");
+		configuration = (DeviceConfiguration) intent.getSerializableExtra("configSelected");
 		samplingFrames = (double)configuration.getReceptionFrequency()/configuration.getSamplingFrequency();
 	}
 
@@ -221,6 +233,17 @@ public class BiopluxService extends Service {
 			client = null;
 		}
 	}
+	private void sendSavedNotification() {
+        Message message = Message.obtain(null, MSG_SAVED);
+		try {
+			client.send(message);
+		} catch (RemoteException e) {
+			Log.e(TAG, "client is dead. Client removed", e);
+			forceStopError = true;
+			stopService();
+			client = null;
+		}
+	}
 
 	private void sendErrorNotificationToActivity(int errorCode) {
 		try {
@@ -265,7 +288,7 @@ public class BiopluxService extends Service {
 		
 		if(!dataManager.saveFiles())
 			sendErrorNotificationToActivity(ERROR_SAVING_RECORDING);
-		
+		sendSavedNotification();
 		Log.i(TAG, "service stopped");
 		super.onDestroy();
 	}

@@ -9,6 +9,7 @@ import java.util.Locale;
 import plux.android.bioplux.BPException;
 import plux.android.bioplux.Device;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
@@ -19,7 +20,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -79,7 +79,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	//DIALOGS
 	private AlertDialog backDialog, bluetoothConnectionDialog, overwriteDialog;
 	private static AlertDialog connectionErrorDialog;
-	private ProgressDialog savingDialog;
 	
 	private Messenger mService = null;
 	private static Graph[] graphs;
@@ -92,7 +91,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private LayoutInflater inflater;
 	private final Messenger mActivity = new Messenger(new IncomingHandler());
 
-	static class IncomingHandler extends Handler {
+	 @SuppressLint("HandlerLeak")
+	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -103,6 +103,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				serviceError = true;
 				displayConnectionErrorDialog(msg.arg1);
 				break;
+			case BiopluxService.MSG_SAVED:
+				displayInfoToast(getString(R.string.nr_info_rec_saved));
+				break;
 			default:
 				super.handleMessage(msg);
 			}
@@ -110,8 +113,14 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	private ServiceConnection mConnection = new ServiceConnection() {
+		// This is called when the connection with the service has been
+        // established, giving us the object we can use to
+        // interact with the service.  We are communicating with the
+        // service using a Messenger, so here we get a client-side
+        // representation of that from the raw IBinder object.
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			mService = new Messenger(service);
+			isServiceBounded = true;
 			try {
 				Message msg = Message.obtain(null,
 						BiopluxService.MSG_REGISTER_CLIENT);
@@ -121,9 +130,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				Log.e(TAG, "service conection failed", e);
 			}
 		}
-
+		
+		// This is called when the connection with the service has been
+        // unexpectedly disconnected -- that is, its process crashed.
 		public void onServiceDisconnected(ComponentName className) {
 			mService = null;
+			isServiceBounded = false;
 			Log.i(TAG, "service disconnected");
 		}
 	};
@@ -282,7 +294,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 						getString(R.string.nr_back_dialog_positive_button),
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
-								new saveRecording().execute("");
+								stopChronometer();
+								sendRecordingDuration();
+								saveRecording();
+								unbindOfService();
+								stopService(new Intent(NewRecordingActivity.this,
+										BiopluxService.class));
 								Intent backIntent = new Intent(context,
 										ConfigurationsActivity.class);
 								startActivity(backIntent);
@@ -340,7 +357,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						if(serviceError){
-							new saveRecording().execute("");
+							stopChronometer();
+							sendRecordingDuration();
+							saveRecording();
+							unbindOfService();
+							stopService(new Intent(NewRecordingActivity.this,
+									BiopluxService.class));
 							Intent backIntent = new Intent(context,
 									ConfigurationsActivity.class);
 							startActivity(backIntent);
@@ -490,14 +512,19 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		} else if (!isServiceRunning() && timeValue != 0) {
 			overwriteDialog.show();
 		} else if (isServiceRunning()) {
-			new saveRecording().execute("");
+			stopChronometer();
+			sendRecordingDuration();
+			saveRecording();
+			unbindOfService();
+			stopService(new Intent(NewRecordingActivity.this,
+					BiopluxService.class));
 			uiStartStopbutton.setText(getString(R.string.nr_button_start));
 		}
 	}
 	
 
 	private void startRecording() {
-		startService(new Intent(context,BiopluxService.class));
+		startService(new Intent(context, BiopluxService.class));
 		bindToService();
 		displayInfoToast(getString(R.string.nr_info_started));
 		uiStartStopbutton.setText(getString(R.string.nr_button_stop));
@@ -648,57 +675,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		intent.putExtra("recordingName", recordingName);
 		intent.putExtra("configSelected", currentConfiguration);
 		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-		isServiceBounded = true;
 	}
 
-	private class saveRecording extends AsyncTask<String, Integer, String> {
-
-		@Override
-		protected String doInBackground(String... params) {
-			stopChronometer();
-			sendRecordingDuration();
-			saveRecording();
-			unbindOfService();
-			stopService(new Intent(NewRecordingActivity.this,
-					BiopluxService.class));
-			
-			return "executed";
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			savingDialog.dismiss();
-			displayInfoToast(getString(R.string.nr_info_rec_saved));
-		}
-
-		@Override
-		protected void onPreExecute() {
-			savingDialog = new ProgressDialog(context);
-			savingDialog.setTitle("Processing...");
-			savingDialog.setMessage("Please wait.");
-			savingDialog.setCancelable(false);
-			savingDialog.setIndeterminate(true);
-			savingDialog.show();
-		}
-
-		@Override
-		protected void onProgressUpdate(Integer... values) {
-		}
-	}
-
+	
+	
+	/** Detach our existing connection with the service **/
 	void unbindOfService() {
 		if (isServiceBounded) {
-			if (mService != null) {
-				try {
-					Message msg = Message.obtain(null,
-							BiopluxService.MSG_UNREGISTER_CLIENT);
-					msg.replyTo = mActivity;
-					mService.send(msg);
-				} catch (RemoteException e) {
-					Log.e(TAG, "Service crashed", e);
-				}
-			}
-			// Detach our existing connection.
 			unbindService(mConnection);
 			isServiceBounded = false;
 		}
