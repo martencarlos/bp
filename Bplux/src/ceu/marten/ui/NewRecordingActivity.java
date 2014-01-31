@@ -702,17 +702,19 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		for (int i = 0; i < graphs.length; i++)
 			graphs[i].getGraphView().zoomOut(300);
 	}
-
 	@Override
-	protected void onDestroy() {
-		super.onDestroy();
+	protected void onStop() {
+		super.onStop();
 		try {
 			unbindOfService();
 		} catch (Throwable t) {
-			Log.e(TAG,
-					"failed to unbind from service when activity is destroyed",
-					t);
+			Log.e(TAG,"failed to unbind from service when activity is destroyed",t);
 		}
+	}
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		
 	}
 
 }

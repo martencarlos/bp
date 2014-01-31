@@ -11,12 +11,15 @@ import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -46,6 +49,8 @@ public class BiopluxService extends Service {
 	//Used to synchronize timer and main thread
 	private static final Object writingLock = new Object();
 	private boolean isWriting;
+	PowerManager mgr;
+	WakeLock wakeLock;
 	
 	private Timer timer = new Timer();
 	private boolean forceStopError = false;
@@ -97,8 +102,11 @@ public class BiopluxService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		
 		//INIT SERVICE VARIABLES
+		mgr = (PowerManager)this.getSystemService(Context.POWER_SERVICE);
+		wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
+		wakeLock.acquire();
+		
 		samplingCounter = 0;
 		frames = new Device.Frame[NUMBER_OF_FRAMES];
 		for (int i = 0; i < frames.length; i++)
@@ -214,8 +222,6 @@ public class BiopluxService extends Service {
 		// GET THE NOTIFICATION AND NOTIFY
 		Notification notification = mBuilder.build();
 		startForeground(R.string.service_id, notification);
-		//TODO notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		//notificationManager.notify(R.string.service_id, notification);
 	}
 
 	private void sendGraphDataToActivity(short[] data) {
@@ -258,8 +264,8 @@ public class BiopluxService extends Service {
 	}
 	
 	private void stopService(){
-		//TODO notificationManager.cancel(R.string.service_id);
 		stopForeground(true);
+		wakeLock.release();
 		if (timer != null)
 			timer.cancel();
 
