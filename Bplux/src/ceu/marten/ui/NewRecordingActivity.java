@@ -79,6 +79,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	//DIALOGS
 	private AlertDialog backDialog, bluetoothConnectionDialog, overwriteDialog;
 	private static AlertDialog connectionErrorDialog;
+	private static ProgressDialog savingDialog;
 	
 	private Messenger mService = null;
 	private static Graph[] graphs;
@@ -104,6 +105,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				displayConnectionErrorDialog(msg.arg1);
 				break;
 			case BiopluxService.MSG_SAVED:
+				savingDialog.dismiss();
 				displayInfoToast(getString(R.string.nr_info_rec_saved));
 				break;
 			default:
@@ -197,6 +199,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		errorMessagePort = getResources().getString(R.string.bp_port_could_not_be_opened);
 		errorMessageProcessingFrames = getResources().getString(R.string.bp_error_processing_frames);
 		errorMessageSavingRecording = getResources().getString(R.string.bp_error_saving_recording);
+		savingDialog = new ProgressDialog(context);
 		inflater = (LayoutInflater) getLayoutInflater();
 		maxDataCount = Integer.parseInt((getResources()
 				.getString(R.string.graph_max_data_count)));
@@ -516,13 +519,17 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			sendRecordingDuration();
 			saveRecording();
 			unbindOfService();
-			stopService(new Intent(NewRecordingActivity.this,
-					BiopluxService.class));
+			stopService(new Intent(NewRecordingActivity.this,BiopluxService.class));
 			uiStartStopbutton.setText(getString(R.string.nr_button_start));
+			
+			savingDialog.setTitle("Compressing file...");
+			savingDialog.setMessage("Please wait. This may take a few seconds");
+			savingDialog.setCancelable(false);
+			savingDialog.setIndeterminate(true);
+			savingDialog.show();
 		}
 	}
 	
-
 	private void startRecording() {
 		startService(new Intent(context, BiopluxService.class));
 		bindToService();

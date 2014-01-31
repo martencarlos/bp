@@ -9,7 +9,6 @@ import plux.android.bioplux.Device;
 import plux.android.bioplux.Device.Frame;
 import android.annotation.SuppressLint;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -48,7 +47,6 @@ public class BiopluxService extends Service {
 	private static final Object writingLock = new Object();
 	private boolean isWriting;
 	
-	private NotificationManager notificationManager;
 	private Timer timer = new Timer();
 	private boolean forceStopError = false;
 	private DataManager dataManager;
@@ -215,8 +213,9 @@ public class BiopluxService extends Service {
 
 		// GET THE NOTIFICATION AND NOTIFY
 		Notification notification = mBuilder.build();
-		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		notificationManager.notify(R.string.service_id, notification);
+		startForeground(R.string.service_id, notification);
+		//TODO notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		//notificationManager.notify(R.string.service_id, notification);
 	}
 
 	private void sendGraphDataToActivity(short[] data) {
@@ -259,7 +258,8 @@ public class BiopluxService extends Service {
 	}
 	
 	private void stopService(){
-		notificationManager.cancel(R.string.service_id);
+		//TODO notificationManager.cancel(R.string.service_id);
+		stopForeground(true);
 		if (timer != null)
 			timer.cancel();
 
