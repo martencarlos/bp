@@ -713,8 +713,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 	@Override
 	protected void onDestroy() {
+		Log.d(TAG, "destroying recording activity");
 		super.onDestroy();
-		
 	}
 
 }

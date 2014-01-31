@@ -41,6 +41,7 @@ public class BiopluxService extends Service {
 	public static final int MSG_CONNECTION_ERROR = 5;
 	public static final int ERROR_PROCESSING_FRAMES = 6;
 	public static final int ERROR_SAVING_RECORDING = 7;
+	public static final int MSG_KILL_SERVICE = 8;
 	
 	//Get 80 frames every 50 miliseconds
 	public static final int NUMBER_OF_FRAMES = 80; 
@@ -53,7 +54,7 @@ public class BiopluxService extends Service {
 	WakeLock wakeLock;
 	
 	private Timer timer = new Timer();
-	private boolean forceStopError = false;
+	private boolean killServiceError = false;
 	private DataManager dataManager;
 
 	private String recordingName;
@@ -142,8 +143,8 @@ public class BiopluxService extends Service {
 		for (Frame f : frames) {
 			if(!dataManager.writeFramesToTmpFile(f)){
 				sendErrorNotificationToActivity(ERROR_PROCESSING_FRAMES);
-				forceStopError = true;
-				stopService();
+				killServiceError = true;
+				stopSelf();
 				break loop;
 			}
 			if(samplingCounter++ >= samplingFrames){
@@ -162,8 +163,7 @@ public class BiopluxService extends Service {
 		} catch (BPException e) {
 			Log.e(TAG, "exception getting frames", e);
 			sendErrorNotificationToActivity(e.code);
-			forceStopError = true;
-			stopService();
+			stopSelf();
 		}
 	}
 
@@ -187,14 +187,14 @@ public class BiopluxService extends Service {
 			} catch (BPException e1) {
 				Log.e(TAG, "bioplux close connection exception", e1);
 				sendErrorNotificationToActivity(e1.code);
-				forceStopError = true;
-				stopService();
+				killServiceError = true;
+				stopSelf();
 				return false;
 			}
 			Log.e(TAG, "bioplux connection exception", e);
 			sendErrorNotificationToActivity(e.code);
-			forceStopError = true;
-			stopService();
+			killServiceError = true;
+			stopSelf();
 			return false;
 		}
 		return true;
@@ -233,8 +233,8 @@ public class BiopluxService extends Service {
 			client.send(message);
 		} catch (RemoteException e) {
 			Log.e(TAG, "client is dead. Client removed", e);
-			forceStopError = true;
-			stopService();
+			killServiceError = true;
+			stopSelf();
 			client = null;
 		}
 	}
@@ -244,8 +244,8 @@ public class BiopluxService extends Service {
 			client.send(message);
 		} catch (RemoteException e) {
 			Log.e(TAG, "client is dead. Client removed", e);
-			forceStopError = true;
-			stopService();
+			killServiceError = true;
+			stopSelf();
 			client = null;
 		}
 	}
@@ -289,12 +289,12 @@ public class BiopluxService extends Service {
 
 	@Override
 	public void onDestroy() {
-		if(!forceStopError)
+		if(!killServiceError){
 			stopService();
-		
-		if(!dataManager.saveFiles())
-			sendErrorNotificationToActivity(ERROR_SAVING_RECORDING);
-		sendSavedNotification();
+			if(!dataManager.saveFiles())
+				sendErrorNotificationToActivity(ERROR_SAVING_RECORDING);
+			sendSavedNotification();
+		}
 		Log.i(TAG, "service stopped");
 		super.onDestroy();
 	}

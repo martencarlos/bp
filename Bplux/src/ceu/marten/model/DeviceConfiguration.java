@@ -2,7 +2,6 @@ package ceu.marten.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import android.util.Log;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -203,8 +202,6 @@ public class DeviceConfiguration implements Serializable {
 				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
 					activeChannels += Math.pow(2, i);
 			}
-			Log.d("BiopluxService", "activeChannels integer number: "
-					+ activeChannels);
 			return activeChannels;
 		} else
 			return 0;
