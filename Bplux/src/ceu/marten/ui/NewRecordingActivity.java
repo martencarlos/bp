@@ -82,10 +82,10 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static ProgressDialog savingDialog;
 	
 	private Messenger mService = null;
-	private static Graph[] graphs;
-	private static double timeValue;
+	private Graph[] graphs;
+	private double timeValue;
 	private boolean isServiceBounded;
-	private static boolean serviceError = false;
+	private boolean serviceError = false;
 	private boolean connectionError;
 	private int bpErrorCode;
 	private Context context = this;
@@ -142,14 +142,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 	};
 
-	static void appendDataToGraphs(short[] data) {
+	 void appendDataToGraphs(short[] data) {
 		if(!serviceError){
 			timeValue++;
 			for (int i = 0; i < graphs.length; i++) {
 				graphs[i].getSerie().appendData(
 						new GraphViewData(timeValue / currentConfiguration.getSamplingFrequency()*1000,
-								data[currentConfiguration.getChannelsToDisplay()
-										.get(i) - 1]), true, maxDataCount);
+								data[i]), true, maxDataCount);
 			}
 		}
 	}

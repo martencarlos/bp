@@ -562,8 +562,8 @@ public class NewConfigurationActivity extends Activity {
 		//CHECK IF CHANNELS TO ACTIVATE ARE FILLED ALREADY
 		if(newConfiguration.getActiveChannelsWithNullFill() !=null && newConfiguration.getNumberOfChannelsActivated() !=0)
 			setupChannelsToDisplay();
-			else
-				displayErrorToast(getString(R.string.nc_error_button_channels_to_display));
+		else
+			displayErrorToast(getString(R.string.nc_error_button_channels_to_display));
 	}
 
 	private boolean validateFields() {
