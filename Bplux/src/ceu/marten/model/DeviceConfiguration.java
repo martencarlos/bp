@@ -57,7 +57,7 @@ public class DeviceConfiguration implements Serializable {
 	private byte[] displayChannels = null;
 
 	/**
-	 * Constructor Needed for the OrmLite to generate object when query invoked
+	 * Empty constructor Needed by the OrmLite to generate object when query invoked
 	 */
 	public DeviceConfiguration() {}
 	
@@ -173,8 +173,14 @@ public class DeviceConfiguration implements Serializable {
 			StringBuilder displayChannelsSB = new StringBuilder();
 			int channelNumber = 1;
 			for (String s : displayChannelsSplitted) {
-				if (s.compareTo("null")!= 0)
-					displayChannelsSB.append(context.getString(R.string.nc_dialog_channel) + " " + channelNumber+ " " +context.getString(R.string.nc_dialog_with_sensor) + " " + s + "\n");
+				if (s.compareTo("null") != 0)
+					displayChannelsSB.append(context
+							.getString(R.string.nc_dialog_channel)
+							+ " "
+							+ channelNumber
+							+ " "
+							+ context.getString(R.string.nc_dialog_with_sensor)
+							+ " " + s + "\n");
 				channelNumber++;
 			}
 			return displayChannelsSB.toString();

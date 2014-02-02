@@ -17,7 +17,7 @@ import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
 
 /**
- * 
+ * Class representing a lineGraphView graph with initialized serie and custom title
  * @author Carlos Marten
  *
  */
@@ -25,7 +25,7 @@ public class Graph implements Serializable {
 
 	private static final long serialVersionUID = -5122704369223869018L;
 
-	private GraphViewSeries serie;
+	private GraphViewSeries basicSerie;
 	private GraphViewSeriesStyle style;
 	private double xValue;
 	private GraphView graphView;
@@ -38,13 +38,13 @@ public class Graph implements Serializable {
 				context), 2); // 2 -> thickness
 
 		// INIT SERIE DATA
-		serie = new GraphViewSeries(title, style, new GraphViewData[] {
-				new GraphViewData(1.0, 125), new GraphViewData(1.5, 10) });
+		basicSerie = new GraphViewSeries(title, style, new GraphViewData[] {
+				new GraphViewData(0.5, 125), new GraphViewData(1, 125) });
 		// INIT GRAPHVIEW
-		graphView = new LineGraphView(context, "");
+		graphView = new LineGraphView(context, ""); 
 
 		// ADD SERIES TO GRAPHVIEW and SET SCROLLABLE
-		graphView.addSeries(serie);
+		graphView.addSeries(basicSerie);
 		graphView.setViewPort(
 				2,
 				Double.parseDouble(context.getResources().getString(
@@ -91,6 +91,16 @@ public class Graph implements Serializable {
 		graphView.setShowLegend(true);
 	}
 
+	/**
+	 * Each of the eight channels of the bioplux device have a fix color.
+	 * Returns the color of the respective channel
+	 * 
+	 * @param channelNumber 
+	 * 			  number of channels to display
+	 * @param context
+	 *            used to get color resources
+	 * @return integer
+	 */
 	private int getChannelColor(int channelNumber, Context context) {
 		switch (channelNumber) {
 		default:
@@ -110,7 +120,6 @@ public class Graph implements Serializable {
 		case 8:
 			return context.getResources().getColor(R.color.channel8);
 		}
-
 	}
 
 	public GraphView getGraphView() {
@@ -118,11 +127,11 @@ public class Graph implements Serializable {
 	}
 
 	public GraphViewSeries getSerie() {
-		return serie;
+		return basicSerie;
 	}
 
 	public void setSerie(GraphViewSeries serie) {
-		this.serie = serie;
+		this.basicSerie = serie;
 	}
 
 	public double getxValue() {

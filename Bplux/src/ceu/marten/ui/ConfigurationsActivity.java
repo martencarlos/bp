@@ -90,7 +90,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		inflater = this.getLayoutInflater();
 		if (loadConfigurations()) {
 			setupConfigurationsListView();
-			setupRecordingNameDialog();
+			setupRecordingNameDialog();//TODO move to onStart()
 			setupConfirmationDialog();
 		}
 	}
