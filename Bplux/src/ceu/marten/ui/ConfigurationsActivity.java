@@ -497,11 +497,13 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 						recordingNameExists = true;
 				}
 			}
-			// check whether the user entered nothing or something and then deleted it
+			// user entered nothing or something and then deleted it
 			if (newRecordingName == null || newRecordingName.compareTo("") == 0) {
 				recordingNameEText.setError(getString(R.string.ca_dialog_null_name));
+			// name already exists
 			} else if (recordingNameExists) {
 				recordingNameEText.setError(getString(R.string.ca_dialog_duplicate_name));
+			// accepted recording name
 			} else {
 				recordingNameDialog.dismiss();
 				Intent newRecordingIntent = new Intent(classContext, NewRecordingActivity.class);

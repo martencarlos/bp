@@ -173,7 +173,7 @@ public class DeviceConfiguration implements Serializable {
 			StringBuilder displayChannelsSB = new StringBuilder();
 			int channelNumber = 1;
 			for (String s : displayChannelsSplitted) {
-				if (s.compareTo("null")!=0)
+				if (s.compareTo("null")!= 0)
 					displayChannelsSB.append(context.getString(R.string.nc_dialog_channel) + " " + channelNumber+ " " +context.getString(R.string.nc_dialog_with_sensor) + " " + s + "\n");
 				channelNumber++;
 			}
@@ -191,7 +191,7 @@ public class DeviceConfiguration implements Serializable {
 		String entire = new String(this.displayChannels);
 		String[] channelsToDisplay = entire.split(SPLIT_PATTERN);
 		for (String s : channelsToDisplay) {
-			if (s.equalsIgnoreCase("true"))
+			if (s.compareTo("null")!=0)
 				numberOfChannelsToDisplay++;
 		}
 		return numberOfChannelsToDisplay;
