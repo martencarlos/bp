@@ -17,9 +17,10 @@ import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
 
 /**
- * Created by martencarlos on 25/07/13.
+ * 
+ * @author Carlos Marten
+ *
  */
-
 public class Graph implements Serializable {
 
 	private static final long serialVersionUID = -5122704369223869018L;

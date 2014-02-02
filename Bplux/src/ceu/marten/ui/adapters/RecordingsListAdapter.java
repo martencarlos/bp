@@ -8,16 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import ceu.marten.bplux.R;
-import ceu.marten.model.Recording;
+import ceu.marten.model.DeviceRecording;
 
 import com.haarman.listviewanimations.ArrayAdapter;
 
-public class RecordingsListAdapter extends ArrayAdapter<Recording> {
+public class RecordingsListAdapter extends ArrayAdapter<DeviceRecording> {
 
 	private final Context context;
 
 	public RecordingsListAdapter(Context context,
-			ArrayList<Recording> recordings) {
+			ArrayList<DeviceRecording> recordings) {
 		super(recordings);
 		this.context = context;
 	}
@@ -35,7 +35,7 @@ public class RecordingsListAdapter extends ArrayAdapter<Recording> {
 		TextView date = (TextView) rowView.findViewById(R.id.dli_date);
 		TextView duration = (TextView) rowView.findViewById(R.id.dli_duration);
 
-		Recording recording = getItem(position);
+		DeviceRecording recording = getItem(position);
 		name.setText(recording.getName());
 		date.setText(recording.getSavedDate());
 		duration.setText(context.getString(R.string.ra_duration)+" "+ recording.getDuration());

@@ -250,7 +250,7 @@
                         android:layout_height="35sp"
                         android:background="@drawable/button_selector"
                         android:drawableRight="@drawable/select"
-                        android:onClick="onClickedChannelPickDialog"
+                        android:onClick="onClickedActiveChannelsButton"
                         android:paddingLeft="10dip"
                         android:text="@string/nc_button_active_channels"
                         android:textColor="@android:color/white" />
@@ -275,7 +275,7 @@
                         android:layout_height="35sp"
                         android:background="@drawable/button_selector"
                         android:drawableRight="@drawable/select"
-                        android:onClick="onClickedChannelDisplayPickDialog"
+                        android:onClick="onClickedDisplayChannelsButton"
                         android:paddingLeft="10dip"
                         android:text="@string/nc_button_channels_to_display"
                         android:textColor="@android:color/white" />

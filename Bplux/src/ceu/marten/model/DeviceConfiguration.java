@@ -3,44 +3,66 @@ package ceu.marten.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import android.content.Context;
+import ceu.marten.bplux.R;
+
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 /**
- * Created by martencarlos on 25/07/13.
+ * Represents a Bioplux device configuration Stored in Android's internal 
+ * Database with ORMlite annotations 
+ * Implements Serializable to transfer instances between activities
+ * 
+ * @author Carlos Marten
  */
 
-@DatabaseTable(tableName = "deviceConfigurations")
+@DatabaseTable(tableName = "DeviceConfigurations")
 public class DeviceConfiguration implements Serializable {
 
+	// Used for unique serializable purposes
 	private static final long serialVersionUID = -4487071327586521666L;
-	private static final String splitPattern = "\\*\\.\\*";
+
+	private static Context context;
+	private static final String SPLIT_PATTERN = "\\*\\.\\*";
+	public static final String DATE_FIELD_NAME = "createDate";
 
 	@DatabaseField(generatedId = true)
 	private Integer id;
 
 	@DatabaseField(unique = true, canBeNull = true)
 	private String name = null;
+
 	@DatabaseField(canBeNull = true)
 	private String macAddress = null;
+
 	@DatabaseField(canBeNull = true)
 	private String createDate = null;
+
 	@DatabaseField(canBeNull = true)
 	private int receptionFrequency = 0;
+
 	@DatabaseField(canBeNull = true)
 	private int samplingFrequency = 0;
+
+	// number of bits can be 8 (default) or 12 [0-255] | [0-4095]
 	@DatabaseField(canBeNull = true)
-	private int numberOfBits = 8; // number of bits can be 8 or 12 [0-255] |
-									// [0-4095]
+	private int numberOfBits = 8;
 
 	@DatabaseField(dataType = DataType.BYTE_ARRAY)
 	private byte[] activeChannels = null;
-	@DatabaseField(dataType = DataType.BYTE_ARRAY)
-	private byte[] channelsToDisplay = null;
 
-	public DeviceConfiguration() {
-		// needed for the OrmLite to generate object when query invoked
+	@DatabaseField(dataType = DataType.BYTE_ARRAY)
+	private byte[] displayChannels = null;
+
+	/**
+	 * Constructor Needed for the OrmLite to generate object when query invoked
+	 */
+	public DeviceConfiguration() {}
+	
+	public DeviceConfiguration(Context _context) {
+		DeviceConfiguration.context = _context;
 	}
 
 	public void setName(String name) {
@@ -51,20 +73,20 @@ public class DeviceConfiguration implements Serializable {
 		return name;
 	}
 
-	public String getMacAddress() {
-		return macAddress;
-	}
-
 	public void setMacAddress(String macAddress) {
 		this.macAddress = macAddress;
 	}
 
-	public String getCreateDate() {
-		return createDate;
+	public String getMacAddress() {
+		return macAddress;
 	}
 
 	public void setCreateDate(String createDate) {
 		this.createDate = createDate;
+	}
+
+	public String getCreateDate() {
+		return createDate;
 	}
 
 	public void setReceptionFrequency(int frequency) {
@@ -75,65 +97,99 @@ public class DeviceConfiguration implements Serializable {
 		return receptionFrequency;
 	}
 
-	public int getSamplingFrequency() {
-		return samplingFrequency;
-	}
-
 	public void setSamplingFrequency(int samplingFrequency) {
 		this.samplingFrequency = samplingFrequency;
 	}
 
-	public int getNumberOfBits() {
-		return numberOfBits;
+	public int getSamplingFrequency() {
+		return samplingFrequency;
 	}
 
 	public void setNumberOfBits(int numberOfBits) {
 		this.numberOfBits = numberOfBits;
 	}
 
-	public void setChannelsToDisplay(boolean[] boo) {
-		int iterator = 0;
-		String[] channelsToDisplay = new String[8];
-		for (boolean b : boo) {
-			if (b)
-				channelsToDisplay[iterator] = "true";
-			else
-				channelsToDisplay[iterator] = "false";
-			iterator++;
-		}
-
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < channelsToDisplay.length; i++) {
-			sb.append(channelsToDisplay[i]);
-			if (i != channelsToDisplay.length - 1) {
-				sb.append("*.*"); // concatenate by this splitter
-			}
-		}
-		this.channelsToDisplay = sb.toString().getBytes();
+	public int getNumberOfBits() {
+		return numberOfBits;
 	}
 
-	public ArrayList<Integer> getChannelsToDisplay() {
-		if (this.channelsToDisplay == null)
+	/**
+	 * Sets the channels to display transforming String[8] to byte[]
+	 * 
+	 * @param displayChannelsB
+	 */
+	public void setDisplayChannels(String[] displayChannels) {
+		// transform String[] to StringBuilder and that to Byte[]
+		StringBuilder displayChannelsSB = new StringBuilder();
+		for (int i = 0; i < displayChannels.length; i++) {
+			displayChannelsSB.append(displayChannels[i]);
+			if (i != displayChannels.length - 1) {
+				// concatenate by this splitter '.'
+				displayChannelsSB.append("*.*");
+			}
+		}
+		this.displayChannels = displayChannelsSB.toString().getBytes();
+	}
+
+	/**
+	 * Get the channels to display
+	 * 
+	 * @return channels to display as an ArrayList of Integers or 'null' if
+	 *         there are none
+	 */
+
+	public ArrayList<Integer> getDisplayChannels() {
+		if (this.displayChannels == null)
 			return null;
 		else {
-			String entire = new String(this.channelsToDisplay);
-			String[] channelsToDisplay = entire.split(splitPattern);
-			ArrayList<Integer> result = new ArrayList<Integer>();
+			String displayChannelsConcatenated = new String(this.displayChannels);
+			String[] displayChannelsSplitted = displayChannelsConcatenated.split(SPLIT_PATTERN);
+			ArrayList<Integer> displayChannels = new ArrayList<Integer>();
 			int channelNumber = 1;
-			for (String s : channelsToDisplay) {
-				if (s.equalsIgnoreCase("true"))
-					result.add(channelNumber);
+			for (String s : displayChannelsSplitted) {
+				if (s.compareTo("null") != 0)
+					displayChannels.add(channelNumber);
 				channelNumber++;
 			}
-			return result;
+			return displayChannels;
 		}
 
 	}
+	
+	
+	/**
+	 * Get the channels to display
+	 * 
+	 * @return channels to display as an ArrayList of Integers or 'null' if
+	 *         there are none
+	 */
 
-	public int getNumberOfChannelsToDisplay() {
+	public String getDisplayChannelsWithSensors() {
+		if (this.displayChannels == null)
+			return null;
+		else {
+			String displayChannelsConcatenated = new String(this.displayChannels);
+			String[] displayChannelsSplitted = displayChannelsConcatenated.split(SPLIT_PATTERN);
+			StringBuilder displayChannelsSB = new StringBuilder();
+			int channelNumber = 1;
+			for (String s : displayChannelsSplitted) {
+				if (s.compareTo("null")!=0)
+					displayChannelsSB.append(context.getString(R.string.nc_dialog_channel) + " " + channelNumber+ " " +context.getString(R.string.nc_dialog_with_sensor) + " " + s + "\n");
+				channelNumber++;
+			}
+			return displayChannelsSB.toString();
+		}
+	}
+	
+
+	/**
+	 * 
+	 * @return number of channels to display as a natural number [0-8]
+	 */
+	public int getDisplayChannelsNumber() {
 		int numberOfChannelsToDisplay = 0;
-		String entire = new String(this.channelsToDisplay);
-		String[] channelsToDisplay = entire.split(splitPattern);
+		String entire = new String(this.displayChannels);
+		String[] channelsToDisplay = entire.split(SPLIT_PATTERN);
 		for (String s : channelsToDisplay) {
 			if (s.equalsIgnoreCase("true"))
 				numberOfChannelsToDisplay++;
@@ -141,91 +197,95 @@ public class DeviceConfiguration implements Serializable {
 		return numberOfChannelsToDisplay;
 	}
 
-	public void setActiveChannels(String[] activeChannels) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < activeChannels.length; i++) {
-			sb.append(activeChannels[i]);
-			if (i != activeChannels.length - 1) {
-				sb.append("*.*");
+	/**
+	 * Sets the active channels for the configuration Transforms String[] to
+	 * Byte[] to save on internal DB
+	 * 
+	 * @param activeChannelsStr
+	 */
+	public void setActiveChannels(String[] activeChannelsStr) {
+		StringBuilder activeChannelsSB = new StringBuilder();
+		for (int i = 0; i < activeChannelsStr.length; i++) {
+			activeChannelsSB.append(activeChannelsStr[i]);
+			if (i != activeChannelsStr.length - 1) {
+				activeChannelsSB.append("*.*");
 			}
 		}
-		this.activeChannels = sb.toString().getBytes();
+		this.activeChannels = activeChannelsSB.toString().getBytes();
 	}
 
-	public String[] getActiveChannelsWithNullFill() {
+	/**
+	 * Gets the active sensors of the configuration with null fill
+	 * 
+	 * @return the active channels or null if there are none
+	 */
+	public String[] getActiveSensors() {
 		if (this.activeChannels != null) {
-			String entire = new String(this.activeChannels);
-			return entire.split(splitPattern);
+			String activeChannelsConcatenated = new String(this.activeChannels);
+			return activeChannelsConcatenated.split(SPLIT_PATTERN);
 		} else
 			return null;
 	}
 
-	public String getActiveChannelsAsString() {
-		String activeChannels = "";
-		String[] arrayStrings;
-		if (this.activeChannels != null) {
-			String entire = new String(this.activeChannels);
-			arrayStrings = entire.split(splitPattern);
-			for (int i = 0; i < arrayStrings.length; i++) {
-				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
-					activeChannels += (" " + String.valueOf(i + 1) + ",");
-			}
-			activeChannels = (activeChannels.substring(0,
-					activeChannels.length() - 1));
-			return activeChannels;
-		} else
-			return null;
-	}
-
+	/**
+	 * Gets the active channels of the configuration
+	 * 
+	 * @return the active channels or null if there are none
+	 */
 	public ArrayList<Integer> getActiveChannels() {
-		ArrayList<Integer> activatedChannels = new ArrayList<Integer>();
-		String[] arrayStrings;
+		ArrayList<Integer> activeChannels = new ArrayList<Integer>();
+		String[] activeChannelsStr;
 		if (this.activeChannels != null) {
-			String entire = new String(this.activeChannels);
-			arrayStrings = entire.split(splitPattern);
-			for (int i = 0; i < arrayStrings.length; i++) {
-				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
-					activatedChannels.add(i + 1);
-			}
-			return activatedChannels;
-		} else
-			return null;
-	}
-
-	public int getActiveChannelsAsInteger() {
-		int activeChannels = 0;
-		String[] arrayStrings;
-		if (this.activeChannels != null) {
-			String entire = new String(this.activeChannels);
-			arrayStrings = entire.split(splitPattern);
-			for (int i = 0; i < arrayStrings.length; i++) {
-				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
-					activeChannels += Math.pow(2, i);
+			// returns active channels concatenated by '.' and with 'null' fill
+			String activeChannelsConcatenated = new String(this.activeChannels);
+			activeChannelsStr = activeChannelsConcatenated.split(SPLIT_PATTERN);
+			for (int i = 0; i < activeChannelsStr.length; i++) {
+				if (activeChannelsStr[i].compareToIgnoreCase("null") != 0)
+					activeChannels.add(i + 1);
 			}
 			return activeChannels;
 		} else
-			return 0;
-
+			return null;
 	}
+	
 
-	public int getNumberOfChannelsActivated() {
-		int numberOfChannels = 0;
+	/**
+	 * Gets the active channels as an integer [0-255] for bioplux API
+	 * 
+	 * @return active channels integer or 0 if there are none activated
+	 */
+	public int getActiveChannelsAsInteger() {
+		int activeChannelsInteger = 0;
+		String[] activeChannelsStr;
 		if (this.activeChannels != null) {
-			String entire = new String(this.activeChannels);
-			String[] arrayStrings = entire.split(splitPattern);
-			for (int i = 0; i < arrayStrings.length; i++) {
-				if (arrayStrings[i].compareToIgnoreCase("null") != 0)
-					numberOfChannels++;
+			String activeChannelsConcatenated = new String(this.activeChannels);
+			activeChannelsStr = activeChannelsConcatenated.split(SPLIT_PATTERN);
+			for (int i = 0; i < activeChannelsStr.length; i++) {
+				if (activeChannelsStr[i].compareToIgnoreCase("null") != 0)
+					activeChannelsInteger += Math.pow(2, i);
 			}
-			return numberOfChannels;
+			return activeChannelsInteger;
 		} else
 			return 0;
-
 	}
 
-	@Override
-	public String toString() {
-		return "name " + name + "; " + "freq " + receptionFrequency + "; "
-				+ "nBits " + numberOfBits + "; " + "\n Active channels ";
+	/**
+	 * Gets the number of channels activated [1-8]
+	 * 
+	 * @return number of channels activated or 0 if there are none
+	 */
+	public int getActiveChannelsNumber() {
+		int activeChannelsNumber = 0;
+		if (this.activeChannels != null) {
+			String activeChannelsConcatenated = new String(this.activeChannels);
+			String[] activeChannelsStr = activeChannelsConcatenated
+					.split(SPLIT_PATTERN);
+			for (int i = 0; i < activeChannelsStr.length; i++) {
+				if (activeChannelsStr[i].compareToIgnoreCase("null") != 0)
+					activeChannelsNumber++;
+			}
+			return activeChannelsNumber;
+		} else
+			return 0;
 	}
 }

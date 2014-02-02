@@ -12,7 +12,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import ceu.marten.bplux.R;
 
-public class ChannelsToDisplayListAdapter extends ArrayAdapter<String>
+public class DisplayChannelsListAdapter extends ArrayAdapter<String>
 		implements OnClickListener {
 
 	private final Context context;
@@ -22,7 +22,7 @@ public class ChannelsToDisplayListAdapter extends ArrayAdapter<String>
 	private boolean[] checkedStatus;
 
 	//CONSTRUCTOR 
-	public ChannelsToDisplayListAdapter(Context context,
+	public DisplayChannelsListAdapter(Context context,
 			ArrayList<String> channels, ArrayList<String> sensors, ArrayList<Integer> channelsToDisplayChecked) {
 		super(context, 0, 0, channels);
 		this.context = context;

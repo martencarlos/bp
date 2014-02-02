@@ -40,7 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import ceu.marten.bplux.R;
 import ceu.marten.model.DeviceConfiguration;
-import ceu.marten.model.Recording;
+import ceu.marten.model.DeviceRecording;
 import ceu.marten.model.io.DatabaseHelper;
 import ceu.marten.services.BiopluxService;
 
@@ -62,7 +62,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private boolean isChronometerRunning;
 
 	private static DeviceConfiguration currentConfiguration;
-	private Recording recording;
+	private DeviceRecording recording;
 	private String recordingName;
 	private String duration;
 	private Bundle extras;
@@ -186,7 +186,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 		// INIT LOCAL VARIABLES
 		int numberOfChannelsToDisplay = currentConfiguration
-				.getNumberOfChannelsToDisplay();
+				.getDisplayChannelsNumber();
 		LayoutParams graphParams, detailParameters;
 		View graphsView;
 
@@ -236,7 +236,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				graphs[i] = new Graph(this,
 						getString(R.string.nc_dialog_channel)
 								+ " "
-								+ currentConfiguration.getChannelsToDisplay()
+								+ currentConfiguration.getDisplayChannels()
 										.get(i).toString());
 				LinearLayout graph = (LinearLayout) inflater.inflate(
 						R.layout.in_ly_graph, null);
@@ -266,7 +266,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 					.getNumberOfBits()) + " bits");
 			uiMacAddress.setText(currentConfiguration.getMacAddress());
 			uiActiveChannels.setText(currentConfiguration
-					.getActiveChannelsAsString());
+					.getActiveChannels().toString());
 		}
 
 		// IF SERVICE WAS RUNNING BIND TO IT
@@ -392,7 +392,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 							public void onClick(DialogInterface dialog, int id) {
 								timeValue = 0;
 								try {
-									Dao<Recording, Integer> dao = getHelper()
+									Dao<DeviceRecording, Integer> dao = getHelper()
 											.getRecordingDao();
 									dao.delete(recording);
 								} catch (SQLException e) {
@@ -412,7 +412,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 									graphs[i] = new Graph(context,
 											getString(R.string.nc_dialog_channel)
 													+ " "
-													+ currentConfiguration.getChannelsToDisplay()
+													+ currentConfiguration.getDisplayChannels()
 															.get(i).toString());
 									LinearLayout graph = (LinearLayout) inflater.inflate(
 											R.layout.in_ly_graph, null);
@@ -421,7 +421,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 								}
 							
 								if (currentConfiguration
-										.getNumberOfChannelsToDisplay() == 1) {
+										.getDisplayChannelsNumber() == 1) {
 									View details = inflater.inflate(R.layout.in_ly_graph_details, null);
 									((ViewGroup) graphsView).addView(details, detailParameters);
 									findDetailViews();
@@ -435,7 +435,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 											.getNumberOfBits()) + " bits");
 									uiMacAddress.setText(currentConfiguration.getMacAddress());
 									uiActiveChannels.setText(currentConfiguration
-											.getActiveChannelsAsString());
+											.getActiveChannels().toString());
 								}
 									
 								startRecording();
@@ -492,7 +492,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			chronometer.start();
 			isChronometerRunning = true;
 		}
-		recording = (Recording) savedInstanceState.getSerializable("recording");
+		recording = (DeviceRecording) savedInstanceState.getSerializable("recording");
 		currentConfiguration = (DeviceConfiguration) savedInstanceState
 				.getSerializable("configSelected");
 		recordingName = savedInstanceState.getString("recordingName")
@@ -650,13 +650,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		Date date = new Date();
 
-		recording = new Recording();
+		recording = new DeviceRecording();
 		recording.setName(recordingName);
-		recording.setConfig(currentConfiguration);
+		recording.setConfiguration(currentConfiguration);
 		recording.setSavedDate(dateFormat.format(date));
 		recording.setDuration(duration);
 		try {
-			Dao<Recording, Integer> dao = getHelper().getRecordingDao();
+			Dao<DeviceRecording, Integer> dao = getHelper().getRecordingDao();
 			dao.create(recording);
 		} catch (SQLException e) {
 			Log.e(TAG, "saving recording exception", e);

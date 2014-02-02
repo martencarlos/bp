@@ -6,7 +6,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import ceu.marten.model.DeviceConfiguration;
-import ceu.marten.model.Recording;
+import ceu.marten.model.DeviceRecording;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
@@ -26,7 +26,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final int DATABASE_VERSION = 1;
 
 	private Dao<DeviceConfiguration, Integer> deviceConfigDao;
-	private Dao<Recording, Integer> sessionDao;
+	private Dao<DeviceRecording, Integer> sessionDao;
 
 	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -37,7 +37,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			ConnectionSource connectionSource) {
 		try {
 			TableUtils.createTable(connectionSource, DeviceConfiguration.class);
-			TableUtils.createTable(connectionSource, Recording.class);
+			TableUtils.createTable(connectionSource, DeviceRecording.class);
 		} catch (SQLException e) {
 			Log.e(TAG, "Unable to create datbase", e);
 		}
@@ -48,7 +48,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			ConnectionSource connectionSource, int oldVer, int newVer) {
 		try {
 			TableUtils.dropTable(connectionSource, DeviceConfiguration.class, true);
-			TableUtils.dropTable(connectionSource, Recording.class, true);
+			TableUtils.dropTable(connectionSource, DeviceRecording.class, true);
 			onCreate(sqliteDatabase, connectionSource);
 		} catch (SQLException e) {
 			Log.e(TAG, "Unable to upgrade database from version " + oldVer
@@ -63,9 +63,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return deviceConfigDao;
 	}
 
-	public Dao<Recording, Integer> getRecordingDao() throws SQLException {
+	public Dao<DeviceRecording, Integer> getRecordingDao() throws SQLException {
 		if (sessionDao == null) {
-			sessionDao = getDao(Recording.class);
+			sessionDao = getDao(DeviceRecording.class);
 		}
 		return sessionDao;
 	}

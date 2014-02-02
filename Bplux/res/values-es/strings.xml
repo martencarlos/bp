@@ -35,6 +35,8 @@
     <string name="ca_error_saving_configs_message">La configuración no se ha almacenado debido a un problema con la base de datos interna</string>
     <string name="ca_error_loading_configs_message">No se han podido cargar las configuraciones de la base de datos interna</string>
     <string name="ca_error_loading_recordings_message">No se han podido cargar las grabaciones de la base de datos interna</string>
+    <string name="ca_error_deleting_configuration_message">Ha habido un problema al intentar borrar la configuracion de la base de datos</string>
+    <string name="ca_error_updating_configuration_message">Ha habido un problema al intentar actualizar la configuracion de la base de datos</string>
     
     <!-- CONFIGURATION LIST ADAPTER -->
     <string name="cl_active">Activos</string>
@@ -76,7 +78,6 @@
     <string name="nc_button_submit">Guardar</string>
     
     <string name="nc_channels_to_activate">Canales a activar:  </string>
-    <string name="nc_channels_to_display">Canales a mostrar:  </string>
     <string name="nc_error_channels_to_display">Canales a mostrar tienen que ser menos de 3</string>
     <string name="nc_error_max_frequency">La frecuencia máxima es </string>
     <string name="nc_error_min_frequency">La frecuencia mínima es </string>

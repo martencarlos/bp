@@ -54,7 +54,7 @@ public class ConfigurationsListAdapter extends ArrayAdapter<DeviceConfiguration>
 				+ " " + configuration.getActiveChannels().toString());
 		channelsToDisplay.setText(context.getString(R.string.cl_display)
 				+ " "
-				+ configuration.getChannelsToDisplay().toString());
+				+ configuration.getDisplayChannels().toString());
 		
 		return rowView;
 	}

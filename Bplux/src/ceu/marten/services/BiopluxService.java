@@ -50,8 +50,8 @@ public class BiopluxService extends Service {
 	//Used to synchronize timer and main thread
 	private static final Object writingLock = new Object();
 	private boolean isWriting;
-	PowerManager mgr;
-	WakeLock wakeLock;
+	private PowerManager mgr;
+	private WakeLock wakeLock;
 	
 	private Timer timer = new Timer();
 	private boolean killServiceError = false;
@@ -178,9 +178,7 @@ public class BiopluxService extends Service {
 		// BIOPLUX INITIALIZATION
 		try {
 			connection = Device.Create(configuration.getMacAddress());
-			connection.BeginAcq(configuration.getReceptionFrequency(),
-					configuration.getActiveChannelsAsInteger(),
-					configuration.getNumberOfBits());
+			connection.BeginAcq(configuration.getReceptionFrequency(), configuration.getActiveChannelsAsInteger(), configuration.getNumberOfBits());
 		} catch (BPException e) {
 			try {
 				connection.Close();

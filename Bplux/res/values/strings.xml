@@ -30,8 +30,10 @@
     <string name="ca_confirm_dialog_negative">Cancel</string>
     <string name="ca_error_dialog_title">An error occurred</string>
     <string name="ca_error_saving_configs_message">There was a problem saving configurations to the internal database</string>
-    <string name="ca_error_loading_configs_message">There was a problem loading configurations</string>
-    <string name="ca_error_loading_recordings_message">There was a problem loading recordings</string>
+    <string name="ca_error_loading_configs_message">There was a problem loading configurations from internal database</string>
+    <string name="ca_error_loading_recordings_message">There was a problem loading recordings from internal database</string>
+    <string name="ca_error_deleting_configuration_message">There was a problem deleting the selected configuration from internal database</string>
+    <string name="ca_error_updating_configuration_message">There was a problem updating the selected configuration from internal database</string>
     
     <string name="ca_empty_list">There are no configurations\nTo add one, press the button below</string>
     
@@ -79,7 +81,6 @@
     <string name="nc_button_submit">Submit</string>
     
     <string name="nc_channels_to_activate">Channels to activate: </string>
-    <string name="nc_channels_to_display">Channels to display: </string>
     <string name="nc_error_channels_to_display">Channels to display have to be less than 3</string>
     <string name="nc_error_max_frequency">Max frequency is </string>
     <string name="nc_error_min_frequency">Min frequency is </string>

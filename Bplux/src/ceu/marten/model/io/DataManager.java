@@ -42,7 +42,7 @@ public class DataManager {
 		this.context = serviceContext;
 		this.recordingName = _recordingName;
 		this.configuration = _configuration;
-		this.numberOfChannelsActivated = configuration.getNumberOfChannelsActivated();
+		this.numberOfChannelsActivated = configuration.getActiveChannelsNumber();
 		frameCounter = 0;
 		
 		try {
@@ -153,7 +153,7 @@ public class DataManager {
 			out.write(String.format("%-10s %-14s%n", "# "+context.getString(R.string.bs_header_duration), duration
 					+ " seconds"));
 			out.write(String.format("%-10s %-14s%n%n", "# "+context.getString(R.string.bs_header_active_channels),
-					configuration.getActiveChannelsAsString()));
+					configuration.getActiveChannels().toString()));
 			
 			out.write("#num ");
 			for(int i: configuration.getActiveChannels())

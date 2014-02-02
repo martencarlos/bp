@@ -24,7 +24,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import ceu.marten.bplux.R;
-import ceu.marten.model.Recording;
+import ceu.marten.model.DeviceRecording;
 import ceu.marten.model.io.DatabaseHelper;
 import ceu.marten.ui.adapters.RecordingsListAdapter;
 
@@ -42,7 +42,7 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	private ListView lvRecordings;
 	private String recordingName;
 	private RecordingsListAdapter baseAdapter;
-	private ArrayList<Recording> recordingsArrayList = null;
+	private ArrayList<DeviceRecording> recordingsArrayList = null;
 	private int[] reverseSortedPositions;
 	private SharedPreferences.Editor prefEditor = null;
 	private LayoutInflater inflater;
@@ -249,7 +249,7 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		}else{
 			for (int position : reverseSortedPositions) {
 				baseAdapter.remove(position);
-				Dao<Recording, Integer> dao = null;
+				Dao<DeviceRecording, Integer> dao = null;
 
 				try {
 					dao = getHelper().getRecordingDao();
@@ -270,13 +270,13 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	}
 
 	public boolean loadRecordings() {
-		Dao<Recording, Integer> dao;
-		recordingsArrayList = new ArrayList<Recording>();
+		Dao<DeviceRecording, Integer> dao;
+		recordingsArrayList = new ArrayList<DeviceRecording>();
 		try {
 			dao = getHelper().getRecordingDao();
-			QueryBuilder<Recording, Integer> builder = dao.queryBuilder();
+			QueryBuilder<DeviceRecording, Integer> builder = dao.queryBuilder();
 			builder.orderBy("startDate", false).limit(30L);
-			recordingsArrayList = (ArrayList<Recording>) dao.query(builder
+			recordingsArrayList = (ArrayList<DeviceRecording>) dao.query(builder
 					.prepare());
 		} catch (SQLException e) {
 			Log.e(TAG, "exception loading recordings from database ", e);
@@ -286,8 +286,8 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		return true;
 	}
 	
-	public boolean deleteRecording(Recording recordingToDelete) {
-		Dao<Recording, Integer> dao = null;
+	public boolean deleteRecording(DeviceRecording recordingToDelete) {
+		Dao<DeviceRecording, Integer> dao = null;
 		try {
 			dao = getHelper().getRecordingDao();
 			dao.delete(recordingToDelete);
