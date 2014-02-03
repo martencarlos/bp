@@ -15,7 +15,7 @@ public class HelpDialog extends Dialog {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.dialog_help);
-		
+		//TODO message is hard coded
 	}
 
 }

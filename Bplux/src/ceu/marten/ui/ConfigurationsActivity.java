@@ -90,9 +90,19 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		inflater = this.getLayoutInflater();
 		if (loadConfigurations()) {
 			setupConfigurationsListView();
-			setupRecordingNameDialog();//TODO move to onStart() 
 			setupConfirmationDialog();
 		}
+	}
+	
+	/**
+	 * Sets up the recording name dialog. Done on onStart() so that the
+	 * recording name editText is cleared when user comes back from a recording
+	 * session
+	 */
+	@Override
+	protected void onStart() {
+		setupRecordingNameDialog();
+		super.onStart();
 	}
 
 	/**

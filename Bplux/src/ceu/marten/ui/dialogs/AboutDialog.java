@@ -26,16 +26,14 @@ public class AboutDialog extends Dialog {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.dialog_about);
-		TextView tv = (TextView) findViewById(R.id.legal_text);
-		tv.setText(readRawTextFile(R.raw.legal));
+		TextView legalText = (TextView) findViewById(R.id.legal_text);
+		legalText.setText(readRawTextFile(R.raw.legal));
 
-		tv = (TextView) findViewById(R.id.info_text);
+		legalText = (TextView) findViewById(R.id.info_text);
+		legalText.setText(Html.fromHtml(readRawTextFile(R.raw.info)));
+		legalText.setLinkTextColor(Color.WHITE);
 
-		tv.setText(Html.fromHtml(readRawTextFile(R.raw.info)));
-
-		tv.setLinkTextColor(Color.WHITE);
-
-		Linkify.addLinks(tv, Linkify.ALL);
+		Linkify.addLinks(legalText, Linkify.ALL);
 
 	}
 

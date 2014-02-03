@@ -67,15 +67,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			uiMacAddress;
 	private static Button uiStartStopbutton;
 	private static Chronometer chronometer;
-	
-	// ERROR MESSAGES
-	private static String errorMessageAddress;
-	private static String errorMessageDevice;
-	private static String errorMessageContacting;
-	private static String errorMessageAdapter;
-	private static String errorMessagePort;
-	private static String errorMessageProcessingFrames;
-	private static String errorMessageSavingRecording;
 
 	// DIALOGS
 	private static AlertDialog connectionErrorDialog;
@@ -88,7 +79,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static DeviceConfiguration recordingConfiguration;
 	private static DeviceRecording recording;
 	private Graph[] graphs;
-	private double  timeValue = 0;
+	private double  timeCounter = 0;
 	private String duration = null; 
 	
 	private boolean isServiceBounded = false;
@@ -149,9 +140,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			serviceMessenger = new Messenger(service);
 			isServiceBounded = true;
+			Log.i(TAG, "service binded");
 			try {
-				Message msg = Message.obtain(null,
-						BiopluxService.MSG_REGISTER_AND_START);
+				Message msg = Message.obtain(null, BiopluxService.MSG_REGISTER_AND_START);
 				msg.replyTo = activityMessenger;
 				serviceMessenger.send(msg);
 			} catch (RemoteException e) {
@@ -178,10 +169,10 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	 */
 	 void appendDataToGraphs(short[] data) {
 		if(!serviceError){
-			timeValue++;
+			timeCounter++;
 			for (int i = 0; i < graphs.length; i++) {
 				graphs[i].getSerie().appendData(
-						new GraphViewData(timeValue / recordingConfiguration.getSamplingFrequency()*1000,
+						new GraphViewData(timeCounter / recordingConfiguration.getSamplingFrequency()*1000,
 								data[i]), true, maxDataCount);
 			}
 		}
@@ -192,23 +183,20 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	 * stopped
 	 */
 	private void sendRecordingDuration() {
-		if (isServiceBounded) {
-			if (serviceMessenger != null) {
-				try {
-					Message msg = Message.obtain(null,
-							BiopluxService.MSG_RECORDING_DURATION, 0, 0);
-					Bundle extras = new Bundle();
-					extras.putString("duration", duration); //TODO HARD CODED
-					msg.setData(extras);
-					msg.replyTo = activityMessenger;
-					serviceMessenger.send(msg);
-	
-				} catch (RemoteException e) {
-					Log.e(TAG, "Error sending duration to service", e);
-					//TODO not informing the user
-				}
+		if (isServiceBounded && serviceMessenger != null) {
+			try {
+				Message msg = Message.obtain(null, BiopluxService.MSG_RECORDING_DURATION, 0, 0);
+				Bundle extras = new Bundle();
+				extras.putString("duration", duration); // TODO HARD CODED
+				msg.setData(extras);
+				msg.replyTo = activityMessenger;
+				serviceMessenger.send(msg);
+
+			} catch (RemoteException e) {
+				Log.e(TAG, "Error sending duration to service", e);
+				// TODO not informing the user
 			}
-		}
+		}else{}//TODO not catching the error or informing the user
 	}
 
 	@Override
@@ -216,82 +204,72 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ly_new_recording);
+		Log.i(TAG, "onCreate()");
 
 		// GETTING EXTRA INFO FROM INTENT
 		extras = getIntent().getExtras();
 		recordingConfiguration = (DeviceConfiguration) extras.getSerializable("configSelected");//TODO HARD CODED
 		recording = new DeviceRecording();
 		recording.setName(extras.getString("recordingName").toString()); //TODO HARD CODED
-
-		// INIT LOCAL VARIABLES
-		int numberOfChannelsToDisplay = recordingConfiguration.getDisplayChannelsNumber();
-		LayoutParams graphParams, detailParameters;
-		View graphsView;
-
-		// INIT GLOBAL VARIABLES
-		errorMessageAddress = getResources().getString(R.string.bp_address_incorrect);
-		errorMessageAdapter = getResources().getString(R.string.bp_adapter_not_found);
-		errorMessageDevice = getResources().getString(R.string.bp_device_not_found);
-		errorMessageContacting = getResources().getString(R.string.bp_contacting_device);
-		errorMessagePort = getResources().getString(R.string.bp_port_could_not_be_opened);
-		errorMessageProcessingFrames = getResources().getString(R.string.bp_error_processing_frames);
-		errorMessageSavingRecording = getResources().getString(R.string.bp_error_saving_recording);
-		savingDialog = new ProgressDialog(classContext);
-		inflater = this.getLayoutInflater();
-		maxDataCount = Integer.parseInt((getResources()
-				.getString(R.string.graph_max_data_count)));//TODO max data count fixed in 5 seconds max
-		graphs = new Graph[numberOfChannelsToDisplay];
 		
 
-		// INIT LAYOUT
+		// INIT GLOBAL VARIABLES
+		savingDialog = new ProgressDialog(classContext);
+		inflater = this.getLayoutInflater();
+		//TODO max data count fixed in 5 seconds max
+		maxDataCount = Integer.parseInt((getResources().getString(R.string.graph_max_data_count)));
+		graphs = new Graph[recordingConfiguration.getDisplayChannelsNumber()];
+		
+		// INIT ANDROID' WIDGETS
+		uiRecordingName = (TextView) findViewById(R.id.nr_txt_recordingName);
+		uiRecordingName.setText(recording.getName());
+		uiStartStopbutton = (Button) findViewById(R.id.nr_bttn_StartPause);
+		chronometer = (Chronometer) findViewById(R.id.nr_chronometer);
+		
+		initActivityContentLayout();
+		
+		// SETUP DIALOG
+		setupConnectionErrorDialog();
+	}
+	
+	private void initActivityContentLayout() {
+		
+		LayoutParams graphParams, detailParameters;
+		View graphsView = findViewById(R.id.nr_graphs);
+		
+		// Initializes layout parameters
 		graphParams = new LayoutParams(LayoutParams.MATCH_PARENT,
 				Integer.parseInt((getResources()
 						.getString(R.string.graph_height))));
 		detailParameters = new LayoutParams(LayoutParams.MATCH_PARENT,
 				LayoutParams.WRAP_CONTENT);
-		graphsView = findViewById(R.id.nr_graphs);
 
-		// ON SCREEN ROTATION, RESTORE GRAPH VIEWS
-		@SuppressWarnings("deprecation")
-		final Object data = getLastNonConfigurationInstance();
-		if (data != null) {
-			graphs = (Graph[]) data;
-			for (int i = 0; i < graphs.length; i++) {
-				((ViewGroup) (graphs[i].getGraphView().getParent()))
-						.removeView(graphs[i].getGraphView());
-				View graph = inflater.inflate(R.layout.in_ly_graph, null);
-				((ViewGroup) graph).addView(graphs[i].getGraphView());
-				((ViewGroup) graphsView).addView(graph, graphParams);
-			}
-		}
-		// ELSE, NORMAL GRAPHS INITIALIZATION
-		else {
-			for (int i = 0; i < numberOfChannelsToDisplay; i++) {
-				graphs[i] = new Graph(this,
-						getString(R.string.nc_dialog_channel)
-								+ " "
-								+ recordingConfiguration.getDisplayChannels()
-										.get(i).toString());
-				LinearLayout graph = (LinearLayout) inflater.inflate(
-						R.layout.in_ly_graph, null);
-				((ViewGroup) graph).addView(graphs[i].getGraphView());
-				((ViewGroup) graphsView).addView(graph, graphParams);
-			}
+		// Initializes graphs layout
+		for (int i = 0; i < recordingConfiguration.getDisplayChannelsNumber(); i++) {
+			graphs[i] = new Graph(this, getString(R.string.nc_dialog_channel)
+					+ " "
+					+ recordingConfiguration.getDisplayChannels().get(i)
+							.toString());
+			LinearLayout graph = (LinearLayout) inflater.inflate(
+					R.layout.in_ly_graph, null);
+			((ViewGroup) graph).addView(graphs[i].getGraphView());
+			((ViewGroup) graphsView).addView(graph, graphParams);
 		}
 
-		// INIT ANDROID' WIDGETS
-		uiRecordingName = (TextView) findViewById(R.id.nr_txt_recordingName);
-		// displays the recording name
-		uiRecordingName.setText(recording.getName());
-		uiStartStopbutton = (Button) findViewById(R.id.nr_bttn_StartPause);
-		chronometer = (Chronometer) findViewById(R.id.nr_chronometer);
-
-		// IF ONLY ONE CHANNEL IS BEING DISPLAY SHOW ITS DETAILS
-		if (numberOfChannelsToDisplay == 1) {
+		// If just one channel is being displayed, show configuration details
+		if (recordingConfiguration.getDisplayChannelsNumber() == 1) {
 			View details = inflater.inflate(R.layout.in_ly_graph_details, null);
 			((ViewGroup) graphsView).addView(details, detailParameters);
-			findDetailViews();
+			
+			// get views
+			uiConfigurationName = (TextView) findViewById(R.id.nr_txt_configName);
+			uiNumberOfBits = (TextView) findViewById(R.id.nr_txt_config_nbits);
+			uiReceptionFrequency = (TextView) findViewById(R.id.nr_reception_freq);
+			uiSamplingFrequency = (TextView) findViewById(R.id.nr_sampling_freq);
+			uiActiveChannels = (TextView) findViewById(R.id.nr_txt_channels_active);
+			uiMacAddress = (TextView) findViewById(R.id.nr_txt_mac);
 
+			// fill them
 			uiConfigurationName.setText(recordingConfiguration.getName());
 			uiReceptionFrequency.setText(String.valueOf(recordingConfiguration
 					.getReceptionFrequency()) + " Hz");
@@ -300,20 +278,11 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			uiNumberOfBits.setText(String.valueOf(recordingConfiguration
 					.getNumberOfBits()) + " bits");
 			uiMacAddress.setText(recordingConfiguration.getMacAddress());
-			uiActiveChannels.setText(recordingConfiguration
-					.getActiveChannels().toString());
+			uiActiveChannels.setText(recordingConfiguration.getActiveChannels()
+					.toString());
 		}
-
-		// IF SERVICE IS RUNNING BIND TO IT
-		if (isServiceRunning()) {//TODO MOVE TO ONSTART()
-			bindToService();
-			uiStartStopbutton.setText(getString(R.string.nr_button_stop));
-		}
-
-		// SETUP DIALOG
-		setupConnectionErrorDialog();
 	}
-
+	
 	/**
 	 * called when the back button is pressed and the recording is still
 	 * running. On positive click, Stops and saves the recording, finishes
@@ -444,46 +413,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 								} catch (SQLException e) {
 									Log.e(TAG, "saving recording exception", e);
 								}
-								//TODO duplicate code
-								//RESET GRAPHS AND GRAPH VIEWS
-								timeValue = 0;
-								LayoutParams graphParams = new LayoutParams(LayoutParams.MATCH_PARENT,
-										Integer.parseInt((getResources()
-												.getString(R.string.graph_height))));
-								LayoutParams detailParameters = new LayoutParams(LayoutParams.MATCH_PARENT,
-										LayoutParams.WRAP_CONTENT);
 								
+								// Reset activity content
+								timeCounter = 0;
 								View graphsView = findViewById(R.id.nr_graphs);
 								((ViewGroup) graphsView).removeAllViews();
-								for (int i = 0; i < graphs.length; i++) {
-									graphs[i] = new Graph(classContext,
-											getString(R.string.nc_dialog_channel)
-													+ " "
-													+ recordingConfiguration.getDisplayChannels()
-															.get(i).toString());
-									LinearLayout graph = (LinearLayout) inflater.inflate(
-											R.layout.in_ly_graph, null);
-									((ViewGroup) graph).addView(graphs[i].getGraphView());
-									((ViewGroup) graphsView).addView(graph, graphParams);
-								}
-							
-								if (recordingConfiguration.getDisplayChannelsNumber() == 1) {
-									View details = inflater.inflate(R.layout.in_ly_graph_details, null);
-									((ViewGroup) graphsView).addView(details, detailParameters);
-									findDetailViews();
-
-									uiConfigurationName.setText(recordingConfiguration.getName());
-									uiReceptionFrequency.setText(String.valueOf(recordingConfiguration
-											.getReceptionFrequency()) + " Hz");
-									uiSamplingFrequency.setText(String.valueOf(recordingConfiguration
-											.getSamplingFrequency()) + " Hz");
-									uiNumberOfBits.setText(String.valueOf(recordingConfiguration
-											.getNumberOfBits()) + " bits");
-									uiMacAddress.setText(recordingConfiguration.getMacAddress());
-									uiActiveChannels.setText(recordingConfiguration
-											.getActiveChannels().toString());
-								}
-								startRecording();//TODO verify
+								initActivityContentLayout();
+								startRecording();
 							}
 						});
 		builder.setNegativeButton(
@@ -506,63 +442,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		if (isChronometerRunning)
 			showBackDialog();
 		else {
-			super.onBackPressed();//TODO verify
+			super.onBackPressed();
 			overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 		}
-	}
-
-	/**
-	 * Saves the chronometer base if its running, the recording and the counter
-	 * variables just before a change on screen orientation
-	 */
-	@Override
-	protected void onSaveInstanceState(Bundle savedInstanceState) {
-		super.onSaveInstanceState(savedInstanceState);
-		if (isChronometerRunning) {
-			extras.putLong("chronometerBase", chronometer.getBase()); //TODO HARD CODE
-		} else
-			extras.putLong("chronometerBase", 0); //TODO HARD CODE
-		
-		extras.putSerializable("recording", recording); //TODO HARD CODE
-		extras.putDouble("xcounter", timeValue); //TODO HARD CODE
-		savedInstanceState.putAll(extras);
-	}
-
-	/**
-	 * Saves all the graph views before a screen orientation change
-	 */
-	@Override
-	public Object onRetainNonConfigurationInstance() {
-		return graphs;
-	}
-
-	/**
-	 * Restores the chronometer base if it was other than 0. ...
-	 */
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		if (savedInstanceState.getLong("chronometerBase") != 0) { //TODO HARD CODE
-			chronometer.setBase(savedInstanceState.getLong("chronometerBase"));//TODO HARD CODE
-			chronometer.start();
-			isChronometerRunning = true;
-		}
-		recording = (DeviceRecording) savedInstanceState.getSerializable("recording");//TODO HARD CODE
-		//TODO this two weren't previously saved and the counter is not restored
-		recordingConfiguration = (DeviceConfiguration) savedInstanceState.getSerializable("configSelected");//TODO HARD CODE
-		recording.setName(savedInstanceState.getString("recordingName").toString());//TODO HARD CODE
-	}
-
-	/**
-	 * Gets the android widgets view to modify them later
-	 */
-	private void findDetailViews() {
-		uiConfigurationName = (TextView) findViewById(R.id.nr_txt_configName);
-		uiNumberOfBits = (TextView) findViewById(R.id.nr_txt_config_nbits);
-		uiReceptionFrequency = (TextView) findViewById(R.id.nr_reception_freq);
-		uiSamplingFrequency = (TextView) findViewById(R.id.nr_sampling_freq);
-		uiActiveChannels = (TextView) findViewById(R.id.nr_txt_channels_active);
-		uiMacAddress = (TextView) findViewById(R.id.nr_txt_mac);
 	}
 
 	/**
@@ -572,12 +454,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		stopChronometer();
 		sendRecordingDuration();
 		saveRecording();
-		unbindOfService();
+		unbindFromService();
 		stopService(new Intent(NewRecordingActivity.this,BiopluxService.class));
 		uiStartStopbutton.setText(getString(R.string.nr_button_start));
 		
-		savingDialog.setTitle("Compressing file..."); //TODO HARD CODE
-		savingDialog.setMessage("Please wait. This may take a few seconds"); //TODO HARD CODE
+		savingDialog.setTitle(getString(R.string.nr_compressing_dialog_title));
+		savingDialog.setMessage(getString(R.string.nr_compressing_dialog_message)); 
 		savingDialog.setCancelable(false);
 		savingDialog.setIndeterminate(true);
 		savingDialog.show();
@@ -592,10 +474,10 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	 */
 	public void onClickedStartStop(View view) { //TODO change name
 		// Starts recording
-		if (!isServiceRunning() && timeValue == 0) {
+		if (!isServiceRunning() && timeCounter == 0) {
 			startRecording();
 		// Overwrites recording
-		} else if (!isServiceRunning() && timeValue != 0) {
+		} else if (!isServiceRunning() && timeCounter != 0) {
 			showOverwriteDialog();
 		// Stops recording
 		} else if (isServiceRunning()) {
@@ -628,7 +510,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 		
 		progress = ProgressDialog.show(this,getResources().getString(R.string.nr_progress_dialog_title),getResources().getString(R.string.nr_progress_dialog_message), true);
-		Thread connectionThread = new Thread(new Runnable() {
+		Thread connectionThread = 
+				new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -657,9 +540,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			}
 		});
 		
-		if(recordingConfiguration.getMacAddress().compareTo("test")==0 && !isServiceRunning() && timeValue == 0)
+		if(recordingConfiguration.getMacAddress().compareTo("test")==0 && !isServiceRunning() && timeCounter == 0)
 			connectionThread.start();
-		else if(mBluetoothAdapter.isEnabled() && !isServiceRunning() && timeValue == 0) {
+		else if(mBluetoothAdapter.isEnabled() && !isServiceRunning() && timeCounter == 0) {
 			connectionThread.start();
 		}
 		return false;
@@ -671,28 +554,28 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	 * 
 	 * @param errorCode
 	 */
-	private static void displayConnectionErrorDialog(int errorCode) {
+	private void displayConnectionErrorDialog(int errorCode) {
 		switch(errorCode){
 		case 1:
-			connectionErrorDialog.setMessage(errorMessageAddress);
+			connectionErrorDialog.setMessage(getResources().getString(R.string.bp_address_incorrect));
 			break;
 		case 2:
-			connectionErrorDialog.setMessage(errorMessageAdapter);
+			connectionErrorDialog.setMessage(getResources().getString(R.string.bp_adapter_not_found));
 			break;
 		case 3:
-			connectionErrorDialog.setMessage(errorMessageDevice);
+			connectionErrorDialog.setMessage(getResources().getString(R.string.bp_device_not_found));
 			break;
 		case 4:
-			connectionErrorDialog.setMessage(errorMessageContacting);
+			connectionErrorDialog.setMessage(getResources().getString(R.string.bp_contacting_device));
 			break;
 		case 5:
-			connectionErrorDialog.setMessage(errorMessagePort);
+			connectionErrorDialog.setMessage(getResources().getString(R.string.bp_port_could_not_be_opened));
 			break;
 		case 6:
-			connectionErrorDialog.setMessage(errorMessageProcessingFrames);
+			connectionErrorDialog.setMessage(getResources().getString(R.string.bp_error_processing_frames));
 			break;
 		case 7:
-			connectionErrorDialog.setMessage(errorMessageSavingRecording);
+			connectionErrorDialog.setMessage(getResources().getString(R.string.bp_error_saving_recording));
 			break;
 		default:
 			connectionErrorDialog.setMessage("FATAL ERROR"); //TODO HARD CODED
@@ -785,10 +668,11 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	/**
 	 * Detach our existing connection with the service
 	 */
-	void unbindOfService() {
+	void unbindFromService() {
 		if (isServiceBounded) {
 			unbindService(bindConnection);
 			isServiceBounded = false;
+			Log.i(TAG, "service unbinded");
 		}
 	}
 	
@@ -811,26 +695,18 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 	
 	/**
-	 * Detaches activity's connection with the service.
-	 */
-	@Override
-	protected void onStop() {
-		super.onStop();
-		try {
-			unbindOfService();
-		} catch (Throwable t) {
-			Log.e(TAG,"failed to unbind from service when activity is destroyed", t);
-			//TODO not notifying the user
-		}
-	}
-	
-	/**
 	 * Destroys activity
 	 */
 	@Override
 	protected void onDestroy() {
-		Log.i(TAG, "destroying activity");
+		try {
+			unbindFromService();
+		} catch (Throwable t) {
+			Log.e(TAG,"failed to unbind from service when activity is destroyed", t);
+			//TODO not notifying the user
+		}
 		super.onDestroy();
+		Log.i(TAG, "onDestroy()");
 	}
 
 }

@@ -112,7 +112,7 @@
     <string name="nr_back_dialog_title">Estas seguro?</string>
     <string name="nr_bluetooth_dialog_title">Problema con bluetooth</string>
     <string name="nr_overwrite_dialog_title">La grabación actual será sobrescrita</string>
-    <string name="nr_overwrite_dialog_message">¿Desea continuar?</string>
+    <string name="nr_overwrite_dialog_message">La grabacion actual se perderá. ¿Desea continuar?</string>
     <string name="nr_back_dialog_message">Si procedes, la grabación será detenida y almacenada</string>
     <string name="nr_overwrite_dialog_positive_button">Continuar</string>
     <string name="nr_bluetooth_dialog_message">Bluetooth tiene que estar encendido para la conexión con el dispositivo Bioplux</string>
@@ -120,6 +120,8 @@
     <string name="nr_bluetooth_dialog_positive_button">Conectar</string>
     <string name="nr_progress_dialog_title">Buscando dispositivos Bioplux</string>
     <string name="nr_progress_dialog_message">Intentando establecer conexion</string>
+    <string name="nr_compressing_dialog_title">Comprimiendo grabacion</string>
+    <string name="nr_compressing_dialog_message">La compresion puede llegar a tardar unos pocos minutos</string>
     
     <!-- BIOPLUX NOTIFICATION MESSAGES -->
     <string name="bp_address_incorrect">La dirección MAC especificada es sintaticamente incorrecta</string>
@@ -132,12 +134,15 @@
     <string name="bp_positive_button">Entendido</string>
     
      <!-- BIOPLUX SERVICE -->
-    <string name="bs_header_name">Nombre de configuración: </string>
+    <string name="bs_header_name">Nombre de configuracion: </string>
     <string name="bs_header_date">Fecha y hora de inicio: </string>
     <string name="bs_header_frequency">Frecuencia: </string>
-    <string name="bs_header_bits">Número de bits: </string>
-    <string name="bs_header_duration">Duración: </string>
+    <string name="bs_header_bits">Numero de bits: </string>
+    <string name="bs_header_duration">Duracion: </string>
     <string name="bs_header_active_channels">Canales activos: </string>
+    
+    <string name="bs_notification_title">Dispositivo conectado</string>
+    <string name="bs_notification_message">Recibiendo muestras del dispositivo bioplux..</string>
     
     
     <!-- DIALOG NAME -->

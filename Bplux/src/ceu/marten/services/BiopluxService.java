@@ -93,7 +93,7 @@ public class BiopluxService extends Service {
 			case MSG_REGISTER_AND_START:
 				// register client
 				client = msg.replyTo;
-				// start processing frames timer
+				
 				wakeLock.acquire();
 				timer.schedule(new TimerTask() {
 					public void run() {
@@ -228,19 +228,16 @@ public class BiopluxService extends Service {
 		// SET THE BASICS
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
 				this).setSmallIcon(R.drawable.notification)
-				.setContentTitle("Device Connected")//TODO HARD CODED
-				.setContentText("service running, receiving data..");//TODO HARD CODED
+				.setContentTitle(getString(R.string.bs_notification_title))
+				.setContentText(getString(R.string.bs_notification_message));
 
-		// EXTRA INFO ON INTENT
+		// CREATE THE INTENT CALLED WHEN NOTIFICATION IS PRESSED
 		Intent newRecordingIntent = new Intent(this, NewRecordingActivity.class);
-		newRecordingIntent.putExtra("recordingName", recordingName); //TODO HARD CODED
-		newRecordingIntent.putExtra("configSelected", configuration);//TODO HARD CODED
 
 		// PENDING INTENT
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-				newRecordingIntent, 0);
+				newRecordingIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 		mBuilder.setContentIntent(pendingIntent);
-		mBuilder.setOngoing(true);
 
 		// CREATES THE NOTIFICATION AND START SERVICE AS FOREGROUND
 		Notification serviceNotification = mBuilder.build();

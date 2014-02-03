@@ -43,11 +43,6 @@ import ceu.marten.ui.adapters.DisplayChannelsListAdapter;
  */
 public class NewConfigurationActivity extends Activity {
 
-	// KEYS USE FOR SAVING AND RESTORING INSTANCES ON SCREEN ROTATION
-	private static final String CONFIGURATION_KEY = "configuration";
-	private static final String ACTIVE_CHANNELS_KEY = "activeChannels";
-	private static final String DISPLAY_CHANNELS_KEY = "displayChannels";
-	
 	// FREQUENCIES MIN, MAX AND DEFUALT VALUES 
 	private static final int RECEPTION_FREQ_MAX = 1000;
 	private static final int RECEPTION_FREQ_MIN = 36;
@@ -302,9 +297,10 @@ public class NewConfigurationActivity extends Activity {
 							activeChannels = activeChannelsListAdapter.getChecked();
 							newConfiguration.setActiveChannels(activeChannels);
 						
-							if (noChannelsActivated(activeChannels))
-								activeChannelsTV.setText("");
-							else{
+							if (noChannelsActivated(activeChannels)){
+								if(activeChannelsTV.getError() == null)
+									activeChannelsTV.setText("");
+							}else{
 								activeChannelsTV.setError(null);
 								activeChannelsTV.setTextColor(getResources().getColor(R.color.blue));
 								activeChannelsTV.setText(getString(R.string.nc_channels_to_activate));
@@ -433,38 +429,6 @@ public class NewConfigurationActivity extends Activity {
 			}
 		}
 		return counter;
-	}
-
-	/**
-	 * Saves the configuration, the active channels text view and the channels
-	 * to display text view just before changing screen orientation
-	 * 
-	 */
-	@Override
-	protected void onSaveInstanceState(Bundle savedInstanceState) {
-		super.onSaveInstanceState(savedInstanceState);
-
-		newConfiguration.setName(configurationName.getText().toString());
-		newConfiguration.setMacAddress(macAddress.getText().toString());
-
-		savedInstanceState.putSerializable(CONFIGURATION_KEY, newConfiguration); 
-		savedInstanceState.putString(ACTIVE_CHANNELS_KEY, activeChannelsTV.getText().toString());
-		savedInstanceState.putString(DISPLAY_CHANNELS_KEY, displayChannelsTV.getText().toString()); 
-
-	}
-
-	/**
-	 * Restores the configuration, the active channels text view and the channels
-	 * to display text view immediately after changing screen orientation
-	 * 
-	 */
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-
-		newConfiguration = (DeviceConfiguration) savedInstanceState.getSerializable(CONFIGURATION_KEY);
-		activeChannelsTV.setText(savedInstanceState.getString(ACTIVE_CHANNELS_KEY));
-		displayChannelsTV.setText(savedInstanceState.getString(DISPLAY_CHANNELS_KEY));
 	}
 
 	/**
