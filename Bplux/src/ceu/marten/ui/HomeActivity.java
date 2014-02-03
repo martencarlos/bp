@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import ceu.marten.bplux.R;
+import ceu.marten.ui.dialogs.AboutDialog;
+import ceu.marten.ui.dialogs.HelpDialog;
 
 public class HomeActivity extends Activity {
 
@@ -51,7 +53,8 @@ public class HomeActivity extends Activity {
 		setContentView(R.layout.ly_home);
 	}
 
-	/* BUTTON EVENTS */
+	/************************ BUTTON EVENTS *******************/
+	
 	public void onClickedStartRecording(View view) {
 		startActivity(new Intent(this, ConfigurationsActivity.class));
 		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);

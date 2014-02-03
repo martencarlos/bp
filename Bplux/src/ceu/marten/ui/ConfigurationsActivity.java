@@ -37,7 +37,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 
 /**
  * Loads, from Android's internal Database, and displays a list of the device
- * configurations, previously created in NewConfigurationsActivity
+ * configurations, previously created in {@link NewConfigurationActivity}
  * 
  * @author Carlos Marten
  * 
@@ -90,7 +90,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		inflater = this.getLayoutInflater();
 		if (loadConfigurations()) {
 			setupConfigurationsListView();
-			setupRecordingNameDialog();//TODO move to onStart()
+			setupRecordingNameDialog();//TODO move to onStart() 
 			setupConfirmationDialog();
 		}
 	}
@@ -207,8 +207,8 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 								
 								removeConfiguration();
 								
-								//checks if don't ask again checkbox is checked if so
-								//commit the changes and reset the dialog because the view must change
+								// checks if 'don't ask again' checkbox is checked if so
+								// commit the changes and reset the dialog because the view must change
 								if (prefEditor != null) {
 									prefEditor.commit();
 									setupConfirmationDialog();
@@ -231,17 +231,12 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	}
 
 	/**
-	 * On back pressed the stack gets cleared and the father activity is called
-	 * for proper navigation
+	 * Destroys activity
 	 */
 	@Override
 	public void onBackPressed() {
-		Intent backIntent = new Intent(this, HomeActivity.class);
-		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		startActivity(backIntent);
-		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 		super.onBackPressed();
+		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 
 	/**
@@ -328,15 +323,14 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		this.reverseSortedPositions = reverseSortedPositions;
 		
 		// getting shared preference to know whether or not to show confirmation dialog
-		boolean dontAskForConfrmation = false;
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		dontAskForConfrmation = sharedPref.getBoolean(SettingsActivity.KEY_PREF_CONF_CONFIG, false);
+		boolean dontAskForConfrmation = sharedPref.getBoolean(SettingsActivity.KEY_PREF_CONF_CONFIG, false);
 
-		if (!dontAskForConfrmation) {
+		if (!dontAskForConfrmation) 
 			confirmationDialog.show();
-		} else {
+		else 
 			removeConfiguration();
-		}
+		
 	}
 	
 	/**
@@ -347,9 +341,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	 */
 	private boolean removeConfiguration(){
 		for (int position : reverseSortedPositions) {
-			baseAdapter.remove(position);
 			Dao<DeviceConfiguration, Integer> dao = null;
-
 			try {
 				dao = getHelper().getDeviceConfigDao();
 				dao.delete(configurations.get(position));
@@ -358,6 +350,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 				showErrorDialog(getResources().getString(R.string.ca_error_deleting_configuration_message));
 				return false;
 			}
+			baseAdapter.remove(position);
 			configurations.remove(position);
 		}
 		displayInfoToast(getString(R.string.ca_configuration_removed));
@@ -455,7 +448,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 
 	/**
 	 * Callback called when 'don't ask again' checkbox of confirmation dialog is
-	 * clicked If check box change its state to checked, puts the global
+	 * clicked. If check box change its state to checked, puts the global
 	 * configuration confirmation preference to true. If its state changed to
 	 * unChecked, puts the preference to false
 	 * 

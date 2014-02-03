@@ -49,9 +49,12 @@ import com.j256.ormlite.dao.Dao;
 import com.jjoe64.graphview.GraphView.GraphViewData;
 
 /**
+ * Used to record a session based on a configuration and display the
+ * corresponding channels or if only one is to be displayed it shows the
+ * configuration' details. Connects to a Bioplux service
  * 
  * @author Carlos Marten
- *
+ * 
  */
 public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
@@ -148,7 +151,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			isServiceBounded = true;
 			try {
 				Message msg = Message.obtain(null,
-						BiopluxService.MSG_REGISTER_CLIENT);
+						BiopluxService.MSG_REGISTER_AND_START);
 				msg.replyTo = activityMessenger;
 				serviceMessenger.send(msg);
 			} catch (RemoteException e) {
@@ -509,7 +512,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	/**
-	 * 
+	 * Saves the chronometer base if its running, the recording and the counter
+	 * variables just before a change on screen orientation
 	 */
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
@@ -525,7 +529,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	/**
-	 * 
+	 * Saves all the graph views before a screen orientation change
 	 */
 	@Override
 	public Object onRetainNonConfigurationInstance() {
@@ -533,7 +537,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	/**
-	 * 
+	 * Restores the chronometer base if it was other than 0. ...
 	 */
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -544,14 +548,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			isChronometerRunning = true;
 		}
 		recording = (DeviceRecording) savedInstanceState.getSerializable("recording");//TODO HARD CODE
-		recordingConfiguration = (DeviceConfiguration) savedInstanceState
-				.getSerializable("configSelected");//TODO HARD CODE
-		recording.setName(savedInstanceState.getString("recordingName")//TODO HARD CODE
-				.toString());
+		//TODO this two weren't previously saved and the counter is not restored
+		recordingConfiguration = (DeviceConfiguration) savedInstanceState.getSerializable("configSelected");//TODO HARD CODE
+		recording.setName(savedInstanceState.getString("recordingName").toString());//TODO HARD CODE
 	}
 
 	/**
-	 * Gets the android widgets view to customize them later
+	 * Gets the android widgets view to modify them later
 	 */
 	private void findDetailViews() {
 		uiConfigurationName = (TextView) findViewById(R.id.nr_txt_configName);
@@ -581,14 +584,20 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 	
 	/**
+	 * Main button of activity. Starts, overwrites and stops recording depending
+	 * of whether the recording was never started, was started or was started
+	 * and stopped
 	 * 
 	 * @param view
 	 */
 	public void onClickedStartStop(View view) { //TODO change name
+		// Starts recording
 		if (!isServiceRunning() && timeValue == 0) {
 			startRecording();
+		// Overwrites recording
 		} else if (!isServiceRunning() && timeValue != 0) {
 			showOverwriteDialog();
+		// Stops recording
 		} else if (isServiceRunning()) {
 			stopRecording();
 		}
@@ -596,13 +605,18 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	
 
 	/**
+	 * Starts the recording if mac address is 'test' and recording is not
+	 * running OR if bluetooth is supported by the device, bluetooth is enabled,
+	 * mac is other than 'test' and recording is not running. Returns always
+	 * false for the main thread to be stopped and thus be available for the
+	 * progress dialog  spinning circle when we test the connection
 	 * 
-	 * @return
+	 * @return boolean
 	 */
 	private boolean startRecording() {
 		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		final ProgressDialog progress;
-		if(recordingConfiguration.getMacAddress().compareTo("test")!=0){ //TODO HARD CODE
+		if(recordingConfiguration.getMacAddress().compareTo("test")!= 0){ //TODO HARD CODE
 			if (mBluetoothAdapter == null) {
 				displayInfoToast("bluetooth not supported");//TODO HARD CODE
 				return false;
@@ -652,6 +666,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 	
 	/**
+	 * Displays an error dialog with corresponding message based on the
+	 * errorCode it receives. If code is unknown it displays FATAL ERROR message
 	 * 
 	 * @param errorCode
 	 */
@@ -679,13 +695,15 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			connectionErrorDialog.setMessage(errorMessageSavingRecording);
 			break;
 		default:
-			connectionErrorDialog.setMessage("FATAL ERROR");
+			connectionErrorDialog.setMessage("FATAL ERROR"); //TODO HARD CODED
 			break;
 		}
 		connectionErrorDialog.show();
 	}
 
 	/**
+	 * Displays a custom view information toast with the message it receives as
+	 * parameter
 	 * 
 	 * @param messageToDisplay
 	 */
@@ -698,7 +716,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	/**
-	 * 
+	 * Starts Android' chronometer widget to display the recordings duration
 	 */
 	private void startChronometer() {
 		chronometer.setBase(SystemClock.elapsedRealtime());
@@ -707,7 +725,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	/**
-	 * 
+	 * Stops the chronometer and calculates the duration of the recording
 	 */
 	private void stopChronometer() {
 		chronometer.stop();
@@ -718,11 +736,11 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	/**
-	 * 
+	 * Saves the recording on Android's internal Database with ORMLite
 	 */
 	public void saveRecording() {
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();
-		Date date = new Date();
+		Date date = new Date();//TODO check if date is properly displayed in emulator
 
 		recording.setConfiguration(recordingConfiguration);
 		recording.setSavedDate(dateFormat.format(date));
@@ -734,12 +752,14 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			Log.e(TAG, "saving recording exception", e);
 			//TODO not informing the user
 		}
-
 	}
 
 	/**
+	 * Gets all the processes that are running on the OS and checks whether the
+	 * bioplux service is running. Returns true if it is running and false
+	 * otherwise
 	 * 
-	 * @return
+	 * @return boolean
 	 */
 	private boolean isServiceRunning() {
 		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -752,7 +772,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	/**
-	 * 
+	 * Attaches connection with the service and passes the recording name and
+	 * the correspondent configuration to it on its intent
 	 */
 	void bindToService() {
 		Intent intent = new Intent(classContext, BiopluxService.class);
@@ -772,16 +793,16 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 	
 	/**
-	 * 
+	 * Widens the graphs' view port
 	 * @param view
 	 */
 	public void zoomIn(View view){
 		for (int i = 0; i < graphs.length; i++)
-			graphs[i].getGraphView().zoomIn(300);
+			graphs[i].getGraphView().zoomIn(300); //TODO HARD CODE, fixed zoom
 	}
 	
 	/**
-	 * 
+	 * Shortens the graphs' view port
 	 * @param view
 	 */
 	public void zoomOut(View view){
@@ -790,7 +811,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 	
 	/**
-	 * 
+	 * Detaches activity's connection with the service.
 	 */
 	@Override
 	protected void onStop() {
@@ -803,7 +824,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 	}
 	
-	
+	/**
+	 * Destroys activity
+	 */
 	@Override
 	protected void onDestroy() {
 		Log.i(TAG, "destroying activity");

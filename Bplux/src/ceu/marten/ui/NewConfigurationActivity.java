@@ -331,28 +331,11 @@ public class NewConfigurationActivity extends Activity {
 	}
 
 	/**
-	 * Returns true if <b>no</b> channels are activated and false if there is at least one activated
-	 * @param channelsActivated
-	 * @return boolean
-	 */
-	private boolean noChannelsActivated(String[] channelsActivated) {
-		int counter = 0;
-		for (int i = 0; i < channelsActivated.length; i++) {
-			if (channelsActivated[i] != null)
-				counter++;
-		}
-		if (counter == 0)
-			return true;
-		else
-			return false;
-	}
-
-	/**
 	 * Creates and shows a dialog for picking which of the active channels the
 	 * user wants to show on his android device. At least one is required
 	 */
 	private void showDisplayChannels() {
-
+	
 		final ArrayList<String> channels = new ArrayList<String>(); //example {channel 1, channel 5}
 		final ArrayList<String> sensors = new ArrayList<String>();  //example {blood pressure, temperature}
 		
@@ -364,13 +347,13 @@ public class NewConfigurationActivity extends Activity {
 				sensors.add(activeSensors[i]);
 			}
 		}
-
+	
 		final DisplayChannelsListAdapter displayChannelsListAdapter = new DisplayChannelsListAdapter(this, channels, sensors, newConfiguration.getDisplayChannels());
 		AlertDialog displayChannelsDialog;
-
+	
 		TextView customTitleView = (TextView) inflater.inflate(R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.nc_dialog_title_channels_to_display);
-
+	
 		// BUILDER
 		AlertDialog.Builder displayChannelsBuilder = new AlertDialog.Builder(this);
 		displayChannelsBuilder.setCustomTitle(customTitleView).setView(getLayoutInflater().inflate(R.layout.dialog_channels_listview, null))
@@ -406,18 +389,35 @@ public class NewConfigurationActivity extends Activity {
 						//dismisses the dialog
 					}
 				});
-
+	
 		// CREATE DIALOG
 		displayChannelsDialog = displayChannelsBuilder.create();
 		displayChannelsDialog.show();
-
+	
 		// LIST VIEW CONFIGURATION
 		ListView channelsToDisplayListView;
 		channelsToDisplayListView = (ListView) displayChannelsDialog.findViewById(R.id.lv_channelsSelection);
 		channelsToDisplayListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		channelsToDisplayListView.setItemsCanFocus(false);
 		channelsToDisplayListView.setAdapter(displayChannelsListAdapter);
+	
+	}
 
+	/**
+	 * Returns true if <b>no</b> channels are activated and false if there is at least one activated
+	 * @param channelsActivated
+	 * @return boolean
+	 */
+	private boolean noChannelsActivated(String[] channelsActivated) {
+		int counter = 0;
+		for (int i = 0; i < channelsActivated.length; i++) {
+			if (channelsActivated[i] != null)
+				counter++;
+		}
+		if (counter == 0)
+			return true;
+		else
+			return false;
 	}
 
 	/**

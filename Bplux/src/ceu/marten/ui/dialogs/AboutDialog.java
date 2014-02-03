@@ -1,4 +1,4 @@
-package ceu.marten.ui;
+package ceu.marten.ui.dialogs;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package ceu.marten.ui;
+package ceu.marten.ui.dialogs;
 
 import ceu.marten.bplux.R;
 import android.app.Dialog;

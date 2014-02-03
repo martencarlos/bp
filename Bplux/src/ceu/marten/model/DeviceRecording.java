@@ -2,6 +2,8 @@ package ceu.marten.model;
 
 import java.io.Serializable;
 
+import ceu.marten.model.io.DatabaseHelper;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -9,6 +11,8 @@ import com.j256.ormlite.table.DatabaseTable;
  * Represents a recording of a session with a specific bioplux device configuration
  * Stored in Android's internal Database with ORMlite annotations 
  * Implements Serializable to transfer instances between activities
+ * 
+ *  If this class is updated. Make sure to update also database version in {@link DatabaseHelper}
  * 
  * @author Carlos Marten
  */

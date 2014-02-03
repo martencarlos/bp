@@ -34,22 +34,34 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
+/**
+ * Loads, from Android's internal Database, and displays a list of the device
+ * recordings, previously created in {@link NewRecordingActivity}
+ * 
+ * @author Carlos Marten
+ * 
+ */
 public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		implements OnDismissCallback{
 
+	// Standard debug constant
 	private static final String TAG = RecordingsActivity.class.getName();
 
-	private ListView lvRecordings;
+	private ListView recordingsLV;
 	private String recordingName;
 	private RecordingsListAdapter baseAdapter;
-	private ArrayList<DeviceRecording> recordingsArrayList = null;
+	private ArrayList<DeviceRecording> recordings = null;
 	private int[] reverseSortedPositions;
 	private SharedPreferences.Editor prefEditor = null;
 	private LayoutInflater inflater;
 	
 	//DIALOGS
-	private AlertDialog confirmDialog, errorDialog;
-
+	private AlertDialog confirmationDialog, errorDialog;
+	
+	/**
+	 * Loads recordings from Android's internal Database, and sets up the
+	 * recording list view and confirmation dialog
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -63,110 +75,189 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		}
 	}
 	
-	@Override
-	public void onBackPressed() {
-	    super.onBackPressed();
-	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+	/**
+	 * Loads recordings from Android's internal Database
+	 * @return true if loading was successful. false when exception is caught 
+	 */
+	private boolean loadRecordings() {
+		Dao<DeviceRecording, Integer> dao;
+		recordings = new ArrayList<DeviceRecording>();
+		try {
+			dao = getHelper().getRecordingDao();
+			QueryBuilder<DeviceRecording, Integer> builder = dao.queryBuilder();
+			builder.orderBy("startDate", false).limit(100L); //TODO HARD CODED
+			recordings = (ArrayList<DeviceRecording>) dao.query(builder.prepare());
+		} catch (SQLException e) {
+			Log.e(TAG, "Exception loading recordings from android' internal database ", e);
+			showErrorDialog(getResources().getString(R.string.ca_error_loading_recordings_message));
+			return false;
+		}
+		return true;
 	}
-	
+
+	/**
+	 * Initializes recording list view with swipe to dismiss adapter
+	 */
+	private void setupRecordingListView() {
+		// SHORT CLICK LISTENER
+		final OnItemClickListener shortPressListener = new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> AdapterView, View configurationView,int position, long id) {
+				recordingName = ((TextView) configurationView.findViewById(R.id.dli_name)).getText().toString();
+				if(fileSizeBiggerThan20Mb())
+					showRecordingTooBigDialog();
+				else
+					showSendRecordingOptions();
+			}
+		};
+		
+		recordingsLV = (ListView) findViewById(R.id.lvSessions);
+		recordingsLV.setOnItemClickListener(shortPressListener);
+		recordingsLV.setEmptyView(findViewById(R.id.empty_list_recordings));
+		
+		baseAdapter = new RecordingsListAdapter(this, recordings);
+		
+		// sets swipe to dismiss adapter from listViewAnimations
+		SwipeDismissAdapter swipeAdapter = new SwipeDismissAdapter(baseAdapter, this);
+		swipeAdapter.setAbsListView(recordingsLV);
+		recordingsLV.setAdapter(baseAdapter);
+	}
+
+	/**
+	 * Sets up delete confirmation dialog used when user swipes recording away to delete it.
+	 * On positive click it deletes the recording from DB and from file system.
+	 * On negative click cancels deletion.
+	 * Adds custom title and content
+	 * Adds positive and negative buttons
+	 * Disables default 'close by touching outside dialog' feature
+	 */
 	private void setupConfirmationDialog() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		
-		
+		// Initializes a custom title view
 		TextView customTitleView = (TextView)inflater.inflate(R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.ra_confirm_dialog_title);
 		customTitleView.setBackgroundColor(getResources().getColor(R.color.waring_dialog));
 		
+		// Initializes a custom title view
 		View contentView = inflater.inflate(R.layout.dialog_confirmation_content, null);
 		((TextView)contentView.findViewById(R.id.confirmation_message)).setText(getResources().getString(R.string.ra_confirm_dialog_message));
 		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setCustomTitle(customTitleView)
 		.setView(contentView)
 		.setPositiveButton(getString(R.string.ra_confirm_dialog_positive),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						loop:
-						for (int position : reverseSortedPositions) {
-							
-							if(!deleteRecording(recordingsArrayList.get(position))){
-								break loop;
-							}
-							
-							File root = Environment.getExternalStorageDirectory();
-							recordingName = recordingsArrayList.get(position).getName();
-							String appDirectory="/Bioplux/";
-							File file = new File(root + appDirectory + recordingName + ".zip");
-							
-							if(file.exists() && !file.delete()){
-								setupErrorDialog(getResources().getString(R.string.ra_error_message_deleting_recording_from_filesystem));
-								break loop;
-							}
-							baseAdapter.remove(position);
-							recordingsArrayList.remove(position);
-							displayInfoToast(getString(R.string.ra_recording_removed));
-						}
-						if(prefEditor!=null){
-							prefEditor.commit();
-							setupConfirmationDialog();
-							prefEditor = null;
-						}
+						// removes recording form database and its zip file
+						removeRecording();
 						
+						// checks if 'don't ask again' checkbox is checked if so
+						// commit the changes and reset the dialog because the view must change
+						if(prefEditor != null){
+							prefEditor.commit();
+							prefEditor = null;
+							setupConfirmationDialog();
+						}
 					}
 				});
 		builder.setNegativeButton(getString(R.string.ra_confirm_dialog_negative),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						 setupRecordingListView();
-						 setupConfirmationDialog();
+						// To re-enable swipe to dismiss capabilities
+						setupRecordingListView();
+						// To reset dialog's checkbox
+						setupConfirmationDialog();
 					}
 				});
-
-		confirmDialog = builder.create();
-		confirmDialog.setCanceledOnTouchOutside(false);
-	}
 	
-	private void setupErrorDialog(String errorMessage) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		confirmationDialog = builder.create();
+		confirmationDialog.setCanceledOnTouchOutside(false);
+	}
 
-		TextView customTitleView = (TextView) inflater.inflate(
-				R.layout.dialog_custom_title, null);
+	/**
+	 * Removes recording from Android's internal Database and its zip file from the file system. Displays a
+	 * removed toast
+	 * 
+	 * @return true if successfully deleted. False if SQLexception was caught
+	 */
+	private boolean removeRecording(){ 		
+		for (int position : reverseSortedPositions) {
+			Dao<DeviceRecording, Integer> dao = null;
+			try {
+				dao = getHelper().getRecordingDao();
+				dao.delete(recordings.get(position));
+			} catch (SQLException e) {
+				Log.e(TAG, "Exception removing recording from database ", e);
+				showErrorDialog(getResources().getString(R.string.ra_error_message_deleting_recording_from_database));
+				return false;
+			}
+			
+			// gets selected recording file path
+			File root = Environment.getExternalStorageDirectory();
+			recordingName = recordings.get(position).getName();
+			String appDirectory="/Bioplux/"; //TODO HARD CODED
+			File file = new File(root + appDirectory + recordingName + ".zip");//TODO HARD CODED
+			
+			// Checks if it exists and there was a problem deleting it from the file system
+			if(file.exists() && !file.delete()){
+				showErrorDialog(getResources().getString(R.string.ra_error_message_deleting_recording_from_filesystem));
+			}else{
+				baseAdapter.remove(position);
+				recordings.remove(position);
+			}
+		}
+		displayInfoToast(getString(R.string.ra_recording_removed));
+		return true;
+	}
+
+	/**
+	 * Shows a custom error dialog with its parameter message
+	 * @param errorMessage
+	 */
+	private void showErrorDialog(String errorMessage) {
+		
+		// Initializes custom title view
+		TextView customTitleView = (TextView) inflater.inflate(R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.ca_error_dialog_title);
-		customTitleView.setBackgroundColor(getResources().getColor(
-				R.color.error_dialog));
+		customTitleView.setBackgroundColor(getResources().getColor(R.color.error_dialog));
 
-		View contentView = inflater.inflate(
-				R.layout.dialog_confirmation_content, null);
-		((TextView) contentView.findViewById(R.id.confirmation_message))
-				.setText(errorMessage);
-
+		// Initializes custom content view
+		View contentView = inflater.inflate(R.layout.dialog_confirmation_content, null);
+		((TextView) contentView.findViewById(R.id.confirmation_message)).setText(errorMessage);
+		
+		// dialog builder
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setCustomTitle(customTitleView)
 				.setView(contentView)
 				.setPositiveButton(getString(R.string.bp_positive_button),
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
-
+								// closes dialog
 							}
 						});
 		errorDialog = builder.create();
 		errorDialog.setCanceledOnTouchOutside(false);
+		errorDialog.show();
 	}
 	
-	private void showFilePathDialog() {
+	/**
+	 * Shows a dialog telling the user that the recording file is bigger than
+	 * 20MB and therefore cannot be sent by email
+	 */
+	private void showRecordingTooBigDialog() {
 		
-		//FILE PATH DIALOG BUILDER
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		TextView customTitleView = (TextView) inflater.inflate(
-				R.layout.dialog_custom_title, null);
+		// Initializes custom title view
+		TextView customTitleView = (TextView) inflater.inflate(R.layout.dialog_custom_title, null);
 		customTitleView.setText(R.string.ra_display_path_dialog_title);
-		customTitleView.setBackgroundColor(getResources().getColor(
-				R.color.error_dialog));
-
+		customTitleView.setBackgroundColor(getResources().getColor(R.color.error_dialog));
+		
+		// dialog's builder
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setCustomTitle(customTitleView)
 				.setMessage(R.string.ra_display_path_dialog_message)
 				.setPositiveButton(getString(R.string.bp_positive_button),
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
-								//JUST CLOSES THE DIALOG
+								// closes dialog
 							}
 						});
 		errorDialog = builder.create();
@@ -174,142 +265,95 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		errorDialog.show();
 	}
 
-	private void setupRecordingListView() {
-
-		final OnItemClickListener shortPressListener = new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> AdapterView, View v,
-					int position, long id) {
-				recordingName = ((TextView) v.findViewById(R.id.dli_name))
-						.getText().toString();
-				if(fileSizeBiggerThan20Mb())
-					showFilePathDialog();
-				else
-					sendDataViaEmail();
-			}
-		};
-		lvRecordings = (ListView) findViewById(R.id.lvSessions);
-		lvRecordings.setOnItemClickListener(shortPressListener);
-		lvRecordings.setEmptyView(findViewById(R.id.empty_list_recordings));
-		baseAdapter = new RecordingsListAdapter(this, recordingsArrayList);
-		setSwipeToDismissAdapter();
-	}
-
-	public void sendDataViaEmail() {
-		File root = Environment.getExternalStorageDirectory();
-		String appDirectory="/Bioplux/";
-		File F = new File(root + appDirectory + recordingName + ".zip");
-		Uri U = Uri.fromFile(F);
-		Intent i = new Intent(Intent.ACTION_SEND);
-		i.setType("application/zip");
-		i.putExtra(Intent.EXTRA_STREAM, U);
-		startActivity(Intent.createChooser(i, getString(R.string.ra_dialog_email)));
-
+	/**
+	 * Gets recording file Uri and starts a sendIntent for Android system to
+	 * display the chooser based on file type
+	 */
+	private void showSendRecordingOptions() {
+		// gets recording file Uri
+		File rootPath = Environment.getExternalStorageDirectory();
+		String appDirectory = "/Bioplux/"; //TODO HARD CODED
+		File recordingFile = new File(rootPath + appDirectory + recordingName + ".zip"); //TODO HARD CODED
+		Uri fileUri = Uri.fromFile(recordingFile);
+		
+		Intent sendIntent = new Intent(Intent.ACTION_SEND);
+		sendIntent.setType("application/zip"); //TODO HARD CODED
+		sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+		startActivity(Intent.createChooser(sendIntent, getString(R.string.ra_dialog_email)));
 	}
 	
-	public boolean fileSizeBiggerThan20Mb() {
+	/**
+	 * Returns true if recording file is bigger than 20 MB. False otherwise
+	 * @return boolean
+	 */
+	private boolean fileSizeBiggerThan20Mb() {
 		File root = Environment.getExternalStorageDirectory();
-		String appDirectory="/Bioplux/";
-		File zipFile = new File(root + appDirectory + recordingName + ".zip");
-		if((zipFile.length()/1024d)/1024d > 20.0d)
+		String appDirectory = "/Bioplux/"; //TODO HARD CODED
+		File zipFile = new File(root + appDirectory + recordingName + ".zip");//TODO HARD CODED
+		if((zipFile.length() / 1024d) / 1024d > 20.0d)//TODO HARD CODED (>20MB)
 			return true;
 		else
 			return false;
 	}
 	
-
+	/**
+	 * creates an info toast showing the message of the parameter it receives
+	 * @param messageToDisplay message to be display in the toast
+	 */
 	private void displayInfoToast(String messageToDisplay) {
 		Toast infoToast = new Toast(getApplicationContext());
-
-		LayoutInflater inflater = getLayoutInflater();
 		View toastView = inflater.inflate(R.layout.toast_info, null);
 		infoToast.setView(toastView);
-		((TextView) toastView.findViewById(R.id.display_text))
-				.setText(messageToDisplay);
-
+		((TextView) toastView.findViewById(R.id.display_text)).setText(messageToDisplay);
 		infoToast.show();
 	}
 
-	private void setSwipeToDismissAdapter() {
-		SwipeDismissAdapter swipeAdapter = new SwipeDismissAdapter(baseAdapter,
-				this);
-		swipeAdapter.setAbsListView(lvRecordings);
-		lvRecordings.setAdapter(baseAdapter);
-	}
 
+	/**
+	 * Callback called when user swipes recording out of the screen
+	 */
 	@Override
 	public void onDismiss(AbsListView listView, int[] reverseSortedPositions) {
+		// needed to delete recording on confirmation dialog positive button pressed
 		this.reverseSortedPositions = reverseSortedPositions;
-		boolean dontAskForConfrmation = false;
-		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		dontAskForConfrmation = sharedPref.getBoolean(SettingsActivity.KEY_PREF_CONF_REC, false);
 		
-		if(!dontAskForConfrmation){
-			confirmDialog.show();
-		}else{
-			for (int position : reverseSortedPositions) {
-				baseAdapter.remove(position);
-				Dao<DeviceRecording, Integer> dao = null;
-
-				try {
-					dao = getHelper().getRecordingDao();
-					dao.delete(recordingsArrayList.get(position));
-				} catch (SQLException e) {
-					Log.e(TAG, "Exception removing recording from database ", e);
-				}
-				
-				File root = Environment.getExternalStorageDirectory();
-				recordingName = recordingsArrayList.get(position).getName();
-				String appDirectory="/Bioplux/";
-				File file = new File(root + appDirectory + recordingName + ".zip");
-				file.delete();
-				recordingsArrayList.remove(position);
-			}
-			displayInfoToast(getString(R.string.ra_recording_removed));
-		}
+		// getting shared preference to know whether or not to show confirmation dialog
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		boolean dontAskForConfrmation = sharedPref.getBoolean(SettingsActivity.KEY_PREF_CONF_REC, false);
+		
+		if(!dontAskForConfrmation)
+			confirmationDialog.show();
+		else
+			removeRecording();
 	}
 
-	public boolean loadRecordings() {
-		Dao<DeviceRecording, Integer> dao;
-		recordingsArrayList = new ArrayList<DeviceRecording>();
-		try {
-			dao = getHelper().getRecordingDao();
-			QueryBuilder<DeviceRecording, Integer> builder = dao.queryBuilder();
-			builder.orderBy("startDate", false).limit(30L);
-			recordingsArrayList = (ArrayList<DeviceRecording>) dao.query(builder
-					.prepare());
-		} catch (SQLException e) {
-			Log.e(TAG, "exception loading recordings from database ", e);
-			setupErrorDialog(getResources().getString(R.string.ca_error_loading_recordings_message));
-			return false;
-		}
-		return true;
+	/**
+	 * Destroys activity
+	 */
+	@Override
+	public void onBackPressed() {
+	    super.onBackPressed();
+	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
-	
-	public boolean deleteRecording(DeviceRecording recordingToDelete) {
-		Dao<DeviceRecording, Integer> dao = null;
-		try {
-			dao = getHelper().getRecordingDao();
-			dao.delete(recordingToDelete);
-		} catch (SQLException e) {
-			Log.e(TAG, "Exception removing recording from database ", e);
-			setupErrorDialog(getResources().getString(R.string.ra_error_message_deleting_recording_from_database));
-			return false;
-		}
-		return true;
-	}
-	
-	public void onDialogCheckBoxClicked(View v) {
+
+	/**
+	 * Callback called when 'don't ask again' checkbox of recording dialog is
+	 * clicked. If check box change its state to checked, puts the global
+	 * recording confirmation preference to true. If its state changed to
+	 * unChecked, puts the preference to false
+	 * 
+	 * @param checkBoxView
+	 */
+	public void onDialogCheckBoxClicked(View checkBoxView) {
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		prefEditor = sharedPref.edit();
 		
-		if(((CheckBox)v).isChecked())
+		if(((CheckBox)checkBoxView).isChecked())
 			prefEditor.putBoolean(SettingsActivity.KEY_PREF_CONF_REC, true);
 		else{
 			prefEditor.putBoolean(SettingsActivity.KEY_PREF_CONF_REC, false);
-			prefEditor=null;
+			// Used to check on recording dialog setup whether the preference has been checked to commit changes
+			prefEditor = null;
 		}
 	}
-	
-
 }

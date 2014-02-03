@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import ceu.marten.bplux.R;
+import ceu.marten.model.io.DatabaseHelper;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -14,6 +15,8 @@ import com.j256.ormlite.table.DatabaseTable;
  * Represents a Bioplux device configuration Stored in Android's internal 
  * Database with ORMlite annotations 
  * Implements Serializable to transfer instances between activities
+ * 
+ * If this class is updated. Make sure to update also database version in {@link DatabaseHelper}
  * 
  * @author Carlos Marten
  */

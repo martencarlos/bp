@@ -22,8 +22,8 @@ import com.j256.ormlite.table.TableUtils;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	private static final String TAG = DatabaseHelper.class.getName();
-	private static final String DATABASE_NAME = "model.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final String DATABASE_NAME = "biopluxDB.db";
+	private static final int DATABASE_VERSION = 3;
 
 	private Dao<DeviceConfiguration, Integer> deviceConfigDao;
 	private Dao<DeviceRecording, Integer> sessionDao;
@@ -51,8 +51,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, DeviceRecording.class, true);
 			onCreate(sqliteDatabase, connectionSource);
 		} catch (SQLException e) {
-			Log.e(TAG, "Unable to upgrade database from version " + oldVer
-					+ " to new " + newVer, e);
+			Log.e(TAG, "Unable to upgrade database from version " + oldVer + " to new " + newVer, e);
 		}
 	}
 

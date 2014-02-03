@@ -22,101 +22,115 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
+
+/**
+ * Saves and compresses recording data into android' external file system
+ * @author Carlos Marten
+ *
+ */
 public class DataManager {
 	
+	// Standard debug constant
 	private static final String TAG = DataManager.class.getName();
 	
-	private String channelFormat = "%-4s ";
+	private DeviceConfiguration configuration;
 	private OutputStreamWriter outStreamWriter;
 	private BufferedWriter bufferedWriter;
-	private int frameCounter;
 	
-	private Context context;
-	private String recordingName;
-	private DeviceConfiguration configuration;
 	private int numberOfChannelsActivated;
+	private int frameCounter = 0;
+	
+	private String channelFormat = "%-4s ";
+	private String recordingName;
 	private String duration;
 	
+	private Context context;
 	
-	public DataManager(Context serviceContext,String _recordingName, DeviceConfiguration _configuration) {
+	/**
+	 * Constructor. Initializes the number of channels activated, the outStream
+	 * write and the Buffered writer
+	 * 
+	 * @param serviceContext
+	 * @param _recordingName
+	 * @param _configuration
+	 */
+	public DataManager(Context serviceContext, String _recordingName, DeviceConfiguration _configuration) {
 		this.context = serviceContext;
 		this.recordingName = _recordingName;
 		this.configuration = _configuration;
-		this.numberOfChannelsActivated = configuration.getActiveChannelsNumber();
-		frameCounter = 0;
 		
+		this.numberOfChannelsActivated = configuration.getActiveChannelsNumber();
 		try {
-			outStreamWriter = new OutputStreamWriter(context.openFileOutput(
-					"tmp.txt", Context.MODE_APPEND));
+			outStreamWriter = new OutputStreamWriter(context.openFileOutput("tmp.txt", Context.MODE_APPEND));//TODO HARD CODED
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "file to write frames on, not found", e);
+			//TODO NOT INFORMING THE USER
 		}
 		bufferedWriter = new BufferedWriter(outStreamWriter);
 	}
 	
-	public DataManager(Context context){
-		this.context = context;  
-	}
-	
-	//WRITES A ROW ON THE TEXT FILE THAT WILL GO AFTER THE HEADER
-	public boolean writeFramesToTmpFile(Frame f) {
-		frameCounter++;
+	/**
+	 * Writes a frame (row) on text file that will go after the header. Returns
+	 * true if wrote successfully and false otherwise.
+	 * 
+	 * @param frame
+	 * @return boolean
+	 */
+	public boolean writeFramesToTmpFile(Frame frame) {
+		frameCounter ++;
 
 		try {
-			//WRITE THE FIRST COLUMN (THE FRAME COUNTER)
+			// WRITE THE FIRST COLUMN (THE FRAME COUNTER)
 			bufferedWriter.write(String.format(channelFormat, frameCounter));
-			//WRITE THE DATA OF ACTIVE CHANNELS ONLY
+			// WRITE THE DATA OF ACTIVE CHANNELS ONLY
 			for(int i=0; i< numberOfChannelsActivated;i++){
-				bufferedWriter.write(String.format(channelFormat, f.an_in[i]));
+				bufferedWriter.write(String.format(channelFormat, frame.an_in[i]));
 			}
-			//WRITE A NEW LINE
+			// WRITE A NEW LINE
 			bufferedWriter.write("\n");
 			
 		} catch (IOException e) {
+			try {bufferedWriter.close();} catch (IOException e1) {}
 			Log.e(TAG, "Exception while writing frame row", e);
-			try {
-				bufferedWriter.close();
-			} catch (IOException e1) {
-				Log.e(TAG, "Exception while closing bufferedWriter", e1);
-			}
 			return false;
 		}
 		return true;
-		
 	}
 	
+	/**
+	 * Returns true if compressed successfully and false otherwise.
+	 * @return boolean
+	 */
 	private boolean compressFile(){
 		BufferedInputStream origin = null;
 		ZipOutputStream out = null;
 		try {
-			String zipFileName = recordingName + ".zip";
-			String file = recordingName + ".txt";
-			String appDirectory = Environment.getExternalStorageDirectory().toString()+"/Bioplux/";
+			String zipFileName = recordingName + ".zip";//TODO HARD CODED
+			String file = recordingName + ".txt";//TODO HARD CODED
+			String appDirectory = Environment.getExternalStorageDirectory().toString()+"/Bioplux/";//TODO HARD CODED
 			File root = new File(appDirectory);
 			root.mkdirs();
-			int BUFFER = 500;
+			int BUFFER = 500;//TODO HARD CODED best buffer size?
 			
-			FileOutputStream dest = new FileOutputStream(root +"/"+ zipFileName);
+			FileOutputStream dest = new FileOutputStream(root +"/"+ zipFileName);//TODO HARD CODED
 					
-			out = new ZipOutputStream(new BufferedOutputStream(
-					dest));
+			out = new ZipOutputStream(new BufferedOutputStream(dest));
 			byte data[] = new byte[BUFFER];
 
-			FileInputStream fi = new FileInputStream(context.getFilesDir() + "/" + file);
+			FileInputStream fi = new FileInputStream(context.getFilesDir() + "/" + file);//TODO HARD CODED
 			origin = new BufferedInputStream(fi, BUFFER);
 
-			ZipEntry entry = new ZipEntry(
-					file.substring(file.lastIndexOf("/") + 1));
+			ZipEntry entry = new ZipEntry(file.substring(file.lastIndexOf("/") + 1));//TODO HARD CODED
 			out.putNextEntry(entry);
 			int count;
 
 			while ((count = origin.read(data, 0, BUFFER)) != -1) {
 				out.write(data, 0, count);
 			}
-			context.deleteFile(recordingName + ".txt");
+			context.deleteFile(recordingName + ".txt");//TODO HARD CODED
 
 		} catch (Exception e) {
-			Log.e(TAG, "exception while zipping", e);
+			Log.e(TAG, "Exception while zipping", e);
 			return false;
 		}
 		finally{
@@ -124,6 +138,7 @@ public class DataManager {
 				origin.close();
 				out.close();
 			} catch (IOException e) {
+				try {out.close();} catch (IOException e1) {}
 				Log.e(TAG, "Exception while closing streams", e);
 				return false;
 			}	
@@ -131,6 +146,10 @@ public class DataManager {
 		return true;
 	}
 	
+	/**
+	 * Returns true if text file was written successfully and false if an exception was caught
+	 * @return boolean
+	 */
 	private boolean writeTextFile() {
 
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();		
@@ -139,48 +158,43 @@ public class DataManager {
 		BufferedInputStream origin = null;
 		BufferedOutputStream dest = null;
 		FileInputStream fi = null;
+		
 		try {
-			out = new OutputStreamWriter(context.openFileOutput(
-					recordingName + ".txt", Context.MODE_PRIVATE));
-			out.write(String.format("%-10s %-10s%n", "# "+context.getString(R.string.bs_header_name),
-					configuration.getName()));
-			out.write(String.format("%-10s %-14s%n", "# "+context.getString(R.string.bs_header_date),
-					dateFormat.format(date)));
-			out.write(String.format("%-10s %-4s%n", "# "+context.getString(R.string.bs_header_frequency),
-					configuration.getReceptionFrequency() + " Hz"));
-			out.write(String.format("%-10s %-10s%n", "# "+context.getString(R.string.bs_header_bits),
-					configuration.getNumberOfBits() + " bits"));
-			out.write(String.format("%-10s %-14s%n", "# "+context.getString(R.string.bs_header_duration), duration
-					+ " seconds"));
-			out.write(String.format("%-10s %-14s%n%n", "# "+context.getString(R.string.bs_header_active_channels),
-					configuration.getActiveChannels().toString()));
-			
+			out = new OutputStreamWriter(context.openFileOutput(recordingName + ".txt", Context.MODE_PRIVATE));
+			out.write(String.format("%-10s %-10s%n",   "# " + context.getString(R.string.bs_header_name), configuration.getName()));
+			out.write(String.format("%-10s %-14s%n",   "# " + context.getString(R.string.bs_header_date), dateFormat.format(date)));
+			out.write(String.format("%-10s %-4s%n",    "# " + context.getString(R.string.bs_header_frequency), configuration.getReceptionFrequency() + " Hz"));
+			out.write(String.format("%-10s %-10s%n",   "# " + context.getString(R.string.bs_header_bits), configuration.getNumberOfBits() + " bits"));
+			out.write(String.format("%-10s %-14s%n",   "# " + context.getString(R.string.bs_header_duration), duration + " seconds"));
+			out.write(String.format("%-10s %-14s%n%n", "# " + context.getString(R.string.bs_header_active_channels), configuration.getActiveChannels().toString()));
 			out.write("#num ");
+			
 			for(int i: configuration.getActiveChannels())
-				out.write("ch "+i+" ");
+				out.write("ch " + i + " ");
+			
 			out.write("\n");
 			out.flush();
 			out.close();
 
 			// APPEND DATA
 			FileOutputStream outBytes = new FileOutputStream(context.getFilesDir()
-					+ "/" + recordingName + ".txt", true);
+					+ "/" + recordingName + ".txt", true);//TODO HARD CODED
 			dest = new BufferedOutputStream(outBytes);
-			fi = new FileInputStream(context.getFilesDir() + "/"
-					+ "tmp.txt");
+			fi = new FileInputStream(context.getFilesDir() + "/"//TODO HARD CODED
+					+ "tmp.txt");//TODO HARD CODED
 			 
-			origin = new BufferedInputStream(fi, 1000);
+			origin = new BufferedInputStream(fi, 1000);//TODO HARD CODED best 1000?
 			int count;
-			byte data[] = new byte[1000];
-			while ((count = origin.read(data, 0, 1000)) != -1) {
+			byte data[] = new byte[1000];//TODO HARD CODED
+			while ((count = origin.read(data, 0, 1000)) != -1) {//TODO HARD CODED
 				dest.write(data, 0, count);
 			}
 
 		} catch (FileNotFoundException e) {
-			Log.e(TAG, "file to write header on, not found", e);
+			Log.e(TAG, "File to write header on, not found", e);
 			return false;
 		} catch (IOException e) {
-			Log.e(TAG, "write header stream exception", e);
+			Log.e(TAG, "Write header stream exception", e);
 			return false;
 		}
 		finally{
@@ -189,28 +203,45 @@ public class DataManager {
 				out.close();
 				origin.close();
 				dest.close();
-				context.deleteFile("tmp.txt");
+				context.deleteFile("tmp.txt");//TODO HARD CODED
 			} catch (IOException e) {
-				Log.e(TAG, "closing streams exception", e);
+				try {out.close();} catch (IOException e1) {}
+				try {origin.close();} catch (IOException e1) {}
+				try {dest.close();} catch (IOException e1) {};
+				Log.e(TAG, "Closing streams exception", e);
 				return false;
 			}
 		}
 		return true;
 	}
 	
+	/**
+	 * Returns true if writers were closed properly. False if an exception was
+	 * caught closing them
+	 * 
+	 * @return boolean
+	 */
 	public boolean closeWriters(){
 		try {
 			bufferedWriter.flush();
 			bufferedWriter.close();
 			outStreamWriter.close();
-		} catch (IOException e1) {
-			Log.e(TAG, "Exception while closing StreamWriter", e1);
+		} catch (IOException e) {
+			try {bufferedWriter.close();} catch (IOException e1) {}
+			try {outStreamWriter.close();} catch (IOException e2) {}
+			Log.e(TAG, "Exception while closing Writers", e);
 			return false;
 		}
 		return true;
 	}
 	
-	public boolean saveFiles(){
+	/**
+	 * Saves and compress a recording. Returns true if the writing and the
+	 * compression were successful or false if either one of them failed
+	 * 
+	 * @return boolean
+	 */
+	public boolean saveAndCompressFile(){
 		if(!writeTextFile())
 			return false;
 		if(!compressFile())
@@ -218,9 +249,12 @@ public class DataManager {
 		return true;
 	}
 
+	/**
+	 * sets the duration of the recording
+	 * @param _duration
+	 */
 	public void setDuration(String _duration) {
 		this.duration = _duration;
-		
 	}
 
 }
