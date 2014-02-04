@@ -5,10 +5,10 @@ INSTALATION INSTRUCTIONS FOR ECLIPSE
 
 To properly run the application simply follow the following steps:
  
- 1) Download the zip file with bplux and GraphView (library).
+ 1) Download the compressed project from github
  
- 2) Import both project as android applicaction to your eclipse workspace.
+ 2) Extract zip. 
  
- 3) Open properties of Bplux project, navigate to Android tab, press 'add library' and select GraphView.
+ 3) Import project into Eclipse as an android project 
  
- 4) Done! Enjoy :)
+ 4) Run project! Enjoy :)
