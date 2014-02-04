@@ -133,6 +133,7 @@ public class BiopluxService extends Service {
 	 */
 	@Override
 	public IBinder onBind(Intent intent) {
+		Log.i(TAG, "service onbind()");
 		recordingName = intent.getStringExtra("recordingName").toString(); //TODO HARD CODED
 		configuration = (DeviceConfiguration) intent.getSerializableExtra("configSelected");//TODO HARD CODED
 		samplingFrames = (double)configuration.getReceptionFrequency() / configuration.getSamplingFrequency();
@@ -301,7 +302,7 @@ public class BiopluxService extends Service {
 	 * Stops the service properly when service is being destroyed
 	 */
 	private void stopService(){
-		stopForeground(true);
+		
 		if (timer != null)
 			timer.cancel();
 
@@ -321,19 +322,31 @@ public class BiopluxService extends Service {
 			Log.e(TAG, "Exception ending ACQ", e);
 			sendErrorToActivity(e.code);
 		}
-		
+	}
+	
+
+	@Override
+	public boolean onUnbind(Intent intent) {
+		// returns true so that next time client binds onRebind() will be called
+		return true;
+	}
+
+	@Override
+	public void onRebind(Intent intent) {
+		// Override and do nothing	
 	}
 
 	@Override
 	public void onDestroy() {
+		stopForeground(true);
 		if(!killServiceError){
 			stopService();
 			if(!dataManager.saveAndCompressFile())
 				sendErrorToActivity(CODE_ERROR_SAVING_RECORDING);
 			sendSavedNotification();
-			wakeLock.release();
 		}
-		Log.i(TAG, "service stopped");
+		wakeLock.release();
 		super.onDestroy();
+		Log.i(TAG, "service destroyed");
 	}
 }

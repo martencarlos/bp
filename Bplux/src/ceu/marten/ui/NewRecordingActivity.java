@@ -695,19 +695,36 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			graphs[i].getGraphView().zoomOut(300); //TODO HARD CODE, fixed zoom
 	}
 	
-	/**
-	 * Destroys activity
-	 */
+	
 	@Override
-	protected void onDestroy() {
+	protected void onPause() {
 		try {
 			unbindFromService();
 		} catch (Throwable t) {
 			Log.e(TAG,"failed to unbind from service when activity is destroyed", t);
 			//TODO not notifying the user
 		}
+		super.onPause();
+		Log.i(TAG, "onPause()");
+	}
+
+	@Override
+	protected void onResume() {
+		// If service was running rebind to it to send its duration
+		if (isServiceRunning()) {
+			bindToService();
+		}
+		super.onResume();
+		Log.i(TAG, "onResume()");
+	}
+
+	/**
+	 * Destroys activity
+	 */
+	@Override
+	protected void onDestroy() {
+		
 		super.onDestroy();
 		Log.i(TAG, "onDestroy()");
 	}
-
 }
