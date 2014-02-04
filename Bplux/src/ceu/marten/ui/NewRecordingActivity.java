@@ -2,9 +2,7 @@ package ceu.marten.ui;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import plux.android.bioplux.BPException;
 import plux.android.bioplux.Device;
@@ -612,9 +610,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	 */
 	private void stopChronometer() {
 		chronometer.stop();
-		Date elapsedMiliseconds = new Date(SystemClock.elapsedRealtime()- chronometer.getBase());
-		DateFormat formatter = new SimpleDateFormat("HH:mm:ss",Locale.getDefault());//TODO HARD CODE
-		duration = formatter.format(elapsedMiliseconds); //TODO check duration time on emulator
+		long elapsedMiliseconds = SystemClock.elapsedRealtime()
+				- chronometer.getBase();
+		duration = String.format("%02d:%02d:%02d",
+				(int) ((elapsedMiliseconds / (1000 * 60 * 60)) % 24), 	// hours
+				(int) ((elapsedMiliseconds / (1000 * 60)) % 60),	  	// minutes
+				(int) (elapsedMiliseconds / 1000) % 60);				// seconds
 		isChronometerRunning = false;
 	}
 
@@ -623,7 +624,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	 */
 	public void saveRecording() {
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();
-		Date date = new Date();//TODO check if date is properly displayed in emulator
+		Date date = new Date();
 
 		recording.setConfiguration(recordingConfiguration);
 		recording.setSavedDate(dateFormat.format(date));
