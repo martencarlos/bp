@@ -83,7 +83,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	
 	private boolean isServiceBounded = false;
 	private static boolean isChronometerRunning = false;
-	private static boolean stopServiceAndFinishActivity = false;
+	private static boolean closeRecordingActivity = false;
 	
 	// ERROR VARIABLES
 	private int bpErrorCode   = 0;
@@ -115,8 +115,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				break;
 			case BiopluxService.MSG_SAVED:
 				savingDialog.dismiss();
-				if(stopServiceAndFinishActivity){
-					stopServiceAndFinishActivity = false; //TODO not done properly. Better move some code to onStart()
+				if(closeRecordingActivity){
+					closeRecordingActivity = false; 
 					finish();
 					overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 				}
@@ -315,7 +315,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 							// stops, saves and finishes recording
 							public void onClick(DialogInterface dialog, int id) {
 								stopRecording();
-								stopServiceAndFinishActivity = true;
+								closeRecordingActivity = true;
 								// dialog gets closed
 							}
 						});
@@ -389,7 +389,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 					public void onClick(DialogInterface dialog, int id) {
 						if(serviceError){
 							stopRecording();
-							stopServiceAndFinishActivity = true;
+							closeRecordingActivity = true;
 						}
 					}
 				});
@@ -483,7 +483,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	 * 
 	 * @param view
 	 */
-	public void onClickedStartStop(View view) { //TODO change name
+	public void onMainButtonClicked(View view) {
 		// Starts recording
 		if (!isServiceRunning() && timeCounter == 0) {
 			startRecording();

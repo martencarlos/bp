@@ -1,35 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@color/blue"
-    android:stretchColumns="*" >
+    android:layout_marginTop="20dp"
+    android:orientation="vertical" >
 
-    <TableRow>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_launcher" />
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Bioplux App"
+        android:textSize="16sp"
+        android:layout_marginBottom="5dp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:gravity="center" />
+    
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="5dp"
+        android:src="@drawable/ic_launcher" />
+    
+    <TextView
+        android:id="@+id/info_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center" />
 
-        <TextView
-            android:id="@+id/info_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center" />
-    </TableRow>
-    <TableRow>
+    <TextView
+        android:id="@+id/legal_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dip"
+        android:layout_marginTop="8dp"
+        android:textColor="#cccccc"
+        android:textSize="12sp"
+        android:textStyle="italic" />
 
-        <TextView
-            android:id="@+id/legal_text"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dip"
-            android:layout_marginTop="20dp"
-            android:layout_span="2"
-            android:textColor="#cccccc"
-            android:textSize="12sp"
-            android:textStyle="italic" />
-    </TableRow>
-</TableLayout>
+</LinearLayout>

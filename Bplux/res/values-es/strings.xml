@@ -5,17 +5,33 @@
     
     <!-- ACTIVITIES LABELS -->
     <string name="home_label">"Bioplux"</string>
+    <string name="settings_label">"Ajustes"</string>
     <string name="configurations_label">"Configuraciones"</string>
     <string name="recordings_label">"Grabaciones"</string>
     <string name="new_configurations_label">"Nuevas Configuraciones"</string>
     <string name="new_recordings_label">"Nueva grabación"</string>
     
-    <!-- LAYOUTS -->
+    <!-- GLOBAL MENU ITEMS -->
+    <string name="gm_settings">Ajustes</string>
+    <string name="gm_help">Ayuda</string>
+    <string name="gm_about">Información</string>
+    
+    <string name="gm_help_title">Consejos</string>
+    <string name="gm_help_message">- Para eliminar configuraciones o grabaciones, arrastralos fuera de la pantalla hacia derecha o izquierda \n\n - Mantén pulsada una configuración para editarla</string>
+	
+	<!-- LAYOUTS -->
     <!-- HOME ACTIVITY -->
     <string name="ha_title">"Bienvenido a Bioplux"</string>
     <string name="ha_description">"Plux es un sistema innovador para el deporte, la medicina y la investigación que a través de sensores de bioseñales obtiene información de los músculos, que obtendrán mejores resultados en el trabajo físico."</string>
     <string name="ha_button1">"Iniciar grabación"</string>
     <string name="ha_button2">"Examinar Grabaciones"</string>
+    
+     <!-- SETTINGS ACTIVITY -->
+    <string name="sa_category_title">DIALOGOS DE CONFIRMACIÓN</string>
+    <string name="sa_configuration_title">Borrando configuraciones</string>
+    <string name="sa_configuration_summary">No mostrar diálogo de confirmación al borrar una configuración</string>
+    <string name="sa_recording_title">Borrando grabaciones</string>
+    <string name="sa_recording_summary">No mostrar diálogo deconfirmación al borrar una grabación</string>
     
     <!-- CONFIGURATIONS ACTIVITY -->
     <string name="ca_header_title">"Seleccione una configuración"</string>
@@ -64,10 +80,10 @@
     <string name="nc_configuration_name">Nombre de la Configuracion</string>
     <string name="nc_mac_address">Dirección MAC</string>
     <string name="nc_mac_address_hint">00: B0: D0: 86: BB: F7</string>
-    <string name="nc_frequency_reception">Frecuencia de recepción</string>
+    <string name="nc_frequency_reception">Frecuencia de adquisición</string>
     <string name="nc_frequency_reception_default">"500"</string>
     <string name="nc_frequency_metric">Hz</string>
-    <string name="nc_frequency_sampling">Frecuencia de muestreo</string>
+    <string name="nc_frequency_sampling">Frecuencia de visualización</string>
     <string name="nc_frequency_sampling_default">50</string>
     <string name="nc_bits">Bits por señal</string>
     <string name="nc_bits_eight">8</string>
@@ -99,9 +115,9 @@
     <string name="nc_active_channels_list_adapter_comparation">electrocardiograma</string>
     
     <!-- NEW RECORDING ACTIVITY -->
-    <string name="nr_configuration_name">Nombre de la configuracion </string>
-    <string name="nr_reception_frequency">Frecuencia de recepción: </string>
-    <string name="nr_sampling_frequency">Frecuencia de muestreo: </string>
+    <string name="nr_configuration_name">Nombre de la configuración: </string>
+    <string name="nr_reception_frequency">Frecuencia de adquisición: </string>
+    <string name="nr_sampling_frequency">Frecuencia de visualización: </string>
     <string name="nr_bits">Número de bits: </string>
     <string name="nr_active_channels">Canales activos: </string>
     <string name="nr_button_start">"Iniciar grabación"</string>
@@ -120,8 +136,8 @@
     <string name="nr_bluetooth_dialog_positive_button">Conectar</string>
     <string name="nr_progress_dialog_title">Buscando dispositivos Bioplux</string>
     <string name="nr_progress_dialog_message">Intentando establecer conexion</string>
-    <string name="nr_compressing_dialog_title">Comprimiendo grabacion</string>
-    <string name="nr_compressing_dialog_message">La compresion puede llegar a tardar unos pocos minutos</string>
+    <string name="nr_compressing_dialog_title">Comprimiendo grabación</string>
+    <string name="nr_compressing_dialog_message">La compresión puede llegar a tardar unos pocos minutos</string>
     
     <!-- BIOPLUX NOTIFICATION MESSAGES -->
     <string name="bp_address_incorrect">La dirección MAC especificada es sintaticamente incorrecta</string>
@@ -175,9 +191,6 @@
         <item>"acelerómetro de tres ejes"</item>
         <item>"Presión arterial"</item>
     </string-array>
-
-    <!-- FOOTER -->
-    <string name="footer">"créditos: Abraham Otero, Carlos marten, CEU"</string>
 
     <!-- IDs -->
  	<string name="service_id">"este servicio de identificación único"</string> 

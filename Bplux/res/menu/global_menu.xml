@@ -2,15 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     
     <item android:id="@+id/gm_settings"
-          android:title="settings" >
+          android:title="@string/gm_settings" >
     </item>
     
     <item android:id="@+id/gm_help"
-          android:title="help" >
+          android:title="@string/gm_help" >
     </item>
     
      <item android:id="@+id/gm_about"
-          android:title="about" >
+          android:title="@string/gm_about" >
     </item>
     
 </menu>

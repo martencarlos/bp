@@ -1,6 +1,6 @@
-<h3>Bioplux App</h3>
+
 Version 1.0<br>
 Copyright 2014<br>
 <b>www.bioplux.com</b><br>
-1-800-555-1234<br><br>
-<b>developed by Carlos Marten</b><br>
+martencarlos@gmail.com<br><br>
+<b>developed by Carlos Marten</b>

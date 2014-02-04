@@ -30,10 +30,11 @@ public class HomeActivity extends Activity {
 	            
 	        case R.id.gm_help:
 	        	HelpDialog help = new HelpDialog(this);
-	        	help.setTitle("Tips & tricks");
+	        	help.setTitle(getString(R.string.gm_help_title));
 	        	help.setCanceledOnTouchOutside(true);
 	        	help.show();
 	        	return true;
+	        	
 	        case R.id.gm_about:
 	        	AboutDialog about = new AboutDialog(this);
 	        	about.requestWindowFeature(Window.FEATURE_NO_TITLE);

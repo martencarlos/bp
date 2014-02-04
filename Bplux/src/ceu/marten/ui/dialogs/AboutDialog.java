@@ -31,7 +31,7 @@ public class AboutDialog extends Dialog {
 
 		legalText = (TextView) findViewById(R.id.info_text);
 		legalText.setText(Html.fromHtml(readRawTextFile(R.raw.info)));
-		legalText.setLinkTextColor(Color.WHITE);
+		legalText.setLinkTextColor(Color.BLUE);
 
 		Linkify.addLinks(legalText, Linkify.ALL);
 

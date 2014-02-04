@@ -3,16 +3,16 @@
     
     <PreferenceCategory
         android:key="pref_key_dialogs"
-        android:title="DIALOGS" >
+        android:title="@string/sa_category_title" >
         <CheckBoxPreference
-            android:key="ask_confirmation_configuration"
-            android:defaultValue="false"
-            android:title="config. deleting confirmation"
-            android:summary="Never ask again for confirmation when deleting a configuration by swiping" />
+            android:key = "ask_confirmation_configuration"
+            android:defaultValue = "false"
+            android:title = "@string/sa_configuration_title"
+            android:summary = "@string/sa_configuration_summary" />
         <CheckBoxPreference
-            android:key="ask_confirmation_recording"
-            android:defaultValue="false"
-            android:title="record. deleting confirmation"
-            android:summary="Never ask again for confirmation when deleting a recording by swiping" />
+            android:key = "ask_confirmation_recording"
+            android:defaultValue = "false"
+            android:title = "@string/sa_recording_title"
+            android:summary = "@string/sa_recording_summary" />
     </PreferenceCategory>
 </PreferenceScreen>

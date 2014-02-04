@@ -9,7 +9,7 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="8" />
 
-	<uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
@@ -24,6 +24,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="ceu.marten.ui.HomeActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/home_label" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,11 +40,10 @@
         </activity>
         <activity
             android:name="ceu.marten.ui.NewRecordingActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/new_recordings_label"
-            android:parentActivityName="ceu.marten.ui.ConfigurationsActivity"
-            
             android:launchMode="singleTask"
-            android:configChanges="orientation|keyboardHidden|screenSize">
+            android:parentActivityName="ceu.marten.ui.ConfigurationsActivity" >
         </activity>
         <activity
             android:name="ceu.marten.ui.NewConfigurationActivity"
@@ -53,20 +53,20 @@
         </activity>
         <activity
             android:name="ceu.marten.ui.RecordingsActivity"
-            android:label="@string/recordings_label"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/recordings_label"
             android:parentActivityName="ceu.marten.ui.HomeActivity" >
         </activity>
-        
-        <activity android:name="ceu.marten.ui.SettingsActivity" android:label="General Settings"
-        android:screenOrientation="nosensor">
-        <intent-filter>
-            <action android:name="ceu.marten.ui.SettingsActivity" />
-            <category android:name="android.intent.cetagory.PREFERENCE" />
-        </intent-filter>
-</activity>
+        <activity
+            android:name="ceu.marten.ui.SettingsActivity"
+            android:label="@string/settings_label" >
+            <intent-filter>
+                <action android:name="ceu.marten.ui.SettingsActivity" />
+                <category android:name="android.intent.cetagory.PREFERENCE" />
+            </intent-filter>
+        </activity>
 
-        <service 
+        <service
             android:name="ceu.marten.services.BiopluxService"
             android:enabled="true"
             android:exported="false"
