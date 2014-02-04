@@ -139,6 +139,7 @@
     <string name="bs_header_frequency">Frecuencia: </string>
     <string name="bs_header_bits">Numero de bits: </string>
     <string name="bs_header_duration">Duracion: </string>
+    <string name="bs_header_seconds">segundos</string>
     <string name="bs_header_active_channels">Canales activos: </string>
     
     <string name="bs_notification_title">Dispositivo conectado</string>

@@ -295,7 +295,7 @@ public class BiopluxService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		return START_NOT_STICKY; // do not recreate service if system kills it
+		return START_NOT_STICKY; // do not re-create service if system kills it
 	}
 	
 	/**
@@ -327,7 +327,7 @@ public class BiopluxService extends Service {
 
 	@Override
 	public boolean onUnbind(Intent intent) {
-		// returns true so that next time client binds onRebind() will be called
+		// returns true so that next time the client binds, onRebind() will be called
 		return true;
 	}
 

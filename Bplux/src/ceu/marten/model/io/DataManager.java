@@ -165,7 +165,7 @@ public class DataManager {
 			out.write(String.format("%-10s %-14s%n",   "# " + context.getString(R.string.bs_header_date), dateFormat.format(date)));
 			out.write(String.format("%-10s %-4s%n",    "# " + context.getString(R.string.bs_header_frequency), configuration.getReceptionFrequency() + " Hz"));
 			out.write(String.format("%-10s %-10s%n",   "# " + context.getString(R.string.bs_header_bits), configuration.getNumberOfBits() + " bits"));
-			out.write(String.format("%-10s %-14s%n",   "# " + context.getString(R.string.bs_header_duration), duration + " seconds"));
+			out.write(String.format("%-10s %-14s%n",   "# " + context.getString(R.string.bs_header_duration), duration + " " + context.getString(R.string.bs_header_seconds)));
 			out.write(String.format("%-10s %-14s%n%n", "# " + context.getString(R.string.bs_header_active_channels), configuration.getActiveChannels().toString()));
 			out.write("#num ");
 			

@@ -76,6 +76,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private LayoutInflater inflater;
 	private static DeviceConfiguration recordingConfiguration;
 	private static DeviceRecording recording;
+	private int[] displayChannelPosition;
 	private Graph[] graphs;
 	private double  timeCounter = 0;
 	private String duration = null; 
@@ -171,7 +172,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			for (int i = 0; i < graphs.length; i++) {
 				graphs[i].getSerie().appendData(
 						new GraphViewData(timeCounter / recordingConfiguration.getSamplingFrequency()*1000,
-								data[i]), true, maxDataCount);
+								data[displayChannelPosition[i]]), true, maxDataCount);
 			}
 		}
 	}
@@ -217,6 +218,18 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		//TODO max data count fixed in 5 seconds max
 		maxDataCount = Integer.parseInt((getResources().getString(R.string.graph_max_data_count)));
 		graphs = new Graph[recordingConfiguration.getDisplayChannelsNumber()];
+		// calculates the display channel position of frame received
+		displayChannelPosition = new int[recordingConfiguration.getDisplayChannels().size()];
+		int displayIterator = 0;
+		for(int i=0; i < recordingConfiguration.getActiveChannels().size(); i++){
+			if(recordingConfiguration.getActiveChannels().get(i) == recordingConfiguration.getDisplayChannels().get(displayIterator)){
+				displayChannelPosition[displayIterator] = i;
+				if(displayIterator < (recordingConfiguration.getDisplayChannels().size()-1))
+				displayIterator++;
+			}
+		}
+			
+		
 		
 		// INIT ANDROID' WIDGETS
 		uiRecordingName = (TextView) findViewById(R.id.nr_txt_recordingName);
@@ -710,7 +723,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	@Override
 	protected void onResume() {
-		// If service was running rebind to it to send its duration
+		// If service is running re-bind to it to send recording duration
 		if (isServiceRunning()) {
 			bindToService();
 		}
@@ -723,7 +736,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	 */
 	@Override
 	protected void onDestroy() {
-		
 		super.onDestroy();
 		Log.i(TAG, "onDestroy()");
 	}
