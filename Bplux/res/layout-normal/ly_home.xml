@@ -10,27 +10,40 @@
         android:layout_height="wrap_content"
         android:background="#fff" >
 
-        <LinearLayout
+                <RelativeLayout
             android:id="@+id/lyHeader"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-        	android:background="@xml/home_header_gradient"
+            android:background="@xml/home_header_gradient"
             android:paddingBottom="5dip"
             android:paddingTop="5dip" >
 
             <ImageView
-                android:contentDescription="@string/divider_image_content"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:contentDescription="@string/divider_image_content"
                 android:src="@drawable/pluxlogo" />
-        </LinearLayout>
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@null"
+                android:contentDescription="@string/app_name"
+                android:onClick="onClikedMenuItems"
+                android:paddingRight="15dp"
+                android:src="@drawable/menu_button" />
+        </RelativeLayout>
+
+       <include layout="@layout/header_shadow" />
 
         <LinearLayout
             android:id="@+id/lyTitle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/lyHeader"
+            android:layout_below="@id/shadow"
             android:orientation="vertical" >
 
             <TextView

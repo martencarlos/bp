@@ -5,7 +5,7 @@
     android:background="#fff" >
 
     <LinearLayout
-        android:id="@+id/header"
+        android:id="@+id/lyHeader"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@xml/header_color"
@@ -21,11 +21,13 @@
             android:textSize="25sp" />
     </LinearLayout>
 
+    <include layout="@layout/header_shadow" />
+    
     <LinearLayout
         android:id="@+id/sl_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/header"
+        android:layout_below="@id/lyHeader"
         android:orientation="vertical"
         android:padding="10dip" >
 

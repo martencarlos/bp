@@ -3,25 +3,19 @@ package ceu.marten.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.PopupMenu;
 import ceu.marten.bplux.R;
 import ceu.marten.ui.dialogs.AboutDialog;
 import ceu.marten.ui.dialogs.HelpDialog;
 
-public class HomeActivity extends Activity {
+public class HomeActivity extends Activity implements android.widget.PopupMenu.OnMenuItemClickListener {
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.global_menu, menu);
-	    return true;
-	}
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onMenuItemClick(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	        case R.id.gm_settings:
@@ -49,12 +43,20 @@ public class HomeActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.ly_home);
 	}
 
 	/************************ BUTTON EVENTS *******************/
+	
+	public void onClikedMenuItems(View v) {
+	    PopupMenu popup = new PopupMenu(this, v);
+	    popup.setOnMenuItemClickListener(this);
+	    MenuInflater inflater = popup.getMenuInflater();
+	    inflater.inflate(R.menu.global_menu, popup.getMenu());
+	    popup.show();
+	}
 	
 	public void onClickedStartRecording(View view) {
 		startActivity(new Intent(this, ConfigurationsActivity.class));

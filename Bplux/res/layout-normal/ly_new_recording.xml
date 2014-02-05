@@ -3,7 +3,7 @@
     android:layout_height="match_parent" >
 
     <RelativeLayout
-        android:id="@+id/nr_header"
+        android:id="@+id/lyHeader"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@xml/header_color"
@@ -37,10 +37,11 @@
         </LinearLayout>
     </RelativeLayout>
 
+    <include layout="@layout/header_shadow" />
     <ScrollView
         android:id="@+id/nr_scroll_view"
         android:layout_width="fill_parent"
-        android:layout_below="@id/nr_header"
+        android:layout_below="@id/shadow"
         android:layout_height="wrap_content"
         android:layout_marginBottom="60dip"
         android:fillViewport="true" >

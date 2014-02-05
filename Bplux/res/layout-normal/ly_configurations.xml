@@ -6,7 +6,7 @@
     android:paddingBottom="2dip" >
     
     <LinearLayout
-        android:id="@+id/header"
+        android:id="@+id/lyHeader"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@xml/header_color"
@@ -21,13 +21,15 @@
             android:text="@string/ca_header_title"
             android:textSize="20sp" />
     </LinearLayout>
+    
+    <include layout="@layout/header_shadow" />
   
     <LinearLayout
         android:id="@+id/sl_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center_vertical"
-        android:layout_below="@id/header"
+        android:layout_below="@id/lyHeader"
         android:orientation="vertical" >
 
         <TextView

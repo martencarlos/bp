@@ -3,13 +3,14 @@
     android:layout_height="match_parent" >
 
     <RelativeLayout
-        android:id="@+id/nr_header"
+        android:id="@+id/lyHeader"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@xml/header_color"
         android:paddingBottom="2dip"
         android:paddingTop="5dip" >
 
+        
         <TextView
             android:id="@+id/nr_txt_recordingName"
             android:layout_width="fill_parent"
@@ -35,16 +36,17 @@
                 android:drawablePadding="5dip"
                 android:textColor="@android:color/white" />
         </LinearLayout>
+        
     </RelativeLayout>
+ <include layout="@layout/header_shadow" />
+    
 
     <ScrollView
         android:id="@+id/nr_scroll_view"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/nr_header"
-        android:layout_marginBottom="60dip"
-        android:fillViewport="true" >
-
+        android:layout_below="@id/shadow"
+        android:layout_marginBottom="60dip" >
         <LinearLayout
             android:id="@+id/nr_graphs"
             android:layout_width="fill_parent"
@@ -62,6 +64,7 @@
         android:orientation="vertical"
         android:paddingTop="5dip" >
 
+       
         <ImageView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -77,12 +80,12 @@
             android:id="@+id/buttons"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
+            android:orientation="horizontal"
             android:paddingBottom="2dp"
             android:paddingTop="5dip" >
-            
+
             <Button
                 android:id="@+id/nr_bttn_StartPause"
                 android:layout_width="0dp"
@@ -92,24 +95,24 @@
                 android:onClick="onMainButtonClicked"
                 android:text="@string/nr_button_start"
                 android:textColor="@android:color/white" />
-            
+
             <ImageButton
-                android:contentDescription="@string/divider_image_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:onClick="zoomOut"
                 android:background="@drawable/button_zoom_out"
-                android:src="@drawable/zoom_out"/>
-            
-            <ImageButton
                 android:contentDescription="@string/divider_image_content"
+                android:onClick="zoomOut"
+                android:src="@drawable/zoom_out" />
+
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="1dp"
-                android:onClick="zoomIn"
                 android:background="@drawable/button_zoom_in"
-                android:src="@drawable/zoom_in"/>
+                android:contentDescription="@string/divider_image_content"
+                android:onClick="zoomIn"
+                android:src="@drawable/zoom_in" />
         </LinearLayout>
     </LinearLayout>
 
