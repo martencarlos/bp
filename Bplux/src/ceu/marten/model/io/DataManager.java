@@ -20,6 +20,9 @@ import ceu.marten.model.DeviceConfiguration;
 import plux.android.bioplux.Device.Frame;
 import android.content.Context;
 import android.os.Environment;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 
 
@@ -32,6 +35,9 @@ public class DataManager {
 	
 	// Standard debug constant
 	private static final String TAG = DataManager.class.getName();
+	
+	public static final int MSG_PERCENTAGE = 99;
+	private Messenger client = null;
 	
 	private DeviceConfiguration configuration;
 	private OutputStreamWriter outStreamWriter;
@@ -101,31 +107,36 @@ public class DataManager {
 	 * Returns true if compressed successfully and false otherwise.
 	 * @return boolean
 	 */
-	private boolean compressFile(){
+	private boolean compressFile(Messenger client){
+		this.client = client;
 		BufferedInputStream origin = null;
 		ZipOutputStream out = null;
 		try {
 			String zipFileName = recordingName + ".zip";//TODO HARD CODED
-			String file = recordingName + ".txt";//TODO HARD CODED
+			String fileName = recordingName + ".txt";//TODO HARD CODED
 			String appDirectory = Environment.getExternalStorageDirectory().toString()+"/Bioplux/";//TODO HARD CODED
 			File root = new File(appDirectory);
 			root.mkdirs();
-			int BUFFER = 500;//TODO HARD CODED best buffer size?
+			int BUFFER = 10000;//TODO HARD CODED best buffer size?
 			
 			FileOutputStream dest = new FileOutputStream(root +"/"+ zipFileName);//TODO HARD CODED
 					
 			out = new ZipOutputStream(new BufferedOutputStream(dest));
 			byte data[] = new byte[BUFFER];
 
-			FileInputStream fi = new FileInputStream(context.getFilesDir() + "/" + file);//TODO HARD CODED
+			FileInputStream fi = new FileInputStream(context.getFilesDir() + "/" + fileName);//TODO HARD CODED
 			origin = new BufferedInputStream(fi, BUFFER);
-
-			ZipEntry entry = new ZipEntry(file.substring(file.lastIndexOf("/") + 1));//TODO HARD CODED
+			
+			ZipEntry entry = new ZipEntry(fileName.substring(fileName.lastIndexOf("/") + 1));//TODO HARD CODED
 			out.putNextEntry(entry);
 			int count;
-
+			
+			Long recordingSize = (new File(context.getFilesDir() + "/" + fileName)).length();
+			long currentBitsCompressed = 0;
 			while ((count = origin.read(data, 0, BUFFER)) != -1) {
 				out.write(data, 0, count);
+				currentBitsCompressed += BUFFER;
+				sendPercentageToActivity((int)( currentBitsCompressed * 100 / recordingSize));
 			}
 			context.deleteFile(recordingName + ".txt");//TODO HARD CODED
 
@@ -144,6 +155,14 @@ public class DataManager {
 			}	
 		}
 		return true;
+	}
+	
+	private void sendPercentageToActivity(int percentage) {
+		try {
+			this.client.send(Message.obtain(null, MSG_PERCENTAGE, percentage, 0));
+		} catch (RemoteException e) {
+			Log.e(TAG, "Exception sending percentage message to activity", e);
+		}
 	}
 	
 	/**
@@ -241,10 +260,10 @@ public class DataManager {
 	 * 
 	 * @return boolean
 	 */
-	public boolean saveAndCompressFile(){
+	public boolean saveAndCompressFile(Messenger client){
 		if(!writeTextFile())
 			return false;
-		if(!compressFile())
+		if(!compressFile(client))
 			return false;
 		return true;
 	}

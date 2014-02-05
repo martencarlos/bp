@@ -39,6 +39,7 @@ import android.widget.Toast;
 import ceu.marten.bplux.R;
 import ceu.marten.model.DeviceConfiguration;
 import ceu.marten.model.DeviceRecording;
+import ceu.marten.model.io.DataManager;
 import ceu.marten.model.io.DatabaseHelper;
 import ceu.marten.services.BiopluxService;
 
@@ -112,6 +113,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			case BiopluxService.MSG_CONNECTION_ERROR:
 				serviceError = true;
 				displayConnectionErrorDialog(msg.arg1);
+				break;
+			case DataManager.MSG_PERCENTAGE:
+				savingDialog.setProgress(msg.arg1);
 				break;
 			case BiopluxService.MSG_SAVED:
 				savingDialog.dismiss();
@@ -195,7 +199,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				Log.e(TAG, "Error sending duration to service", e);
 				// TODO not informing the user
 			}
-		}else{}//TODO not catching the error or informing the user
+		}else{Log.e(TAG, "Error sending duration to service");}//TODO not catching the error or informing the user
 	}
 
 	@Override
@@ -470,9 +474,11 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		uiStartStopbutton.setText(getString(R.string.nr_button_start));
 		
 		savingDialog.setTitle(getString(R.string.nr_compressing_dialog_title));
-		savingDialog.setMessage(getString(R.string.nr_compressing_dialog_message)); 
+		//savingDialog.setMessage(getString(R.string.nr_compressing_dialog_message)); 
 		savingDialog.setCancelable(false);
-		savingDialog.setIndeterminate(true);
+		savingDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		savingDialog.setMax(100); //100%
+		savingDialog.setProgress(0); //starts with 0%
 		savingDialog.show();
 	}
 	

@@ -1,6 +1,7 @@
 package ceu.marten.services;
 
 
+import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -14,6 +15,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -21,6 +23,7 @@ import android.os.Messenger;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.RemoteException;
+import android.os.StatFs;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import ceu.marten.bplux.R;
@@ -165,6 +168,7 @@ public class BiopluxService extends Service {
 				stopSelf();
 				break loop;
 			}
+			
 			if(samplingCounter++ >= samplingFrames){
 				sendFrameToActivity(frame.an_in);
 				samplingCounter -= samplingFrames;
@@ -196,7 +200,6 @@ public class BiopluxService extends Service {
 	 * @return boolean
 	 */
 	private boolean connectToBiopluxDevice() {
-
 		// BIOPLUX INITIALIZATION
 		try {
 			connection = Device.Create(configuration.getMacAddress());
@@ -302,7 +305,6 @@ public class BiopluxService extends Service {
 	 * Stops the service properly when service is being destroyed
 	 */
 	private void stopService(){
-		
 		if (timer != null)
 			timer.cancel();
 
@@ -333,7 +335,7 @@ public class BiopluxService extends Service {
 
 	@Override
 	public void onRebind(Intent intent) {
-		// Override and do nothing	
+		// Override and do nothing. Needed for the notification to be dismissed when the service stops	
 	}
 
 	@Override
@@ -341,7 +343,7 @@ public class BiopluxService extends Service {
 		stopForeground(true);
 		if(!killServiceError){
 			stopService();
-			if(!dataManager.saveAndCompressFile())
+			if(!dataManager.saveAndCompressFile(client))
 				sendErrorToActivity(CODE_ERROR_SAVING_RECORDING);
 			sendSavedNotification();
 		}
@@ -349,4 +351,59 @@ public class BiopluxService extends Service {
 		super.onDestroy();
 		Log.i(TAG, "service destroyed");
 	}
+	
+	/*********************** LOW MEMORY? ********************/
+	
+	public static boolean externalMemoryAvailable() {
+        return android.os.Environment.getExternalStorageState().equals(
+                android.os.Environment.MEDIA_MOUNTED);
+    }
+	
+	public static String formatSize(long size) {
+        String suffix = null;
+
+        if (size >= 1024) {
+            suffix = "KB";
+            size /= 1024;
+            if (size >= 1024) {
+                suffix = "MB";
+                size /= 1024;
+            }
+        }
+
+        StringBuilder resultBuffer = new StringBuilder(Long.toString(size));
+
+        int commaOffset = resultBuffer.length() - 3;
+        while (commaOffset > 0) {
+            resultBuffer.insert(commaOffset, ',');
+            commaOffset -= 3;
+        }
+
+        if (suffix != null) resultBuffer.append(suffix);
+        return resultBuffer.toString();
+    }
+	
+	 public static String getAvailableInternalMemorySize() {
+	        File path = Environment.getDataDirectory();
+	        StatFs stat = new StatFs(path.getPath());
+	        @SuppressWarnings("deprecation")
+			long blockSize = stat.getBlockSize();
+	        @SuppressWarnings("deprecation")
+			long availableBlocks = stat.getAvailableBlocks();
+	        return formatSize(availableBlocks * blockSize);
+	 }
+	 
+	 public static String getAvailableExternalMemorySize() {
+	        if (externalMemoryAvailable()) {
+	            File path = Environment.getExternalStorageDirectory();
+	            StatFs stat = new StatFs(path.getPath());
+	            @SuppressWarnings("deprecation")
+				long blockSize = stat.getBlockSize();
+	            @SuppressWarnings("deprecation")
+				long availableBlocks = stat.getAvailableBlocks();
+	            return formatSize(availableBlocks * blockSize);
+	        } else {
+	            return "ERROR";
+	        }
+	    }
 }
