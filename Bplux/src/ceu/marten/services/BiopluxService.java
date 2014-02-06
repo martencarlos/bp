@@ -62,7 +62,7 @@ public class BiopluxService extends Service {
 	
 	// Used to keep activity running while device screen is turned off
 	private PowerManager powerManager;
-	private WakeLock wakeLock;
+	private WakeLock wakeLock = null;
 		
 	private DeviceConfiguration configuration;
 	private Device connection;
@@ -96,8 +96,9 @@ public class BiopluxService extends Service {
 			case MSG_REGISTER_AND_START:
 				// register client
 				client = msg.replyTo;
-				
-				wakeLock.acquire();
+				if ((wakeLock != null) && (wakeLock.isHeld() == false)) {
+					wakeLock.acquire();
+				}
 				timer.schedule(new TimerTask() {
 					public void run() {
 						processFrames();
