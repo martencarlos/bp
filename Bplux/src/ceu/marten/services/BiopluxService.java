@@ -1,7 +1,6 @@
 package ceu.marten.services;
 
 
-import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -15,15 +14,14 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.os.PowerManager.WakeLock;
 import android.os.RemoteException;
-import android.os.StatFs;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import ceu.marten.bplux.R;
@@ -42,11 +40,14 @@ public class BiopluxService extends Service {
 	private static final String TAG = BiopluxService.class.getName();
 
 	// messages 'what' fields for the communication with client
-	public static final int MSG_REGISTER_AND_START = 1;
+	public static final int MSG_REGISTER_CLIENT = 1;
 	public static final int MSG_DATA = 2;
 	public static final int MSG_RECORDING_DURATION = 3;
 	public static final int MSG_SAVED = 4;
 	public static final int MSG_CONNECTION_ERROR = 5;
+	public static final int MSG_CHRONOMETER_BASE = 8;
+	
+	
 	
 	// Codes for the activity to display the correct error message
 	public static final int CODE_ERROR_PROCESSING_FRAMES = 6;
@@ -68,12 +69,16 @@ public class BiopluxService extends Service {
 	private Device connection;
 	private Device.Frame[] frames;
 	
-	private Timer timer = new Timer();
+	private Timer timer = null;
 	private DataManager dataManager;
 	private String recordingName;
 	private double samplingFrames;
 	private double samplingCounter = 0;
+	private double  timeCounter = 0;
+	private double  xValue = 0;
 	private boolean killServiceError = false;
+	Notification serviceNotification = null;
+	private boolean activityAlive = false;
 
 	/**
 	 * Target we publish for clients to send messages to IncomingHandler
@@ -93,17 +98,22 @@ public class BiopluxService extends Service {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case MSG_REGISTER_AND_START:
+			case MSG_REGISTER_CLIENT:
 				// register client
 				client = msg.replyTo;
-				if ((wakeLock != null) && (wakeLock.isHeld() == false)) {
-					wakeLock.acquire();
+				activityAlive = true;
+				Log.i(TAG, "onBind handler");
+				stopForeground(true);
+					
+				if (timer == null) {
+					setAndSendChronometerBaseTime();
+					timer = new Timer();
+					timer.schedule(new TimerTask() {
+						public void run() {
+							processFrames();
+						}
+					}, 0, TIMER_TIME);
 				}
-				timer.schedule(new TimerTask() {
-					public void run() {
-						processFrames();
-					}
-				}, 0, TIMER_TIME);
 				break;
 			case MSG_RECORDING_DURATION:
 				dataManager.setDuration(msg.getData().getString("duration")); //TODO HARD CODED
@@ -123,11 +133,25 @@ public class BiopluxService extends Service {
 		
 		powerManager = (PowerManager)this.getSystemService(Context.POWER_SERVICE);
 		wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
+		if ((wakeLock != null) && (wakeLock.isHeld() == false)) {
+			wakeLock.acquire();
+		}
 		frames = new Device.Frame[NUMBER_OF_FRAMES];
 		for (int i = 0; i < frames.length; i++)
 			frames[i] = new Frame();
+	}
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		recordingName = intent.getStringExtra("recordingName").toString(); //TODO HARD CODED
+		configuration = (DeviceConfiguration) intent.getSerializableExtra("configSelected");//TODO HARD CODED
+		samplingFrames = (double)configuration.getReceptionFrequency() / configuration.getSamplingFrequency();
 		
-		Log.i(TAG, "Service created");
+		if(connectToBiopluxDevice()){
+			dataManager = new DataManager(this, recordingName, configuration);
+			createNotification();
+		}
+		return START_NOT_STICKY; // do not re-create service if system kills it
 	}
 
 	/**
@@ -137,24 +161,24 @@ public class BiopluxService extends Service {
 	 */
 	@Override
 	public IBinder onBind(Intent intent) {
-		Log.i(TAG, "service onbind()");
-		recordingName = intent.getStringExtra("recordingName").toString(); //TODO HARD CODED
-		configuration = (DeviceConfiguration) intent.getSerializableExtra("configSelected");//TODO HARD CODED
-		samplingFrames = (double)configuration.getReceptionFrequency() / configuration.getSamplingFrequency();
-		
-		if(connectToBiopluxDevice()){
-			dataManager = new DataManager(this, recordingName, configuration);
-			showNotification(intent);
-		}
+		Log.i(TAG, "onBind");
 		return mMessenger.getBinder();
 	}
 	
+	@Override
+	public boolean onUnbind(Intent intent) {
+		Log.i(TAG, "onUNBind");
+		activityAlive = false;
+		startForeground(R.string.service_id, serviceNotification);
+		return true;
+	}
+
+
 	/**
 	 * Gets and process the frames from the bioplux device. Saves all the frames
 	 * receives to a text file and send the requested frames to the activity
 	 */
 	private void processFrames() {
-		
 		synchronized (writingLock) {
 			isWriting = true;
 		}
@@ -171,7 +195,11 @@ public class BiopluxService extends Service {
 			}
 			
 			if(samplingCounter++ >= samplingFrames){
-				sendFrameToActivity(frame.an_in);
+				//calculates x value of graphs
+				timeCounter++;
+				xValue = timeCounter / configuration.getSamplingFrequency()*1000;
+				if(activityAlive)
+					sendFrameToActivity(frame.an_in);
 				samplingCounter -= samplingFrames;
 			}	
 		}
@@ -225,10 +253,10 @@ public class BiopluxService extends Service {
 	}
 
 	/**
-	 * Creates the notification and starts service in the foreground
+	 * Creates the notification 
 	 * @param parentIntent
 	 */
-	private void showNotification(Intent parentIntent) {
+	private void createNotification() {
 
 		// SET THE BASICS
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
@@ -238,15 +266,16 @@ public class BiopluxService extends Service {
 
 		// CREATE THE INTENT CALLED WHEN NOTIFICATION IS PRESSED
 		Intent newRecordingIntent = new Intent(this, NewRecordingActivity.class);
-
+		newRecordingIntent.putExtra("configSelected", configuration);//TODO HARD CODED
+		newRecordingIntent.putExtra("recordingName", recordingName);
+		
 		// PENDING INTENT
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-				newRecordingIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+				newRecordingIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 		mBuilder.setContentIntent(pendingIntent);
 
 		// CREATES THE NOTIFICATION AND START SERVICE AS FOREGROUND
-		Notification serviceNotification = mBuilder.build();
-		startForeground(R.string.service_id, serviceNotification);
+		serviceNotification = mBuilder.build();
 	}
 
 	/**
@@ -255,18 +284,35 @@ public class BiopluxService extends Service {
 	 */
 	private void sendFrameToActivity(short[] frame) {
 		Bundle b = new Bundle();
+		b.putDouble("xValue", xValue);
         b.putShortArray("frame", frame);//TODO HARD CODED
         Message message = Message.obtain(null, MSG_DATA);
         message.setData(b);
 		try {
 			client.send(message);
 		} catch (RemoteException e) {
-			Log.e(TAG, "client is dead. Service is being stopped", e);
-			killServiceError = true;
-			stopSelf();
-			client = null;
+			activityAlive = false;
+			Log.i(TAG, "client is dead");
+			//killServiceError = true;
+			//stopSelf();
+			//client = null;
 		}
 	}
+	
+	
+	private void setAndSendChronometerBaseTime() {
+		Bundle b = new Bundle();
+		long chronometerBase = SystemClock.elapsedRealtime();
+		b.putLong("chronometerBase", chronometerBase); // TODO HARD CODED
+        Message message = Message.obtain(null, MSG_CHRONOMETER_BASE);
+        message.setData(b);
+		try {
+			client.send(message);
+		} catch (RemoteException e) {
+			activityAlive = false;
+		}
+	}
+
 	
 	/**
 	 * Notifies the client that the recording frames were stored properly
@@ -297,11 +343,14 @@ public class BiopluxService extends Service {
 		}
 	}
 
+	@SuppressLint("NewApi")
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		return START_NOT_STICKY; // do not re-create service if system kills it
+	public void onTaskRemoved(Intent rootIntent) {
+		killServiceError = true;
+		stopSelf();
+		super.onTaskRemoved(rootIntent);
 	}
-	
+
 	/**
 	 * Stops the service properly when service is being destroyed
 	 */
@@ -329,19 +378,7 @@ public class BiopluxService extends Service {
 	
 
 	@Override
-	public boolean onUnbind(Intent intent) {
-		// returns true so that next time the client binds, onRebind() will be called
-		return true;
-	}
-
-	@Override
-	public void onRebind(Intent intent) {
-		// Override and do nothing. Needed for the notification to be dismissed when the service stops	
-	}
-
-	@Override
 	public void onDestroy() {
-		stopForeground(true);
 		if(!killServiceError){
 			stopService();
 			if(!dataManager.saveAndCompressFile(client))
@@ -352,59 +389,5 @@ public class BiopluxService extends Service {
 		super.onDestroy();
 		Log.i(TAG, "service destroyed");
 	}
-	
-	/*********************** LOW MEMORY? ********************/
-	
-	public static boolean externalMemoryAvailable() {
-        return android.os.Environment.getExternalStorageState().equals(
-                android.os.Environment.MEDIA_MOUNTED);
-    }
-	
-	public static String formatSize(long size) {
-        String suffix = null;
 
-        if (size >= 1024) {
-            suffix = "KB";
-            size /= 1024;
-            if (size >= 1024) {
-                suffix = "MB";
-                size /= 1024;
-            }
-        }
-
-        StringBuilder resultBuffer = new StringBuilder(Long.toString(size));
-
-        int commaOffset = resultBuffer.length() - 3;
-        while (commaOffset > 0) {
-            resultBuffer.insert(commaOffset, ',');
-            commaOffset -= 3;
-        }
-
-        if (suffix != null) resultBuffer.append(suffix);
-        return resultBuffer.toString();
-    }
-	
-	 public static String getAvailableInternalMemorySize() {
-	        File path = Environment.getDataDirectory();
-	        StatFs stat = new StatFs(path.getPath());
-	        @SuppressWarnings("deprecation")
-			long blockSize = stat.getBlockSize();
-	        @SuppressWarnings("deprecation")
-			long availableBlocks = stat.getAvailableBlocks();
-	        return formatSize(availableBlocks * blockSize);
-	 }
-	 
-	 public static String getAvailableExternalMemorySize() {
-	        if (externalMemoryAvailable()) {
-	            File path = Environment.getExternalStorageDirectory();
-	            StatFs stat = new StatFs(path.getPath());
-	            @SuppressWarnings("deprecation")
-				long blockSize = stat.getBlockSize();
-	            @SuppressWarnings("deprecation")
-				long availableBlocks = stat.getAvailableBlocks();
-	            return formatSize(availableBlocks * blockSize);
-	        } else {
-	            return "ERROR";
-	        }
-	    }
 }

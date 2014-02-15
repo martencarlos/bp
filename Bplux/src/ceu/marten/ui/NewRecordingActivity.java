@@ -81,9 +81,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private Graph[] graphs;
 	private double  timeCounter = 0;
 	private String duration = null; 
-	
 	private boolean isServiceBounded = false;
-	private static boolean isChronometerRunning = false;
 	private static boolean closeRecordingActivity = false;
 	
 	// ERROR VARIABLES
@@ -108,7 +106,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case BiopluxService.MSG_DATA:
-				appendDataToGraphs(msg.getData().getShortArray("frame"));//TODO HARD CODED
+				appendDataToGraphs(msg.getData().getDouble("xValue"),msg.getData().getShortArray("frame"));//TODO HARD CODED
 				break;
 			case BiopluxService.MSG_CONNECTION_ERROR:
 				serviceError = true;
@@ -125,6 +123,11 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 					overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 				}
 				displayInfoToast(getString(R.string.nr_info_rec_saved));
+				break;
+				
+			case BiopluxService.MSG_CHRONOMETER_BASE:
+				chronometer.setBase(msg.getData().getLong("chronometerBase"));
+				chronometer.start();
 				break;
 			default:
 				super.handleMessage(msg);
@@ -143,9 +146,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			serviceMessenger = new Messenger(service);
 			isServiceBounded = true;
-			Log.i(TAG, "service binded");
 			try {
-				Message msg = Message.obtain(null, BiopluxService.MSG_REGISTER_AND_START);
+				Message msg = Message.obtain(null, BiopluxService.MSG_REGISTER_CLIENT);
 				msg.replyTo = activityMessenger;
 				serviceMessenger.send(msg);
 			} catch (RemoteException e) {
@@ -170,12 +172,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	 * 
 	 * @param data
 	 */
-	 void appendDataToGraphs(short[] data) {
+	 void appendDataToGraphs(double xValue, short[] data) {
 		if(!serviceError){
 			timeCounter++;
 			for (int i = 0; i < graphs.length; i++) {
 				graphs[i].getSerie().appendData(
-						new GraphViewData(timeCounter / recordingConfiguration.getSamplingFrequency()*1000,
+						new GraphViewData(xValue,
 								data[displayChannelPosition[i]]), true, maxDataCount);
 			}
 		}
@@ -218,6 +220,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 		// INIT GLOBAL VARIABLES
 		savingDialog = new ProgressDialog(classContext);
+		savingDialog.setTitle(getString(R.string.nr_compressing_dialog_title));
+		savingDialog.setMessage(getString(R.string.nr_compressing_dialog_message)); 
+		savingDialog.setCancelable(false);
+		savingDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		savingDialog.setProgress(0); //starts with 0%
+		savingDialog.setMax(100); //100%
+		
 		inflater = this.getLayoutInflater();
 		//TODO max data count fixed in 5 seconds max
 		maxDataCount = Integer.parseInt((getResources().getString(R.string.graph_max_data_count)));
@@ -232,8 +241,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				displayIterator++;
 			}
 		}
-			
-		
 		
 		// INIT ANDROID' WIDGETS
 		uiRecordingName = (TextView) findViewById(R.id.nr_txt_recordingName);
@@ -259,17 +266,20 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		detailParameters = new LayoutParams(LayoutParams.MATCH_PARENT,
 				LayoutParams.WRAP_CONTENT);
 
-		// Initializes graphs layout
-		for (int i = 0; i < recordingConfiguration.getDisplayChannelsNumber(); i++) {
-			graphs[i] = new Graph(this, getString(R.string.nc_dialog_channel)
-					+ " "
-					+ recordingConfiguration.getDisplayChannels().get(i)
-							.toString());
-			LinearLayout graph = (LinearLayout) inflater.inflate(
-					R.layout.in_ly_graph, null);
-			((ViewGroup) graph).addView(graphs[i].getGraphView());
-			((ViewGroup) graphsView).addView(graph, graphParams);
-		}
+		
+			for (int i = 0; i < recordingConfiguration
+					.getDisplayChannelsNumber(); i++) {
+				graphs[i] = new Graph(this,
+						getString(R.string.nc_dialog_channel)
+								+ " "
+								+ recordingConfiguration.getDisplayChannels()
+										.get(i).toString());
+				LinearLayout graph = (LinearLayout) inflater.inflate(
+						R.layout.in_ly_graph, null);
+				((ViewGroup) graph).addView(graphs[i].getGraphView());
+				((ViewGroup) graphsView).addView(graph, graphParams);
+			}
+		
 
 		// If just one channel is being displayed, show configuration details
 		if (recordingConfiguration.getDisplayChannelsNumber() == 1) {
@@ -454,7 +464,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	 */
 	@Override
 	public void onBackPressed() {
-		if (isChronometerRunning)
+		if (isServiceRunning())
 			showBackDialog();
 		else {
 			super.onBackPressed();
@@ -470,15 +480,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		sendRecordingDuration();
 		saveRecording();
 		unbindFromService();
-		stopService(new Intent(NewRecordingActivity.this,BiopluxService.class));
+		stopService(new Intent(NewRecordingActivity.this, BiopluxService.class));
 		uiStartStopbutton.setText(getString(R.string.nr_button_start));
 		
-		savingDialog.setTitle(getString(R.string.nr_compressing_dialog_title));
-		//savingDialog.setMessage(getString(R.string.nr_compressing_dialog_message)); 
-		savingDialog.setCancelable(false);
-		savingDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-		savingDialog.setMax(100); //100%
-		savingDialog.setProgress(0); //starts with 0%
 		savingDialog.show();
 	}
 	
@@ -546,9 +550,11 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 						if(connectionError){
 							displayConnectionErrorDialog(bpErrorCode);
 						}else{
-							startService(new Intent(classContext, BiopluxService.class));
+							Intent intent = new Intent(classContext, BiopluxService.class);
+							intent.putExtra("recordingName", recording.getName());//TODO HARD CODE
+							intent.putExtra("configSelected", recordingConfiguration);//TODO HARD CODE
+							startService(intent);
 							bindToService();
-							startChronometer();
 							uiStartStopbutton.setText(getString(R.string.nr_button_stop));
 							displayInfoToast(getString(R.string.nr_info_started));
 						}
@@ -616,15 +622,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	/**
-	 * Starts Android' chronometer widget to display the recordings duration
-	 */
-	private void startChronometer() {
-		chronometer.setBase(SystemClock.elapsedRealtime());
-		chronometer.start();
-		isChronometerRunning = true;
-	}
-
-	/**
 	 * Stops the chronometer and calculates the duration of the recording
 	 */
 	private void stopChronometer() {
@@ -635,7 +632,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				(int) ((elapsedMiliseconds / (1000 * 60 * 60)) % 24), 	// hours
 				(int) ((elapsedMiliseconds / (1000 * 60)) % 60),	  	// minutes
 				(int) (elapsedMiliseconds / 1000) % 60);				// seconds
-		isChronometerRunning = false;
 	}
 
 	/**
@@ -680,8 +676,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	 */
 	void bindToService() {
 		Intent intent = new Intent(classContext, BiopluxService.class);
-		intent.putExtra("recordingName", recording.getName());//TODO HARD CODE
-		intent.putExtra("configSelected", recordingConfiguration);//TODO HARD CODE
 		bindService(intent, bindConnection, Context.BIND_AUTO_CREATE);
 	}
 
@@ -692,7 +686,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		if (isServiceBounded) {
 			unbindService(bindConnection);
 			isServiceBounded = false;
-			Log.i(TAG, "service unbinded");
 		}
 	}
 	
@@ -736,6 +729,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		super.onResume();
 		Log.i(TAG, "onResume()");
 	}
+	
 
 	/**
 	 * Destroys activity
