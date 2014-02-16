@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ceu.marten.bplux"
-    android:versionCode="1"
-    android:versionName="Alpha" >
+    android:versionCode="2"
+    android:versionName="Beta" >
 
     <uses-sdk
         android:maxSdkVersion="19"
@@ -15,7 +16,6 @@
     <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -28,6 +28,7 @@
             android:label="@string/home_label" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -59,9 +60,10 @@
         </activity>
         <activity
             android:name="ceu.marten.ui.SettingsActivity"
-            android:label="@string/settings_label" >
+            android:label="@string/global_settings_label" >
             <intent-filter>
                 <action android:name="ceu.marten.ui.SettingsActivity" />
+
                 <category android:name="android.intent.cetagory.PREFERENCE" />
             </intent-filter>
         </activity>

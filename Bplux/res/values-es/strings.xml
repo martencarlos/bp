@@ -4,17 +4,19 @@
     <string name="divider_image_content">"divisor"</string>
     
     <!-- ACTIVITIES LABELS -->
-    <string name="home_label">"Bioplux"</string>
-    <string name="settings_label">"Ajustes"</string>
-    <string name="configurations_label">"Configuraciones"</string>
-    <string name="recordings_label">"Grabaciones"</string>
-    <string name="new_configurations_label">"Nuevas Configuraciones"</string>
-    <string name="new_recordings_label">"Nueva grabación"</string>
+    <string name="home_label">Bioplux</string>
+    <string name="global_settings_label">Ajustes generales</string>
+    <string name="recording_settings_label">Ajustes de grabación</string>
+    <string name="configurations_label">Configuraciones</string>
+    <string name="recordings_label">Grabaciones</string>
+    <string name="new_configurations_label">Nuevas Configuraciones</string>
+    <string name="new_recordings_label">Nueva grabación</string>
     
     <!-- GLOBAL MENU ITEMS -->
     <string name="gm_settings">Ajustes</string>
     <string name="gm_help">Ayuda</string>
     <string name="gm_about">Información</string>
+    <string name="nr_recording_settings">Ajustes</string>
     
     <string name="gm_help_title">Consejos</string>
     <string name="gm_help_message">- Para eliminar configuraciones o grabaciones, arrastralos fuera de la pantalla hacia derecha o izquierda \n\n - Mantén pulsada una configuración para editarla</string>
@@ -28,6 +30,7 @@
     
      <!-- SETTINGS ACTIVITY -->
     <string name="sa_category_title">DIALOGOS DE CONFIRMACIÓN</string>
+    <string name="sa_nr_category_title">GRÁFICOS</string>
     <string name="sa_configuration_title">Borrando configuraciones</string>
     <string name="sa_configuration_summary">No mostrar diálogo de confirmación al borrar una configuración</string>
     <string name="sa_recording_title">Borrando grabaciones</string>
@@ -64,7 +67,7 @@
     
     <string name="ra_recording_removed">"Grabación eliminada"</string>
     <string name="ra_duration">"Duración "</string>
-    <string name="ra_dialog_email">Seleccione cliente mail</string>
+    <string name="ra_send_dialog_title">Seleccione método de envío</string>
     <string name="ra_confirm_dialog_title">Estas seguro?</string>
     <string name="ra_confirm_dialog_message">La grabación será borrada</string>
     <string name="ra_confirm_dialog_positive">Confirmar</string>
@@ -72,7 +75,7 @@
     <string name="ra_error_message_deleting_recording_from_database">Hubo un problema al borrar la grabación de la base de datos</string>
     <string name="ra_error_message_deleting_recording_from_filesystem">Hubo un problema al borrar la grabación de la memoria interna de su dispositivo</string>
     <string name="ra_display_path_dialog_title">El tamaño de la grabación es muy grande</string>
-    <string name="ra_display_path_dialog_message">Su tamaño es mayor que 20MB y no puede ser enviado por email.\nPara transferir la grabación, conecte el dispositivo con cable USB al PC y acceda a la carpeta Bioplux</string>
+    <string name="ra_display_path_dialog_message">Su tamaño es mayor de 20 MB y no puede ser enviado por email.\nPara transferir la grabación, conecte el dispositivo con cable USB al PC y acceda a la carpeta Bioplux</string>
     
     
     <!-- NEW CONFIGURATION ACTIVITY -->
@@ -122,6 +125,7 @@
     <string name="nr_active_channels">Canales activos: </string>
     <string name="nr_button_start">"Iniciar grabación"</string>
     
+    <string name="nr_bluetooth_not_supported">Su dispositivo no tiene soporte para bluetooth</string>
     <string name="nr_button_stop">Parar grabación</string>
     <string name="nr_info_started">Grabación ha comenzado</string>
     <string name="nr_info_rec_saved">Grabación guardada</string>
@@ -136,8 +140,9 @@
     <string name="nr_bluetooth_dialog_positive_button">Conectar</string>
     <string name="nr_progress_dialog_title">Buscando dispositivos Bioplux</string>
     <string name="nr_progress_dialog_message">Intentando establecer conexion</string>
-    <string name="nr_compressing_dialog_title">Comprimiendo grabación</string>
-    <string name="nr_compressing_dialog_message">La compresión puede llegar a tardar unos pocos minutos</string>
+    <string name="nr_saving_dialog_title">Almacenando grabación</string>
+    <string name="nr_saving_dialog_adding_header_message">Adjuntando la cabecera de la grabación</string>
+    <string name="nr_saving_dialog_compressing_message">Comprimiendo grabación</string>
     
     <!-- BIOPLUX NOTIFICATION MESSAGES -->
     <string name="bp_address_incorrect">La dirección MAC especificada es sintaticamente incorrecta</string>

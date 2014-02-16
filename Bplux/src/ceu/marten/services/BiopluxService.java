@@ -19,7 +19,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.PowerManager;
-import android.os.SystemClock;
 import android.os.PowerManager.WakeLock;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
@@ -39,15 +38,15 @@ public class BiopluxService extends Service {
 	// Standard debug constant
 	private static final String TAG = BiopluxService.class.getName();
 
-	// messages 'what' fields for the communication with client
+	// messages 'what' fields for the communication with the client
 	public static final int MSG_REGISTER_CLIENT = 1;
 	public static final int MSG_DATA = 2;
 	public static final int MSG_RECORDING_DURATION = 3;
 	public static final int MSG_SAVED = 4;
 	public static final int MSG_CONNECTION_ERROR = 5;
-	public static final int MSG_CHRONOMETER_BASE = 8;
 	
-	
+	public static final String KEY_X_VALUE = "xValue";
+	public static final String KEY_FRAME_DATA = "frame";
 	
 	// Codes for the activity to display the correct error message
 	public static final int CODE_ERROR_PROCESSING_FRAMES = 6;
@@ -71,7 +70,6 @@ public class BiopluxService extends Service {
 	
 	private Timer timer = null;
 	private DataManager dataManager;
-	private String recordingName;
 	private double samplingFrames;
 	private double samplingCounter = 0;
 	private double  timeCounter = 0;
@@ -106,7 +104,6 @@ public class BiopluxService extends Service {
 				stopForeground(true);
 					
 				if (timer == null) {
-					setAndSendChronometerBaseTime();
 					timer = new Timer();
 					timer.schedule(new TimerTask() {
 						public void run() {
@@ -116,7 +113,7 @@ public class BiopluxService extends Service {
 				}
 				break;
 			case MSG_RECORDING_DURATION:
-				dataManager.setDuration(msg.getData().getString("duration")); //TODO HARD CODED
+				dataManager.setDuration(msg.getData().getString(NewRecordingActivity.KEY_DURATION)); 
 				break;
 			default:
 				super.handleMessage(msg);
@@ -143,8 +140,8 @@ public class BiopluxService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		recordingName = intent.getStringExtra("recordingName").toString(); //TODO HARD CODED
-		configuration = (DeviceConfiguration) intent.getSerializableExtra("configSelected");//TODO HARD CODED
+		String recordingName = intent.getStringExtra(NewRecordingActivity.KEY_RECORDING_NAME).toString(); 
+		configuration = (DeviceConfiguration) intent.getSerializableExtra(NewRecordingActivity.KEY_CONFIGURATION);
 		samplingFrames = (double)configuration.getReceptionFrequency() / configuration.getSamplingFrequency();
 		
 		if(connectToBiopluxDevice()){
@@ -187,7 +184,7 @@ public class BiopluxService extends Service {
 		
 		loop:
 		for (Frame frame : frames) {
-			if(!dataManager.writeFramesToTmpFile(frame)){
+			if(!dataManager.writeFrameToTmpFile(frame)){
 				sendErrorToActivity(CODE_ERROR_PROCESSING_FRAMES);
 				killServiceError = true;
 				stopSelf();
@@ -266,8 +263,6 @@ public class BiopluxService extends Service {
 
 		// CREATE THE INTENT CALLED WHEN NOTIFICATION IS PRESSED
 		Intent newRecordingIntent = new Intent(this, NewRecordingActivity.class);
-		newRecordingIntent.putExtra("configSelected", configuration);//TODO HARD CODED
-		newRecordingIntent.putExtra("recordingName", recordingName);
 		
 		// PENDING INTENT
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
@@ -284,8 +279,8 @@ public class BiopluxService extends Service {
 	 */
 	private void sendFrameToActivity(short[] frame) {
 		Bundle b = new Bundle();
-		b.putDouble("xValue", xValue);
-        b.putShortArray("frame", frame);//TODO HARD CODED
+		b.putDouble(KEY_X_VALUE, xValue);
+        b.putShortArray(KEY_FRAME_DATA, frame);
         Message message = Message.obtain(null, MSG_DATA);
         message.setData(b);
 		try {
@@ -293,26 +288,9 @@ public class BiopluxService extends Service {
 		} catch (RemoteException e) {
 			activityAlive = false;
 			Log.i(TAG, "client is dead");
-			//killServiceError = true;
-			//stopSelf();
-			//client = null;
 		}
 	}
 	
-	
-	private void setAndSendChronometerBaseTime() {
-		Bundle b = new Bundle();
-		long chronometerBase = SystemClock.elapsedRealtime();
-		b.putLong("chronometerBase", chronometerBase); // TODO HARD CODED
-        Message message = Message.obtain(null, MSG_CHRONOMETER_BASE);
-        message.setData(b);
-		try {
-			client.send(message);
-		} catch (RemoteException e) {
-			activityAlive = false;
-		}
-	}
-
 	
 	/**
 	 * Notifies the client that the recording frames were stored properly
@@ -389,5 +367,4 @@ public class BiopluxService extends Service {
 		super.onDestroy();
 		Log.i(TAG, "service destroyed");
 	}
-
 }

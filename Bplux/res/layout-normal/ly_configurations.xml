@@ -60,7 +60,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/button_selector"
+        android:background="@xml/button_selector"
         android:drawableEnd="@drawable/new_configuration"
         android:paddingLeft="20dip"
         android:paddingRight="30dip"

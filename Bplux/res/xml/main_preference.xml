@@ -15,4 +15,18 @@
             android:title = "@string/sa_recording_title"
             android:summary = "@string/sa_recording_summary" />
     </PreferenceCategory>
+    
+    <PreferenceCategory
+        android:key="pref_key_graph"
+        android:title="@string/sa_nr_category_title" >
+
+        <ceu.marten.ui.dialogs.SeekBarPreference
+            android:key = "nr_zoom"
+            android:title = "Set the amount of zoom per click"
+            android:summary = "The default amount is 500 miliseconds"
+            android:defaultValue = "500"
+            android:max="5000"
+			android:text=" miliseconds">
+        </ceu.marten.ui.dialogs.SeekBarPreference>
+    </PreferenceCategory>
 </PreferenceScreen>

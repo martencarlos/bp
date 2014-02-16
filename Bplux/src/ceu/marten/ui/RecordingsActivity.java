@@ -24,6 +24,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import ceu.marten.bplux.R;
+import ceu.marten.model.Constants;
 import ceu.marten.model.DeviceRecording;
 import ceu.marten.model.io.DatabaseHelper;
 import ceu.marten.ui.adapters.RecordingsListAdapter;
@@ -54,6 +55,7 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	private int[] reverseSortedPositions;
 	private SharedPreferences.Editor prefEditor = null;
 	private LayoutInflater inflater;
+	private static final File externalStorageDirectory = Environment.getExternalStorageDirectory();
 	
 	//DIALOGS
 	private AlertDialog confirmationDialog, errorDialog;
@@ -85,7 +87,7 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		try {
 			dao = getHelper().getRecordingDao();
 			QueryBuilder<DeviceRecording, Integer> builder = dao.queryBuilder();
-			builder.orderBy("startDate", false).limit(100L); //TODO HARD CODED
+			builder.orderBy(DeviceRecording.DATE_FIELD_NAME, false).limit(100L); 
 			recordings = (ArrayList<DeviceRecording>) dao.query(builder.prepare());
 		} catch (SQLException e) {
 			Log.e(TAG, "Exception loading recordings from android' internal database ", e);
@@ -104,10 +106,11 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 			@Override
 			public void onItemClick(AdapterView<?> AdapterView, View configurationView,int position, long id) {
 				recordingName = ((TextView) configurationView.findViewById(R.id.dli_name)).getText().toString();
-				if(fileSizeBiggerThan20Mb())
+				File recordingZipFile = new File(externalStorageDirectory + Constants.APP_DIRECTORY + recordingName + Constants.ZIP_FILE_EXTENTION);
+				if(fileSizeBiggerThan20Mb(recordingZipFile))
 					showRecordingTooBigDialog();
 				else
-					showSendRecordingOptions();
+					showSendRecordingOptions(recordingZipFile);
 			}
 		};
 		
@@ -192,10 +195,8 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 			}
 			
 			// gets selected recording file path
-			File root = Environment.getExternalStorageDirectory();
 			recordingName = recordings.get(position).getName();
-			String appDirectory="/Bioplux/"; //TODO HARD CODED
-			File file = new File(root + appDirectory + recordingName + ".zip");//TODO HARD CODED
+			File file = new File(externalStorageDirectory + Constants.APP_DIRECTORY + recordingName + Constants.ZIP_FILE_EXTENTION);
 			
 			// Checks if it exists and there was a problem deleting it from the file system
 			if(file.exists() && !file.delete()){
@@ -204,7 +205,14 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 				baseAdapter.remove(position);
 				recordings.remove(position);
 			}
+			// Tells the media scanner to scan the deleted compressed file, so that
+			// it is no longer visible for the user via USB without needing to reboot
+			// device because of the MTP protocol
+			Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+			intent.setData(Uri.fromFile(file));
+			sendBroadcast(intent);
 		}
+		
 		displayInfoToast(getString(R.string.ra_recording_removed));
 		return true;
 	}
@@ -269,28 +277,22 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	 * Gets recording file Uri and starts a sendIntent for Android system to
 	 * display the chooser based on file type
 	 */
-	private void showSendRecordingOptions() {
+	private void showSendRecordingOptions(File recordingZipFile) {
 		// gets recording file Uri
-		File rootPath = Environment.getExternalStorageDirectory();
-		String appDirectory = "/Bioplux/"; //TODO HARD CODED
-		File recordingFile = new File(rootPath + appDirectory + recordingName + ".zip"); //TODO HARD CODED
-		Uri fileUri = Uri.fromFile(recordingFile);
+		Uri fileUri = Uri.fromFile(recordingZipFile);
 		
 		Intent sendIntent = new Intent(Intent.ACTION_SEND);
-		sendIntent.setType("application/zip"); //TODO HARD CODED
+		sendIntent.setType("application/zip"); 
 		sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-		startActivity(Intent.createChooser(sendIntent, getString(R.string.ra_dialog_email)));
+		startActivity(Intent.createChooser(sendIntent, getString(R.string.ra_send_dialog_title)));
 	}
 	
 	/**
 	 * Returns true if recording file is bigger than 20 MB. False otherwise
 	 * @return boolean
 	 */
-	private boolean fileSizeBiggerThan20Mb() {
-		File root = Environment.getExternalStorageDirectory();
-		String appDirectory = "/Bioplux/"; //TODO HARD CODED
-		File zipFile = new File(root + appDirectory + recordingName + ".zip");//TODO HARD CODED
-		if((zipFile.length() / 1024d) / 1024d > 20.0d)//TODO HARD CODED (>20MB)
+	private boolean fileSizeBiggerThan20Mb(File recordingZipFile) {
+		if((recordingZipFile.length() / 1024d) / 1024d > 20.0d)// (>20MB)?
 			return true;
 		else
 			return false;

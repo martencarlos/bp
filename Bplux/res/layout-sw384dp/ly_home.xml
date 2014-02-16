@@ -37,7 +37,7 @@
         </RelativeLayout>
 
         <include layout="@layout/header_shadow" />
-        "
+        
 
         <LinearLayout
             android:id="@+id/lyTitle"
@@ -80,7 +80,7 @@
                 android:layout_height="45dip"
                 android:layout_marginLeft="30dip"
                 android:layout_marginRight="30dip"
-                android:background="@drawable/button_selector"
+                android:background="@xml/button_selector"
                 android:drawableEnd="@drawable/start"
                 android:gravity="center"
                 android:maxLines="1"
@@ -96,7 +96,7 @@
                 android:layout_marginLeft="30dip"
                 android:layout_marginRight="30dip"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/button_selector"
+                android:background="@xml/button_selector"
                 android:drawableEnd="@drawable/browse"
                 android:gravity="center"
                 android:onClick="onClickedBrowseRecordings"

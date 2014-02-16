@@ -10,21 +10,12 @@
         android:paddingBottom="2dip"
         android:paddingTop="5dip" >
 
-        
-        <TextView
-            android:id="@+id/nr_txt_recordingName"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@android:color/white"
-            android:textSize="25sp" />
-
         <LinearLayout
             android:id="@+id/nr_headerChronometer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="15dip"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15dip"
             android:layout_marginTop="5dip"
             android:orientation="horizontal" >
 
@@ -36,10 +27,28 @@
                 android:drawablePadding="5dip"
                 android:textColor="@android:color/white" />
         </LinearLayout>
-        
+
+        <TextView
+            android:id="@+id/nr_txt_recordingName"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="25sp" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@null"
+            android:contentDescription="@string/app_name"
+            android:onClick="onClikedMenuItems"
+            android:paddingRight="15dp"
+            android:src="@drawable/menu_button" />
     </RelativeLayout>
- <include layout="@layout/header_shadow" />
-    
+
+    <include layout="@layout/header_shadow" />
 
     <ScrollView
         android:id="@+id/nr_scroll_view"
@@ -47,6 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/shadow"
         android:layout_marginBottom="60dip" >
+
         <LinearLayout
             android:id="@+id/nr_graphs"
             android:layout_width="fill_parent"
@@ -64,7 +74,6 @@
         android:orientation="vertical"
         android:paddingTop="5dip" >
 
-       
         <ImageView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -91,7 +100,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/button_selector"
+                android:background="@xml/button_selector"
                 android:onClick="onMainButtonClicked"
                 android:text="@string/nr_button_start"
                 android:textColor="@android:color/white" />
@@ -100,7 +109,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:background="@drawable/button_zoom_out"
+                android:background="@xml/button_zoom_out"
                 android:contentDescription="@string/divider_image_content"
                 android:onClick="zoomOut"
                 android:src="@drawable/zoom_out" />
@@ -109,7 +118,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="1dp"
-                android:background="@drawable/button_zoom_in"
+                android:background="@xml/button_zoom_in"
                 android:contentDescription="@string/divider_image_content"
                 android:onClick="zoomIn"
                 android:src="@drawable/zoom_in" />

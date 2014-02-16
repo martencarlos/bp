@@ -15,10 +15,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import ceu.marten.bplux.R;
+import ceu.marten.model.Constants;
 import ceu.marten.model.DeviceConfiguration;
 
 import plux.android.bioplux.Device.Frame;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Message;
 import android.os.Messenger;
@@ -37,18 +40,23 @@ public class DataManager {
 	private static final String TAG = DataManager.class.getName();
 	
 	public static final int MSG_PERCENTAGE = 99;
+	
+	public static final int STATE_APPENDING_HEADER = 1;
+	public static final int STATE_COMPRESSING_FILE = 2;
+	
 	private Messenger client = null;
 	
 	private DeviceConfiguration configuration;
 	private OutputStreamWriter outStreamWriter;
 	private BufferedWriter bufferedWriter;
-	
+	private int BUFFER = 524288; // 0.5MB Optimal for Android devices
 	private int numberOfChannelsActivated;
 	private int frameCounter = 0;
 	
 	private String channelFormat = "%-4s ";
 	private String recordingName;
 	private String duration;
+	
 	
 	private Context context;
 	
@@ -67,10 +75,9 @@ public class DataManager {
 		
 		this.numberOfChannelsActivated = configuration.getActiveChannelsNumber();
 		try {
-			outStreamWriter = new OutputStreamWriter(context.openFileOutput("tmp.txt", Context.MODE_PRIVATE));//TODO HARD CODED
+			outStreamWriter = new OutputStreamWriter(context.openFileOutput(Constants.TEMP_FILE, Context.MODE_PRIVATE));
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "file to write frames on, not found", e);
-			//TODO NOT INFORMING THE USER
 		}
 		bufferedWriter = new BufferedWriter(outStreamWriter);
 	}
@@ -82,7 +89,7 @@ public class DataManager {
 	 * @param frame
 	 * @return boolean
 	 */
-	public boolean writeFramesToTmpFile(Frame frame) {
+	public boolean writeFrameToTmpFile(Frame frame) {
 		frameCounter ++;
 
 		try {
@@ -104,73 +111,12 @@ public class DataManager {
 	}
 	
 	/**
-	 * Returns true if compressed successfully and false otherwise.
-	 * @return boolean
-	 */
-	private boolean compressFile(Messenger client){
-		this.client = client;
-		BufferedInputStream origin = null;
-		ZipOutputStream out = null;
-		try {
-			String zipFileName = recordingName + ".zip";//TODO HARD CODED
-			String fileName = recordingName + ".txt";//TODO HARD CODED
-			String appDirectory = Environment.getExternalStorageDirectory().toString()+"/Bioplux/";//TODO HARD CODED
-			File root = new File(appDirectory);
-			root.mkdirs();
-			int BUFFER = 10000;//TODO HARD CODED best buffer size?
-			
-			FileOutputStream dest = new FileOutputStream(root +"/"+ zipFileName);//TODO HARD CODED
-					
-			out = new ZipOutputStream(new BufferedOutputStream(dest));
-			byte data[] = new byte[BUFFER];
-
-			FileInputStream fi = new FileInputStream(context.getFilesDir() + "/" + fileName);//TODO HARD CODED
-			origin = new BufferedInputStream(fi, BUFFER);
-			
-			ZipEntry entry = new ZipEntry(fileName.substring(fileName.lastIndexOf("/") + 1));//TODO HARD CODED
-			out.putNextEntry(entry);
-			int count;
-			
-			Long recordingSize = (new File(context.getFilesDir() + "/" + fileName)).length();
-			long currentBitsCompressed = 0;
-			while ((count = origin.read(data, 0, BUFFER)) != -1) {
-				out.write(data, 0, count);
-				currentBitsCompressed += BUFFER;
-				sendPercentageToActivity((int)( currentBitsCompressed * 100 / recordingSize));
-			}
-			context.deleteFile(recordingName + ".txt");//TODO HARD CODED
-
-		} catch (Exception e) {
-			Log.e(TAG, "Exception while zipping", e);
-			return false;
-		}
-		finally{
-			try {
-				origin.close();
-				out.close();
-			} catch (IOException e) {
-				try {out.close();} catch (IOException e1) {}
-				Log.e(TAG, "Exception while closing streams", e);
-				return false;
-			}	
-		}
-		return true;
-	}
-	
-	private void sendPercentageToActivity(int percentage) {
-		try {
-			this.client.send(Message.obtain(null, MSG_PERCENTAGE, percentage, 0));
-		} catch (RemoteException e) {
-			Log.e(TAG, "Exception sending percentage message to activity", e);
-		}
-	}
-	
-	/**
 	 * Returns true if text file was written successfully and false if an exception was caught
 	 * @return boolean
 	 */
-	private boolean writeTextFile() {
-
+	private boolean appendHeader(Messenger client) {
+	
+		this.client = client;
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();		
 		Date date = new Date();
 		OutputStreamWriter out = null;
@@ -194,21 +140,25 @@ public class DataManager {
 			out.write("\n");
 			out.flush();
 			out.close();
-
+	
 			// APPEND DATA
 			FileOutputStream outBytes = new FileOutputStream(context.getFilesDir()
-					+ "/" + recordingName + ".txt", true);//TODO HARD CODED
+					+ "/" + recordingName + Constants.TEXT_FILE_EXTENTION, true);
 			dest = new BufferedOutputStream(outBytes);
-			fi = new FileInputStream(context.getFilesDir() + "/"//TODO HARD CODED
-					+ "tmp.txt");//TODO HARD CODED
+			fi = new FileInputStream(context.getFilesDir() + "/" + Constants.TEMP_FILE);
 			 
-			origin = new BufferedInputStream(fi, 1000);//TODO HARD CODED best 1000?
+			origin = new BufferedInputStream(fi, BUFFER);
 			int count;
-			byte data[] = new byte[1000];//TODO HARD CODED
-			while ((count = origin.read(data, 0, 1000)) != -1) {//TODO HARD CODED
+			byte data[] = new byte[BUFFER];
+			
+			Long tmpFileSize = (new File(context.getFilesDir() + "/" + Constants.TEMP_FILE)).length();
+			long currentBitsCopied = 0;
+			while ((count = origin.read(data, 0, BUFFER)) != -1) {
 				dest.write(data, 0, count);
+				currentBitsCopied += BUFFER;
+				sendPercentageToActivity((int)( currentBitsCopied * 100 / tmpFileSize), STATE_APPENDING_HEADER);
 			}
-
+	
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "File to write header on, not found", e);
 			return false;
@@ -222,7 +172,7 @@ public class DataManager {
 				out.close();
 				origin.close();
 				dest.close();
-				context.deleteFile("tmp.txt");//TODO HARD CODED
+				context.deleteFile(Constants.TEMP_FILE);
 			} catch (IOException e) {
 				try {out.close();} catch (IOException e1) {}
 				try {origin.close();} catch (IOException e1) {}
@@ -232,6 +182,77 @@ public class DataManager {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Returns true if compressed successfully and false otherwise.
+	 * @return boolean
+	 */
+	private boolean compressFile(){
+		
+		BufferedInputStream origin = null;
+		ZipOutputStream out = null;
+		try {
+			String zipFileName = recordingName + Constants.ZIP_FILE_EXTENTION;
+			String fileName = recordingName + Constants.TEXT_FILE_EXTENTION;
+			String directoryAbsolutePath = Environment.getExternalStorageDirectory().toString()+ Constants.APP_DIRECTORY;
+			File root = new File(directoryAbsolutePath);
+			root.mkdirs();
+			
+			
+			FileOutputStream dest = new FileOutputStream(root +"/"+ zipFileName);
+					
+			out = new ZipOutputStream(new BufferedOutputStream(dest));
+			byte data[] = new byte[BUFFER];
+
+			FileInputStream fi = new FileInputStream(context.getFilesDir() + "/" + fileName);
+			origin = new BufferedInputStream(fi, BUFFER);
+			
+			ZipEntry entry = new ZipEntry(fileName.substring(fileName.lastIndexOf("/") + 1));
+			out.putNextEntry(entry);
+			int count;
+			
+			Long recordingSize = (new File(context.getFilesDir() + "/" + fileName)).length();
+			long currentBitsCompressed = 0;
+			while ((count = origin.read(data, 0, BUFFER)) != -1) {
+				out.write(data, 0, count);
+				currentBitsCompressed += BUFFER;
+				sendPercentageToActivity((int)( currentBitsCompressed * 100 / recordingSize), STATE_COMPRESSING_FILE);
+			}
+			context.deleteFile(recordingName + Constants.TEXT_FILE_EXTENTION);
+			
+			// Tells the media scanner to scan the new compressed file, so that
+			// it is visible for the user via USB without needing to reboot
+			// device because of the MTP protocol
+			Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+			intent.setData(Uri.fromFile(new File(root + "/" + zipFileName)));
+			context.sendBroadcast(intent);
+			
+
+
+		} catch (Exception e) {
+			Log.e(TAG, "Exception while zipping", e);
+			return false;
+		}
+		finally{
+			try {
+				origin.close();
+				out.close();
+			} catch (IOException e) {
+				try {out.close();} catch (IOException e1) {}
+				Log.e(TAG, "Exception while closing streams", e);
+				return false;
+			}	
+		}
+		return true;
+	}
+	
+	private void sendPercentageToActivity(int percentage, int state) {
+		try {
+			this.client.send(Message.obtain(null, MSG_PERCENTAGE, percentage, state));
+		} catch (RemoteException e) {
+			Log.e(TAG, "Exception sending percentage message to activity", e);
+		}
 	}
 	
 	/**
@@ -261,9 +282,9 @@ public class DataManager {
 	 * @return boolean
 	 */
 	public boolean saveAndCompressFile(Messenger client){
-		if(!writeTextFile())
+		if(!appendHeader(client))
 			return false;
-		if(!compressFile(client))
+		if(!compressFile())
 			return false;
 		return true;
 	}

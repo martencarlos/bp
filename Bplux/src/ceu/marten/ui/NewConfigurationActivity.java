@@ -83,7 +83,7 @@ public class NewConfigurationActivity extends Activity {
 		inflater = this.getLayoutInflater();
 		configurations = new ArrayList<DeviceConfiguration>();
 		configurations = (ArrayList<DeviceConfiguration>) getIntent()
-				.getExtras().getSerializable(ConfigurationsActivity.CONFIGURATIONS_KEY);
+				.getExtras().getSerializable(ConfigurationsActivity.KEY_CONFIGURATIONS);
 
 		// CREATES AND SETS DEFAULT VALUES FOR THE NEW CONFIGURATION
 		newConfiguration = new DeviceConfiguration(this);
@@ -223,11 +223,11 @@ public class NewConfigurationActivity extends Activity {
 		
 		
 		/* ********* UPDATE CONFIGURATION CODE ********* */
-		if(getIntent().getExtras().containsKey(ConfigurationsActivity.CONFIGURATION_POSITION_KEY)) 
+		if(getIntent().getExtras().containsKey(ConfigurationsActivity.KEY_CONFIGURATION_POSITION)) 
 			isUpdatingConfiguration = true;
 		
 		if(isUpdatingConfiguration){
-			oldConfiguration = configurations.get(getIntent().getExtras().getInt(ConfigurationsActivity.CONFIGURATION_POSITION_KEY)); 
+			oldConfiguration = configurations.get(getIntent().getExtras().getInt(ConfigurationsActivity.KEY_CONFIGURATION_POSITION)); 
 			//FILL WIDGETS FIELDS WITH CONFIGURATION TO EDIT DETAILS
 			configurationName.setText(oldConfiguration.getName());
 			macAddress.setText(oldConfiguration.getMacAddress());
@@ -246,7 +246,7 @@ public class NewConfigurationActivity extends Activity {
 			activeChannels = oldConfiguration.getActiveSensors();
 			boolean[] boolArray = {true};
 			channelsSelected = boolArray;
-			configurations.remove(configurations.get(getIntent().getExtras().getInt(ConfigurationsActivity.CONFIGURATION_POSITION_KEY))); 
+			configurations.remove(configurations.get(getIntent().getExtras().getInt(ConfigurationsActivity.KEY_CONFIGURATION_POSITION))); 
 			newConfiguration = oldConfiguration;
 		}
 	}
@@ -559,12 +559,12 @@ public class NewConfigurationActivity extends Activity {
 		
 		if (validateFields()) {
 			Intent returnIntent = new Intent();
-			returnIntent.putExtra(ConfigurationsActivity.CONFIGURATIONS_KEY, newConfiguration);
+			returnIntent.putExtra(ConfigurationsActivity.KEY_CONFIGURATIONS, newConfiguration);
 		
 			if(!isUpdatingConfiguration)
 				displayInfoToast(getString(R.string.nc_info_created));
 			else{
-				returnIntent.putExtra(ConfigurationsActivity.OLD_CONFIGURATION_KEY, oldConfiguration);
+				returnIntent.putExtra(ConfigurationsActivity.KEY_OLD_CONFIGURATION, oldConfiguration);
 				displayInfoToast(getString(R.string.nc_info_modified));
 			}
 			setResult(RESULT_OK, returnIntent);

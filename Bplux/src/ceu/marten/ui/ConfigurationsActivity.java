@@ -45,9 +45,14 @@ import com.j256.ormlite.stmt.QueryBuilder;
 public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		implements OnDismissCallback {
 
-	public static final String CONFIGURATIONS_KEY = "configurations";
-	public static final String OLD_CONFIGURATION_KEY = "oldConfiguration";
-	public static final String CONFIGURATION_POSITION_KEY = "position";
+	// keys for extra content on NewConfiguration intent
+	public static final String KEY_CONFIGURATIONS = "configurations";
+	public static final String KEY_OLD_CONFIGURATION = "oldConfiguration";
+	public static final String KEY_CONFIGURATION_POSITION = "position";
+	
+	// keys for extra content on NewRecording intent
+	public static final String KEY_CONFIGURATION = "configuration";
+	public static final String KEY_RECORDING_NAME = "recordingName";
 	
 	// Used for debug purposes
 	private static final String TAG = ConfigurationsActivity.class.getName();
@@ -151,8 +156,8 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapterView,View view, int position, long id) {
 				Intent modifyConfigurationIntent = new Intent(classContext, NewConfigurationActivity.class);
-				modifyConfigurationIntent.putExtra(CONFIGURATIONS_KEY, configurations);
-				modifyConfigurationIntent.putExtra(CONFIGURATION_POSITION_KEY, position);
+				modifyConfigurationIntent.putExtra(KEY_CONFIGURATIONS, configurations);
+				modifyConfigurationIntent.putExtra(KEY_CONFIGURATION_POSITION, position);
 				startActivityForResult(modifyConfigurationIntent, MODIFY_CONFIGURATION_CODE_REQUEST);
 				overridePendingTransition(R.anim.slide_in_bottom,R.anim.slide_out_top);
 				return true;
@@ -260,7 +265,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 			if (requestCode == NEW_CONFIGURATION_CODE_REQUEST) {
 
 				DeviceConfiguration newConfiguration = ((DeviceConfiguration) data
-						.getSerializableExtra(CONFIGURATIONS_KEY));
+						.getSerializableExtra(KEY_CONFIGURATIONS));
 				if (saveConfiguration(newConfiguration)) {
 					if (loadConfigurations())
 						setupConfigurationsListView();
@@ -269,9 +274,9 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 			} else if (requestCode == MODIFY_CONFIGURATION_CODE_REQUEST) {
 
 				DeviceConfiguration newConfiguration = ((DeviceConfiguration) data
-						.getSerializableExtra(CONFIGURATIONS_KEY));
+						.getSerializableExtra(KEY_CONFIGURATIONS));
 				DeviceConfiguration oldConfiguration = ((DeviceConfiguration) data
-						.getSerializableExtra(OLD_CONFIGURATION_KEY));
+						.getSerializableExtra(KEY_OLD_CONFIGURATION));
 				updateConfiguration(oldConfiguration, newConfiguration);
 				if (loadConfigurations())
 					setupConfigurationsListView();
@@ -451,7 +456,7 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	 */
 	public void onClickedNewConfig(View buttonView) {
 		Intent intent = new Intent(this, NewConfigurationActivity.class);
-		intent.putExtra(CONFIGURATIONS_KEY, configurations);
+		intent.putExtra(KEY_CONFIGURATIONS, configurations);
 		startActivityForResult(intent, NEW_CONFIGURATION_CODE_REQUEST);
 		overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_top);
 	}
@@ -510,8 +515,8 @@ public class ConfigurationsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 			} else {
 				recordingNameDialog.dismiss();
 				Intent newRecordingIntent = new Intent(classContext, NewRecordingActivity.class);
-				newRecordingIntent.putExtra("recordingName", newRecordingName);//TODO hardcode
-				newRecordingIntent.putExtra("configSelected", configurations.get(configurationClickedPosition));//TODO hardcode
+				newRecordingIntent.putExtra(KEY_RECORDING_NAME, newRecordingName);
+				newRecordingIntent.putExtra(KEY_CONFIGURATION, configurations.get(configurationClickedPosition));
 				startActivity(newRecordingIntent);
 				overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
 			}

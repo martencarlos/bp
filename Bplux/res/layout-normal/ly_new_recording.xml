@@ -7,24 +7,16 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@xml/header_color"
-        android:paddingTop="5dp"
-       	android:paddingBottom="5dp" >
-
-        <TextView
-            android:id="@+id/nr_txt_recordingName"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@android:color/white"
-            android:textSize="20sp" />
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp" >
 
         <LinearLayout
             android:id="@+id/nr_headerChronometer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="15dip"
-            android:layout_marginBottom="5dip"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15dip"
+            android:layout_marginTop="5dip"
             android:orientation="horizontal" >
 
             <Chronometer
@@ -35,14 +27,34 @@
                 android:drawablePadding="5dip"
                 android:textColor="@android:color/white" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/nr_txt_recordingName"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+        
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@null"
+            android:contentDescription="@string/app_name"
+            android:onClick="onClikedMenuItems"
+            android:paddingRight="15dp"
+            android:src="@drawable/menu_button" />
     </RelativeLayout>
 
     <include layout="@layout/header_shadow" />
+
     <ScrollView
         android:id="@+id/nr_scroll_view"
         android:layout_width="fill_parent"
-        android:layout_below="@id/shadow"
         android:layout_height="wrap_content"
+        android:layout_below="@id/shadow"
         android:layout_marginBottom="60dip"
         android:fillViewport="true" >
 
@@ -75,12 +87,12 @@
             android:src="?android:attr/listDivider" />
 
         <LinearLayout
-           android:id="@+id/buttons"
+            android:id="@+id/buttons"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
+            android:orientation="horizontal"
             android:paddingBottom="2dp"
             android:paddingTop="5dip" >
 
@@ -89,29 +101,30 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/button_selector"
+                android:background="@xml/button_selector"
                 android:onClick="onMainButtonClicked"
                 android:text="@string/nr_button_start"
-                android:textSize="16sp"
-                android:textColor="@android:color/white" />
-            
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
             <ImageButton
-                android:contentDescription="@string/divider_image_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:onClick="zoomOut"
-                android:background="@drawable/button_zoom_out"
-                android:src="@drawable/zoom_out"/>
-            
-            <ImageButton
+                android:background="@xml/button_zoom_out"
                 android:contentDescription="@string/divider_image_content"
+                android:onClick="zoomOut"
+                android:src="@drawable/zoom_out" />
+
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="1dp"
+                android:background="@xml/button_zoom_in"
+                android:contentDescription="@string/divider_image_content"
                 android:onClick="zoomIn"
-                android:background="@drawable/button_zoom_in"
-                android:src="@drawable/zoom_in"/>
+                android:src="@drawable/zoom_in" />
         </LinearLayout>
     </LinearLayout>
+
 </RelativeLayout>

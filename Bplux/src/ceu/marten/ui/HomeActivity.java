@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.PopupMenu;
 import ceu.marten.bplux.R;
+import ceu.marten.model.Constants;
 import ceu.marten.ui.dialogs.AboutDialog;
 import ceu.marten.ui.dialogs.HelpDialog;
 
@@ -19,7 +20,9 @@ public class HomeActivity extends Activity implements android.widget.PopupMenu.O
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	        case R.id.gm_settings:
-	        	startActivity(new Intent(this, SettingsActivity.class));
+	        	Intent globalSettingsIntent = new Intent(this, SettingsActivity.class);
+	        	globalSettingsIntent.putExtra(Constants.KEY_SETTINGS_TYPE, 1);
+	        	startActivity(globalSettingsIntent);
 	            return true;
 	            
 	        case R.id.gm_help:

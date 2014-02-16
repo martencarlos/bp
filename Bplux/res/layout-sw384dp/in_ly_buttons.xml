@@ -31,7 +31,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/button_selector"
+            android:background="@xml/button_selector"
             android:onClick="onClickedStartStop"
             android:text="@string/nr_button_start"
             android:textColor="@android:color/white" />
