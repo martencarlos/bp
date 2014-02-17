@@ -21,6 +21,7 @@ public class SettingsActivity extends PreferenceActivity{
 		switch (extras.getInt(Constants.KEY_SETTINGS_TYPE)) {
 		case 1:
 			addPreferencesFromResource(R.xml.main_preference);
+			addPreferencesFromResource(R.xml.recording_preference);
 			setTitle(getString(R.string.global_settings_label));
 			break;
 		case 2:

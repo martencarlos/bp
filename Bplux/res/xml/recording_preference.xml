@@ -7,7 +7,7 @@
 
         <ceu.marten.ui.dialogs.SeekBarPreference
             android:key = "nr_zoom"
-            android:title = "Set the amount of zoom per click"
+            android:title = "Zoom per click"
             android:summary = "The default amount is 500 miliseconds"
             android:defaultValue = "500"
             android:max="5000"
