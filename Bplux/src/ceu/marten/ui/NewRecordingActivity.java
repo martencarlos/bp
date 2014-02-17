@@ -19,6 +19,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -61,7 +62,7 @@ import com.jjoe64.graphview.GraphView.GraphViewData;
  * @author Carlos Marten
  * 
  */
-public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> implements android.widget.PopupMenu.OnMenuItemClickListener {
+public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> implements android.widget.PopupMenu.OnMenuItemClickListener, OnSharedPreferenceChangeListener {
 
 	private static final String TAG = NewRecordingActivity.class.getName();
 	
@@ -73,7 +74,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	// key for recovery. Used when android kills activity
 	public static final String KEY_CHRONOMETER_BASE = "chronometerBase";
 	
-	private static int maxDataCount = 0;
+	// 10 seconds
+	private static final int maxDataCount = 10000; 
 
 	// Android's widgets
 	private static TextView uiRecordingName, uiConfigurationName, uiNumberOfBits,
@@ -96,6 +98,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	
 	private Graph[] graphs;
 	private int[] displayChannelPosition;
+	private int currentZoomValue = 0;
 	private String duration = null; 
 	private SharedPreferences sharedPref = null;
 	
@@ -113,6 +116,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	private Messenger serviceMessenger = null;
 	private final Messenger activityMessenger = new Messenger(new IncomingHandler());
 
+	
+	
 	/**
 	 * Handler that receives messages from the service. It receives frames data,
 	 * error messages and a saved message if service stops correctly
@@ -120,6 +125,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	 * @author Carlos Marten
 	 * 
 	 */
+	
 	 @SuppressLint("HandlerLeak")
 	class IncomingHandler extends Handler {
 		@Override
@@ -133,19 +139,19 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 				displayConnectionErrorDialog(msg.arg1);
 				break;
 			case DataManager.MSG_PERCENTAGE:
-				if(!savingDialogMessageChanged && msg.arg2 == DataManager.STATE_COMPRESSING_FILE){
+				if (!savingDialogMessageChanged && msg.arg2 == DataManager.STATE_COMPRESSING_FILE) {
 					savingDialog.setMessage(getString(R.string.nr_saving_dialog_compressing_message));
 					savingDialogMessageChanged = true;
-				}	
+				}
 				savingDialog.setProgress(msg.arg1);
-					
+
 				break;
 			case BiopluxService.MSG_SAVED:
 				savingDialog.dismiss();
-				if(closeRecordingActivity){
-					closeRecordingActivity = false; 
+				if (closeRecordingActivity) {
+					closeRecordingActivity = false;
 					finish();
-					overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+					overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
 				}
 				displayInfoToast(getString(R.string.nr_info_rec_saved));
 				break;
@@ -248,8 +254,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 		
 		inflater = this.getLayoutInflater();
 		sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		maxDataCount = Integer.parseInt((getResources().getString(R.string.graph_max_data_count)));
+		currentZoomValue = sharedPref.getInt(SettingsActivity.KEY_PREF_ZOOM_VALUE, 500);
 		graphs = new Graph[recordingConfiguration.getDisplayChannelsNumber()];
+
+		// Used to update zoom values
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+	    settings.registerOnSharedPreferenceChangeListener(this);
 		
 		// calculates the display channel position of frame received
 		displayChannelPosition = new int[recordingConfiguration.getDisplayChannels().size()];
@@ -720,7 +730,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 			isServiceBounded = false;
 		}
 	}
-	
+
 	/**
 	 * Main button of activity. Starts, overwrites and stops recording depending
 	 * of whether the recording was never started, was started or was started
@@ -742,7 +752,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 		}
 	}
 	
-	/************************ BUTTON EVENTS *******************/
+	/************************  EVENTS **********************/
 	
 	public void onClikedMenuItems(View v) {
 	    PopupMenu popup = new PopupMenu(this, v);
@@ -766,13 +776,19 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	    }
 	}
 
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		if(key.compareTo(SettingsActivity.KEY_PREF_ZOOM_VALUE)==0)
+			currentZoomValue = sharedPref.getInt(SettingsActivity.KEY_PREF_ZOOM_VALUE, 500);
+	}
+
 	/**
 	 * Widens the graphs' view port
 	 * @param view
 	 */
 	public void zoomIn(View view){
 		for (int i = 0; i < graphs.length; i++)
-			graphs[i].getGraphView().zoomIn(sharedPref.getInt(SettingsActivity.KEY_PREF_ZOOM_VALUE, 500)); 
+			graphs[i].getGraphView().zoomIn(currentZoomValue); 
 	}
 	
 	/**
@@ -781,7 +797,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	 */
 	public void zoomOut(View view){
 		for (int i = 0; i < graphs.length; i++)
-			graphs[i].getGraphView().zoomOut(sharedPref.getInt(SettingsActivity.KEY_PREF_ZOOM_VALUE, 500)); 
+			graphs[i].getGraphView().zoomOut(currentZoomValue); 
 	}
 	
 	
