@@ -63,7 +63,6 @@
             android:label="@string/global_settings_label" >
             <intent-filter>
                 <action android:name="ceu.marten.ui.SettingsActivity" />
-
                 <category android:name="android.intent.cetagory.PREFERENCE" />
             </intent-filter>
         </activity>

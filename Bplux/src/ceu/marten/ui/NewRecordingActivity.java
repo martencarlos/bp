@@ -718,7 +718,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	 */
 	void bindToService() {
 		Intent intent = new Intent(classContext, BiopluxService.class);
-		bindService(intent, bindConnection, Context.BIND_AUTO_CREATE);
+		bindService(intent, bindConnection, 0);
 	}
 
 	/**
@@ -730,7 +730,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 			isServiceBounded = false;
 		}
 	}
-
+	
 	/**
 	 * Main button of activity. Starts, overwrites and stops recording depending
 	 * of whether the recording was never started, was started or was started
@@ -812,7 +812,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 		super.onPause();
 		Log.i(TAG, "onPause()");
 	}
-	
 	
 
 	@Override

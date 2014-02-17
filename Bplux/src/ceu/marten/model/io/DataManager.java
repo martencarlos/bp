@@ -114,9 +114,9 @@ public class DataManager {
 	 * Returns true if text file was written successfully and false if an exception was caught
 	 * @return boolean
 	 */
-	private boolean appendHeader(Messenger client) {
+	private boolean appendHeader() {
 	
-		this.client = client;
+		
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();		
 		Date date = new Date();
 		OutputStreamWriter out = null;
@@ -281,11 +281,14 @@ public class DataManager {
 	 * 
 	 * @return boolean
 	 */
-	public boolean saveAndCompressFile(Messenger client){
-		if(!appendHeader(client))
+	public boolean saveAndCompressFile(Messenger client) {
+		this.client = client;
+
+		if (!appendHeader())
 			return false;
-		if(!compressFile())
+		if (!compressFile())
 			return false;
+
 		return true;
 	}
 
@@ -296,5 +299,5 @@ public class DataManager {
 	public void setDuration(String _duration) {
 		this.duration = _duration;
 	}
-
+	
 }

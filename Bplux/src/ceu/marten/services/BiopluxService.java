@@ -58,8 +58,9 @@ public class BiopluxService extends Service {
 	
 	// Used to synchronize timer and main thread
 	private static final Object writingLock = new Object();
+	private static final Object savingLock = new Object();
 	private boolean isWriting;
-	
+	private boolean isSavingAndCompressing= true;
 	// Used to keep activity running while device screen is turned off
 	private PowerManager powerManager;
 	private WakeLock wakeLock = null;
@@ -359,8 +360,27 @@ public class BiopluxService extends Service {
 	public void onDestroy() {
 		if(!killServiceError){
 			stopService();
-			if(!dataManager.saveAndCompressFile(client))
-				sendErrorToActivity(CODE_ERROR_SAVING_RECORDING);
+			new Thread()
+			{
+			    @Override
+			    public void run() {
+			    	synchronized (savingLock) {
+						isSavingAndCompressing = true;
+					}
+			    	if(!dataManager.saveAndCompressFile(client))
+						sendErrorToActivity(CODE_ERROR_SAVING_RECORDING);
+			    	synchronized (savingLock) {
+						isSavingAndCompressing = false;
+					}
+			    }
+			}.start();
+			while (isSavingAndCompressing) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e2) {
+					Log.e(TAG, "Exception thread is sleeping", e2);
+				}
+			}
 			sendSavedNotification();
 		}
 		wakeLock.release();
