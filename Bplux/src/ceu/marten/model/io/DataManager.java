@@ -309,7 +309,7 @@ public class DataManager {
 	 */
 	@SuppressWarnings("deprecation")
 	public long internalStorageAvailable() {
-		StatFs statFs = new StatFs(Environment.getRootDirectory().getAbsolutePath());
+		StatFs statFs = new StatFs(Environment.getDataDirectory().getAbsolutePath());
 		long free = (statFs.getAvailableBlocks() * statFs.getBlockSize());// in Bytes [/1048576 -> in MB]
 		return free;
 	}
