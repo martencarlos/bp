@@ -122,8 +122,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	 * Handler that receives messages from the service. It receives frames data,
 	 * error messages and a saved message if service stops correctly
 	 * 
-	 * @author Carlos Marten
-	 * 
 	 */
 	
 	 @SuppressLint("HandlerLeak")
@@ -148,6 +146,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 				break;
 			case BiopluxService.MSG_SAVED:
 				savingDialog.dismiss();
+				saveRecordingOnInternalDB();
 				if (closeRecordingActivity) {
 					closeRecordingActivity = false;
 					finish();
@@ -448,17 +447,20 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 		
 		// builder
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setCustomTitle(customTitleView).setPositiveButton(
+		builder.setCustomTitle(customTitleView)
+			   .setPositiveButton(
 				getString(R.string.bp_positive_button),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						if(serviceError){
-							stopRecording();
-							closeRecordingActivity = true;
-						}
+						savingDialog.dismiss();
+						closeRecordingActivity = true;
+						
 					}
 				});
 		connectionErrorDialog = builder.create();
+		connectionErrorDialog.setCancelable(false);
+		connectionErrorDialog.setCanceledOnTouchOutside(false);
+		
 	}
 
 	/**
@@ -490,14 +492,18 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 									Log.e(TAG, "saving recording exception", e);
 								}
 								
-								// Reset activity content
+								// Reset activity variables
 								recordingOverride = false;
+								serviceError = false;
+								closeRecordingActivity = false;
+								savingDialogMessageChanged = false;
+								// Reset activity content
 								View graphsView = findViewById(R.id.nr_graphs);
 								((ViewGroup) graphsView).removeAllViews();
 								initActivityContentLayout();
 								savingDialog.setMessage(getString(R.string.nr_saving_dialog_adding_header_message));
 								savingDialog.setProgress(0);
-								savingDialogMessageChanged = false;
+								
 								startRecording();
 							}
 						});
@@ -530,14 +536,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	 * Stops and saves the recording in database and data as zip file
 	 */
 	private void stopRecording(){
+		savingDialog.show();
 		stopChronometer();
 		sendRecordingDuration();
-		saveRecording();
 		unbindFromService();
 		stopService(new Intent(NewRecordingActivity.this, BiopluxService.class));
 		uiMainbutton.setText(getString(R.string.nr_button_start));
-		
-		savingDialog.show();
 	}
 	
 	/**
@@ -612,6 +616,9 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	 * @param errorCode
 	 */
 	private void displayConnectionErrorDialog(int errorCode) {
+		// Initializes custom title
+		TextView customTitleView = (TextView) inflater.inflate(R.layout.dialog_custom_title, null);
+		customTitleView.setBackgroundColor(getResources().getColor(R.color.error_dialog));
 		switch(errorCode){
 		case 1:
 			connectionErrorDialog.setMessage(getResources().getString(R.string.bp_address_incorrect));
@@ -629,9 +636,13 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 			connectionErrorDialog.setMessage(getResources().getString(R.string.bp_port_could_not_be_opened));
 			break;
 		case 6:
-			connectionErrorDialog.setMessage(getResources().getString(R.string.bp_error_processing_frames));
+			customTitleView.setText(R.string.nr_storage_error_dialog_title);
+			connectionErrorDialog.setCustomTitle(customTitleView);
+			connectionErrorDialog.setMessage(getResources().getString(R.string.bp_error_writing_a_frame));
 			break;
 		case 7:
+			customTitleView.setText(R.string.nr_storage_error_dialog_title);
+			connectionErrorDialog.setCustomTitle(customTitleView);
 			connectionErrorDialog.setMessage(getResources().getString(R.string.bp_error_saving_recording));
 			break;
 		default:
@@ -679,7 +690,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	/**
 	 * Saves the recording on Android's internal Database with ORMLite
 	 */
-	public void saveRecording() {
+	public void saveRecordingOnInternalDB() {
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		Date date = new Date();
 

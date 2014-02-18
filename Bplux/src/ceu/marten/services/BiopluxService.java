@@ -49,7 +49,7 @@ public class BiopluxService extends Service {
 	public static final String KEY_FRAME_DATA = "frame";
 	
 	// Codes for the activity to display the correct error message
-	public static final int CODE_ERROR_PROCESSING_FRAMES = 6;
+	public static final int CODE_ERROR_WRITING_TEXT_FILE = 6;
 	public static final int CODE_ERROR_SAVING_RECORDING = 7;
 	
 	// Get 80 frames every 50 miliseconds
@@ -58,9 +58,7 @@ public class BiopluxService extends Service {
 	
 	// Used to synchronize timer and main thread
 	private static final Object writingLock = new Object();
-	private static final Object savingLock = new Object();
 	private boolean isWriting;
-	private boolean isSavingAndCompressing= true;
 	// Used to keep activity running while device screen is turned off
 	private PowerManager powerManager;
 	private WakeLock wakeLock = null;
@@ -76,8 +74,8 @@ public class BiopluxService extends Service {
 	private double  timeCounter = 0;
 	private double  xValue = 0;
 	private boolean killServiceError = false;
+	private boolean clientActive = false;
 	Notification serviceNotification = null;
-	private boolean activityAlive = false;
 
 	/**
 	 * Target we publish for clients to send messages to IncomingHandler
@@ -100,10 +98,10 @@ public class BiopluxService extends Service {
 			case MSG_REGISTER_CLIENT:
 				// register client
 				client = msg.replyTo;
-				activityAlive = true;
-				Log.i(TAG, "onBind handler");
+				clientActive = true;
+				// removes notification
 				stopForeground(true);
-					
+				
 				if (timer == null) {
 					timer = new Timer();
 					timer.schedule(new TimerTask() {
@@ -139,6 +137,10 @@ public class BiopluxService extends Service {
 			frames[i] = new Frame();
 	}
 
+	/**
+	 * Gets information from the activity extracted from the intent and connects
+	 * to bioplux device. Returns a do not re-create flag if killed by system
+	 */
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		String recordingName = intent.getStringExtra(NewRecordingActivity.KEY_RECORDING_NAME).toString(); 
@@ -152,9 +154,9 @@ public class BiopluxService extends Service {
 		return START_NOT_STICKY; // do not re-create service if system kills it
 	}
 
+
 	/**
-	 * Gets information from the activity extracted from the intent and connects
-	 * to bioplux device. Returns the communication channel to the service or
+	 * Returns the communication channel to the service or
 	 * null if clients cannot bind to the service
 	 */
 	@Override
@@ -163,10 +165,13 @@ public class BiopluxService extends Service {
 		return mMessenger.getBinder();
 	}
 	
+	/**
+	 * Changes the service to be run in the foreground and shows the notification
+	 */
 	@Override
 	public boolean onUnbind(Intent intent) {
 		Log.i(TAG, "onUNBind");
-		activityAlive = false;
+		clientActive = false;
 		startForeground(R.string.service_id, serviceNotification);
 		return true;
 	}
@@ -186,18 +191,20 @@ public class BiopluxService extends Service {
 		loop:
 		for (Frame frame : frames) {
 			if(!dataManager.writeFrameToTmpFile(frame)){
-				sendErrorToActivity(CODE_ERROR_PROCESSING_FRAMES);
+				sendErrorToActivity(CODE_ERROR_WRITING_TEXT_FILE);
 				killServiceError = true;
 				stopSelf();
 				break loop;
 			}
 			
 			if(samplingCounter++ >= samplingFrames){
-				//calculates x value of graphs
+				// calculates x value of graphs
 				timeCounter++;
 				xValue = timeCounter / configuration.getSamplingFrequency()*1000;
-				if(activityAlive)
+				
+				if(clientActive)
 					sendFrameToActivity(frame.an_in);
+				// retains the decimals
 				samplingCounter -= samplingFrames;
 			}	
 		}
@@ -287,7 +294,7 @@ public class BiopluxService extends Service {
 		try {
 			client.send(message);
 		} catch (RemoteException e) {
-			activityAlive = false;
+			clientActive = false;
 			Log.i(TAG, "client is dead");
 		}
 	}
@@ -304,7 +311,6 @@ public class BiopluxService extends Service {
 			Log.e(TAG, "client is dead. Service is being stopped", e);
 			killServiceError = true;
 			stopSelf();
-			client = null;
 		}
 	}
 
@@ -322,6 +328,7 @@ public class BiopluxService extends Service {
 		}
 	}
 
+
 	@SuppressLint("NewApi")
 	@Override
 	public void onTaskRemoved(Intent rootIntent) {
@@ -331,7 +338,7 @@ public class BiopluxService extends Service {
 	}
 
 	/**
-	 * Stops the service properly when service is being destroyed
+	 * Stops the service properly whilst being destroyed
 	 */
 	private void stopService(){
 		if (timer != null)
@@ -358,33 +365,23 @@ public class BiopluxService extends Service {
 
 	@Override
 	public void onDestroy() {
+		super.onDestroy();
 		if(!killServiceError){
 			stopService();
-			new Thread()
-			{
+			new Thread(){
 			    @Override
 			    public void run() {
-			    	synchronized (savingLock) {
-						isSavingAndCompressing = true;
-					}
-			    	if(!dataManager.saveAndCompressFile(client))
-						sendErrorToActivity(CODE_ERROR_SAVING_RECORDING);
-			    	synchronized (savingLock) {
-						isSavingAndCompressing = false;
-					}
+			    	boolean errorSavingRecording = false;
+			    	if(!dataManager.saveAndCompressFile(client)){
+			    		errorSavingRecording = true;
+			    		sendErrorToActivity(CODE_ERROR_SAVING_RECORDING);
+			    	}
+			    	if(!errorSavingRecording)
+						sendSavedNotification();
+			    	wakeLock.release();
 			    }
 			}.start();
-			while (isSavingAndCompressing) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e2) {
-					Log.e(TAG, "Exception thread is sleeping", e2);
-				}
-			}
-			sendSavedNotification();
 		}
-		wakeLock.release();
-		super.onDestroy();
 		Log.i(TAG, "service destroyed");
 	}
 }

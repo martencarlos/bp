@@ -32,9 +32,14 @@
     <string name="sa_category_title">DIALOGOS DE CONFIRMACIÓN</string>
     <string name="sa_nr_category_title">GRÁFICOS</string>
     <string name="sa_configuration_title">Borrando configuraciones</string>
-    <string name="sa_configuration_summary">No mostrar diálogo de confirmación al borrar una configuración</string>
     <string name="sa_recording_title">Borrando grabaciones</string>
-    <string name="sa_recording_summary">No mostrar diálogo deconfirmación al borrar una grabación</string>
+    <string name="sa_configuration_summary">No mostrar diálogo de confirmación al borrar una configuración</string>
+    <string name="sa_recording_summary">No mostrar diálogo de confirmación al borrar una grabación</string>
+    
+    <string name="sa_zoom_unit_measure">milisegundos</string>
+    <string name="sa_zoom_summary_message">El zoom actual está fijado en</string>
+    <string name="sa_zoom_title">Zoom por click</string>
+    <string name="sa_zoom_default_summary">El zoom por defecto es de 500 milisegundos</string>
     
     <!-- CONFIGURATIONS ACTIVITY -->
     <string name="ca_header_title">"Seleccione una configuración"</string>
@@ -131,6 +136,7 @@
     <string name="nr_info_rec_saved">Grabación guardada</string>
     <string name="nr_back_dialog_title">Estas seguro?</string>
     <string name="nr_bluetooth_dialog_title">Problema con bluetooth</string>
+    <string name="nr_storage_error_dialog_title">Error de memoria</string>
     <string name="nr_overwrite_dialog_title">La grabación actual será sobrescrita</string>
     <string name="nr_overwrite_dialog_message">La grabacion actual se perderá. ¿Desea continuar?</string>
     <string name="nr_back_dialog_message">Si procedes, la grabación será detenida y almacenada</string>
@@ -150,8 +156,8 @@
     <string name="bp_device_not_found">El dispositivo Plux no se encuentra. Verifica que está al alcance, encendido y su batería esta bien (luz roja está apagada)</string>
     <string name="bp_contacting_device">Se ha perdido la comunicación con el dispositivo Plux. Verifica que está al alcance, encendido y su batería esta bien (luz roja está apagada)</string>
     <string name="bp_port_could_not_be_opened">El puerto de comunicación no existe o está siendo usado</string>
-    <string name="bp_error_processing_frames">Hubo un error procesando las muestras</string>
-    <string name="bp_error_saving_recording">Hubo un error mientras se almacenaba la grabación</string>
+    <string name="bp_error_writing_a_frame">Hubo un error al almacenar muestras en la memoria interna de su dispositivo</string>
+    <string name="bp_error_saving_recording">Su dispositivo no tiene suficiente memoria libre para almacenar la grabación</string>
     <string name="bp_positive_button">Entendido</string>
     
      <!-- BIOPLUX SERVICE -->

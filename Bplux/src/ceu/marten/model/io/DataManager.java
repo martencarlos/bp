@@ -26,6 +26,7 @@ import android.os.Environment;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.os.StatFs;
 import android.util.Log;
 
 
@@ -111,13 +112,17 @@ public class DataManager {
 	}
 	
 	/**
-	 * Returns true if text file was written successfully and false if an exception was caught
+	 * Creates and appends the header on the recording session file
+	 * 
+	 * Returns true if the text file was written successfully or false if an
+	 * exception was caught
+	 * 
 	 * @return boolean
 	 */
 	private boolean appendHeader() {
-	
 		
-		DateFormat dateFormat = DateFormat.getDateTimeInstance();		
+		DateFormat dateFormat = DateFormat.getDateTimeInstance();
+		String tmpFilePath = context.getFilesDir() + "/" + Constants.TEMP_FILE;
 		Date date = new Date();
 		OutputStreamWriter out = null;
 		BufferedInputStream origin = null;
@@ -145,14 +150,15 @@ public class DataManager {
 			FileOutputStream outBytes = new FileOutputStream(context.getFilesDir()
 					+ "/" + recordingName + Constants.TEXT_FILE_EXTENTION, true);
 			dest = new BufferedOutputStream(outBytes);
-			fi = new FileInputStream(context.getFilesDir() + "/" + Constants.TEMP_FILE);
+			fi = new FileInputStream(tmpFilePath);
 			 
 			origin = new BufferedInputStream(fi, BUFFER);
 			int count;
 			byte data[] = new byte[BUFFER];
 			
-			Long tmpFileSize = (new File(context.getFilesDir() + "/" + Constants.TEMP_FILE)).length();
+			Long tmpFileSize = (new File(tmpFilePath)).length();
 			long currentBitsCopied = 0;
+			
 			while ((count = origin.read(data, 0, BUFFER)) != -1) {
 				dest.write(data, 0, count);
 				currentBitsCopied += BUFFER;
@@ -192,14 +198,14 @@ public class DataManager {
 		
 		BufferedInputStream origin = null;
 		ZipOutputStream out = null;
-		try {
+		
 			String zipFileName = recordingName + Constants.ZIP_FILE_EXTENTION;
 			String fileName = recordingName + Constants.TEXT_FILE_EXTENTION;
 			String directoryAbsolutePath = Environment.getExternalStorageDirectory().toString()+ Constants.APP_DIRECTORY;
 			File root = new File(directoryAbsolutePath);
 			root.mkdirs();
 			
-			
+		try {	
 			FileOutputStream dest = new FileOutputStream(root +"/"+ zipFileName);
 					
 			out = new ZipOutputStream(new BufferedOutputStream(dest));
@@ -228,9 +234,8 @@ public class DataManager {
 			intent.setData(Uri.fromFile(new File(root + "/" + zipFileName)));
 			context.sendBroadcast(intent);
 			
-
-
 		} catch (Exception e) {
+			context.deleteFile(recordingName + Constants.TEXT_FILE_EXTENTION);
 			Log.e(TAG, "Exception while zipping", e);
 			return false;
 		}
@@ -247,6 +252,12 @@ public class DataManager {
 		return true;
 	}
 	
+	/**
+	 * Used to send updates of the percentage of adding the header or compressing the file
+	 * to the client, to keep him informed while waiting
+	 * @param percentage
+	 * @param state
+	 */
 	private void sendPercentageToActivity(int percentage, int state) {
 		try {
 			this.client.send(Message.obtain(null, MSG_PERCENTAGE, percentage, state));
@@ -283,17 +294,72 @@ public class DataManager {
 	 */
 	public boolean saveAndCompressFile(Messenger client) {
 		this.client = client;
-
+		if(!enoughStorageAvailable())
+			return false;
 		if (!appendHeader())
 			return false;
 		if (!compressFile())
 			return false;
-
 		return true;
 	}
 
 	/**
-	 * sets the duration of the recording
+	 * Returns the internal storage available in bytes
+	 * @return long
+	 */
+	@SuppressWarnings("deprecation")
+	public long internalStorageAvailable() {
+		StatFs statFs = new StatFs(Environment.getRootDirectory().getAbsolutePath());
+		long free = (statFs.getAvailableBlocks() * statFs.getBlockSize());// in Bytes [/1048576 -> in MB]
+		return free;
+	}
+
+	/**
+	 * Returns the external storage available in bytes
+	 * @return long
+	 */
+	@SuppressWarnings("deprecation")
+	public long externalStorageAvailable() {
+		StatFs statFs = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
+		long free = (statFs.getAvailableBlocks() * statFs.getBlockSize());// in Bytes [/1048576 -> in MB]
+		return free;
+	}
+
+	/**
+	 * Checks whether there is enough internal and external storage available to
+	 * save the recording.
+	 * 
+	 * Returns true if there is enough storage or false otherwise
+	 * 
+	 * @return boolean
+	 */
+	private boolean enoughStorageAvailable() {
+		Long tmpFileSize = (new File(context.getFilesDir() + "/" + Constants.TEMP_FILE)).length();
+		Log.i(TAG, "text file size: " + tmpFileSize);
+		Log.i(TAG, "internal storage available: " + internalStorageAvailable());
+		Log.i(TAG, "external storage available: " + externalStorageAvailable());
+		boolean isEnough = false;
+		
+		if (internalStorageAvailable() > (tmpFileSize * 2 + 2 * 1048576)) // 2*tmpFile + 2MB
+			isEnough = true;
+		else {
+			Log.e(TAG, "not enough internal storage to save raw recording");
+			isEnough = false;
+		}
+		if(isEnough){
+			if (externalStorageAvailable() > (tmpFileSize / 4))// compressed, weights 1/4 of the space
+				isEnough = true;
+			else {
+				Log.e(TAG, "not enough external storage to save compressed recording");
+				isEnough = false;
+			}
+		}
+		
+		return isEnough;
+	}
+
+	/**
+	 * Sets the duration of the recording
 	 * @param _duration
 	 */
 	public void setDuration(String _duration) {

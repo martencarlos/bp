@@ -34,9 +34,14 @@
     <string name="sa_category_title">CONFIRMATION DIALOGS</string>
     <string name="sa_nr_category_title">GRAPHS</string>
     <string name="sa_configuration_title">Deleting configurations</string>
-    <string name="sa_configuration_summary">Never ask for confirmation again after deleting a configuration by swiping it off the screen</string>
     <string name="sa_recording_title">Deleting recordings</string>
+    <string name="sa_configuration_summary">Never ask for confirmation again after deleting a configuration by swiping it off the screen</string>
     <string name="sa_recording_summary">Never ask for confirmation again after deleting a recording by swiping it off the screen</string>
+   
+    <string name="sa_zoom_unit_measure">miliseconds</string>
+    <string name="sa_zoom_summary_message">The current zoom in/out value is</string>
+    <string name="sa_zoom_title">Zoom per click</string>
+    <string name="sa_zoom_default_summary">The default amount is 500 miliseconds</string>
     
     <!-- CONFIGURATIONS ACTIVITY -->
     <string name="ca_header_title">Select a configuration</string>
@@ -134,6 +139,7 @@
     <string name="nr_info_rec_saved">Recording saved</string>
     <string name="nr_back_dialog_title">Are you sure?</string>
     <string name="nr_bluetooth_dialog_title">Bluetooth connection failed</string>
+    <string name="nr_storage_error_dialog_title">Storage Error</string>
     <string name="nr_overwrite_dialog_title">Recording will be overwrited</string>
     <string name="nr_overwrite_dialog_message">The actual recording will be lost. Do you wish to proceed?</string>
     <string name="nr_overwrite_dialog_positive_button">Proceed</string>
@@ -153,8 +159,8 @@
     <string name="bp_device_not_found">The Plux device could not be found. Verify that it is whithin range, turned on, and that the battery is OK (red led turned off)</string>
     <string name="bp_contacting_device">Communication with the device was lost. Verify that the Plux device is within range, and that the battery is OK (red led turned off)</string>
     <string name="bp_port_could_not_be_opened">The communication port does not exist or it is already being used</string>
-    <string name="bp_error_processing_frames">An error occurred processing the frames</string>
-    <string name="bp_error_saving_recording">An error occurred saving the recording</string>
+    <string name="bp_error_writing_a_frame">An error occurred while writing a frame to you device internal storage</string>
+    <string name="bp_error_saving_recording">There is not enough internal/external storage to save the recording</string>
     <string name="bp_positive_button">Got it</string>
     
     
