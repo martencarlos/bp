@@ -310,7 +310,7 @@ public class DataManager {
 	@SuppressWarnings("deprecation")
 	public long internalStorageAvailable() {
 		StatFs statFs = new StatFs(Environment.getDataDirectory().getAbsolutePath());
-		long free = (statFs.getAvailableBlocks() * statFs.getBlockSize());// in Bytes [/1048576 -> in MB]
+		long free = ((long)statFs.getAvailableBlocks() * (long)statFs.getBlockSize());// in Bytes [/1048576 -> in MB]
 		return free;
 	}
 
@@ -321,7 +321,7 @@ public class DataManager {
 	@SuppressWarnings("deprecation")
 	public long externalStorageAvailable() {
 		StatFs statFs = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
-		long free = (statFs.getAvailableBlocks() * statFs.getBlockSize());// in Bytes [/1048576 -> in MB]
+		long free = ((long)statFs.getAvailableBlocks() * (long)statFs.getBlockSize());// in Bytes [/1048576 -> in MB]
 		return free;
 	}
 

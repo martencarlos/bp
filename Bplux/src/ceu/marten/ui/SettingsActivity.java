@@ -9,7 +9,8 @@ public class SettingsActivity extends PreferenceActivity{
 
 	public static final String KEY_PREF_CONF_CONFIG = "ask_confirmation_configuration";
 	public static final String KEY_PREF_CONF_REC = "ask_confirmation_recording";
-	public static final String KEY_PREF_ZOOM_VALUE = "nr_zoom";
+	public static final String KEY_PREF_ZOOM_VALUE = "zoom";
+	public static final String KEY_DRAW_IN_BACKGROUND = "draw_in_background";
 	
 	
 	@SuppressWarnings("deprecation")

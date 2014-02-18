@@ -134,6 +134,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 				break;
 			case BiopluxService.MSG_CONNECTION_ERROR:
 				serviceError = true;
+				savingDialog.dismiss();
 				displayConnectionErrorDialog(msg.arg1);
 				break;
 			case DataManager.MSG_PERCENTAGE:

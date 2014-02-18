@@ -5,8 +5,14 @@
         android:key="pref_key_graph"
         android:title="@string/sa_nr_category_title" >
 
+        <CheckBoxPreference
+            android:key = "draw_in_background"
+            android:defaultValue = "true"
+            android:title = "@string/sa_draw_in_background_title"
+            android:summary = "@string/sa_draw_in_background_summary" />
+        
         <ceu.marten.ui.dialogs.SeekBarPreference
-            android:key = "nr_zoom"
+            android:key = "zoom"
             android:title = "@string/sa_zoom_title"
             android:summary = "@string/sa_zoom_default_summary"
             android:defaultValue = "500"

@@ -13,6 +13,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -27,6 +28,7 @@ import ceu.marten.bplux.R;
 import ceu.marten.model.DeviceConfiguration;
 import ceu.marten.model.io.DataManager;
 import ceu.marten.ui.NewRecordingActivity;
+import ceu.marten.ui.SettingsActivity;
 
 /**
  * Creates a connection with a bioplux device and receives frames sent from device
@@ -73,9 +75,12 @@ public class BiopluxService extends Service {
 	private double samplingCounter = 0;
 	private double  timeCounter = 0;
 	private double  xValue = 0;
+	private boolean drawInBackground = true;
 	private boolean killServiceError = false;
 	private boolean clientActive = false;
 	Notification serviceNotification = null;
+	private SharedPreferences sharedPref;
+	
 
 	/**
 	 * Target we publish for clients to send messages to IncomingHandler
@@ -119,6 +124,7 @@ public class BiopluxService extends Service {
 			}
 		}
 	}
+	
 
 	/**
 	 * Initializes the wake lock and the frames array
@@ -126,7 +132,8 @@ public class BiopluxService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		
+		sharedPref = getSharedPreferences("ceu.marten.bplux_preferences", Context.MODE_MULTI_PROCESS);
+		drawInBackground = sharedPref.getBoolean(SettingsActivity.KEY_DRAW_IN_BACKGROUND, true);
 		powerManager = (PowerManager)this.getSystemService(Context.POWER_SERVICE);
 		wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
 		if ((wakeLock != null) && (wakeLock.isHeld() == false)) {
@@ -185,7 +192,7 @@ public class BiopluxService extends Service {
 		synchronized (writingLock) {
 			isWriting = true;
 		}
-		
+	
 		getFrames(NUMBER_OF_FRAMES);
 		
 		loop:
@@ -201,8 +208,9 @@ public class BiopluxService extends Service {
 				// calculates x value of graphs
 				timeCounter++;
 				xValue = timeCounter / configuration.getSamplingFrequency()*1000;
+				// gets default share preferences with multi-process flag
 				
-				if(clientActive)
+				if(clientActive || !clientActive && drawInBackground)
 					sendFrameToActivity(frame.an_in);
 				// retains the decimals
 				samplingCounter -= samplingFrames;
