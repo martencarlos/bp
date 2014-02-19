@@ -235,7 +235,9 @@ public class NewConfigurationActivity extends Activity {
 			receptionFreqEditor.setText(String.valueOf(oldConfiguration.getReceptionFrequency()));
 			samplingfreqSeekbar.setProgress(oldConfiguration.getSamplingFrequency());
 			samplingFreqEditor.setText(String.valueOf(oldConfiguration.getSamplingFrequency()));
+			activeChannelsTV.setVisibility(View.VISIBLE);
 			activeChannelsTV.setText(getString(R.string.nc_channels_to_activate)+" "+oldConfiguration.getActiveChannels());
+			displayChannelsTV.setVisibility(View.VISIBLE);
 			displayChannelsTV.setText(oldConfiguration.getDisplayChannelsWithSensors());
 			if(oldConfiguration.getNumberOfBits() == 12){
 				((RadioButton)findViewById(R.id.radioBttn12)).setChecked(true);
@@ -291,6 +293,7 @@ public class NewConfigurationActivity extends Activity {
 							// reset display channels because active channels have changed. Leaves error message if there was one
 							if(displayChannelsTV.getError() == null){
 								displayChannelsTV.setText("");
+								displayChannelsTV.setVisibility(View.GONE);
 								channelsSelected = null;
 							}
 							// get active channels from adapter and sets it to the new configuration
@@ -298,13 +301,17 @@ public class NewConfigurationActivity extends Activity {
 							newConfiguration.setActiveChannels(activeChannels);
 						
 							if (noChannelsActivated(activeChannels)){
-								if(activeChannelsTV.getError() == null)
+								if(activeChannelsTV.getError() == null){
 									activeChannelsTV.setText("");
+									activeChannelsTV.setVisibility(View.GONE);
+								}
+									
 							}else{
+								activeChannelsTV.setVisibility(View.VISIBLE);
 								activeChannelsTV.setError(null);
 								activeChannelsTV.setTextColor(getResources().getColor(R.color.blue));
 								activeChannelsTV.setText(getString(R.string.nc_channels_to_activate));
-								activeChannelsTV.append("  "+newConfiguration.getActiveChannels().toString());
+								activeChannelsTV.append("  " + newConfiguration.getActiveChannels().toString());
 							}
 						}
 				})
@@ -360,9 +367,13 @@ public class NewConfigurationActivity extends Activity {
 							channelsSelected = displayChannelsListAdapter.getChecked();
 							String[] displayChannels = new String[8];
 	
-							if (numberOfChannelsSelected(channelsSelected) == 0) 
+							if (numberOfChannelsSelected(channelsSelected) == 0){
 								displayChannelsTV.setText("");
+								displayChannelsTV.setVisibility(View.GONE);
+							}
+								
 							else{
+								displayChannelsTV.setVisibility(View.VISIBLE);
 								displayChannelsTV.setError(null);
 								displayChannelsTV.setTextColor(getResources().getColor(R.color.blue));
 								convertBooleanToString(displayChannels, channelsSelected);
@@ -522,6 +533,7 @@ public class NewConfigurationActivity extends Activity {
 		if (activeChannels == null || noChannelsActivated(activeChannels)) {
 			activeChannelsTV.setError("");
 			activeChannelsTV.setTextColor(Color.RED);
+			activeChannelsTV.setVisibility(View.VISIBLE);
 			activeChannelsTV.setText(getString(R.string.nc_error_message_active_channels)+ "  ");
 			validated = false;
 		}
@@ -530,6 +542,7 @@ public class NewConfigurationActivity extends Activity {
 		if (channelsSelected == null || numberOfChannelsSelected(channelsSelected) == 0) {
 			displayChannelsTV.setError("");
 			displayChannelsTV.setTextColor(Color.RED);
+			displayChannelsTV.setVisibility(View.VISIBLE);
 			displayChannelsTV.setText(getString(R.string.nc_error_message_channels_to_display)+ "  ");
 			validated = false;
 		}

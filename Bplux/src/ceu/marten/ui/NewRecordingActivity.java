@@ -32,7 +32,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
@@ -105,7 +107,8 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	private boolean isServiceBounded = false;
 	private boolean recordingOverride = false;
 	private boolean savingDialogMessageChanged = false;
-	private static boolean closeRecordingActivity = false;
+	private boolean closeRecordingActivity = false;
+	private boolean goToEnd = true;
 	
 	// ERROR VARIABLES
 	private int bpErrorCode   = 0;
@@ -116,7 +119,27 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	private Messenger serviceMessenger = null;
 	private final Messenger activityMessenger = new Messenger(new IncomingHandler());
 
-	
+	/**
+	 * Listener for new started touches on graphs vertical labels
+	 */
+	private OnTouchListener graphTouchListener = new OnTouchListener()
+    {
+        @Override
+        public boolean onTouch(View v, MotionEvent event){
+        	// get masked (not specific to a pointer) action
+    		int maskedAction = event.getActionMasked();
+
+    		switch (maskedAction) {
+    			case MotionEvent.ACTION_DOWN:
+    				if(goToEnd)
+    					goToEnd = false;
+    				else
+    					goToEnd = true;
+    			break;
+    		}
+        	return true;
+        }
+   };
 	
 	/**
 	 * Handler that receives messages from the service. It receives frames data,
@@ -203,7 +226,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 			for (int i = 0; i < graphs.length; i++) {
 				graphs[i].getSerie().appendData(
 						new GraphViewData(xValue,
-								data[displayChannelPosition[i]]), true, maxDataCount);
+								data[displayChannelPosition[i]]), goToEnd, maxDataCount);
 			}
 		}
 	}
@@ -256,6 +279,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 		sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		currentZoomValue = sharedPref.getInt(SettingsActivity.KEY_PREF_ZOOM_VALUE, 500);
 		graphs = new Graph[recordingConfiguration.getDisplayChannelsNumber()];
+		
 
 		// Used to update zoom values
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -327,6 +351,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 										.get(i).toString());
 				LinearLayout graph = (LinearLayout) inflater.inflate(
 						R.layout.in_ly_graph, null);
+				graphs[i].getGraphView().setOnTouchListener(graphTouchListener);
 				((ViewGroup) graph).addView(graphs[i].getGraphView());
 				((ViewGroup) graphsView).addView(graph, graphParams);
 			}
@@ -498,6 +523,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 								serviceError = false;
 								closeRecordingActivity = false;
 								savingDialogMessageChanged = false;
+								goToEnd = true;
 								// Reset activity content
 								View graphsView = findViewById(R.id.nr_graphs);
 								((ViewGroup) graphsView).removeAllViews();

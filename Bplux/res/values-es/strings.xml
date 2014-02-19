@@ -1,10 +1,10 @@
 <resources>
 
-    <string name="app_name">"Bplux"</string>
+    <string name="app_name">"Biosignals plux"</string>
     <string name="divider_image_content">"divisor"</string>
     
     <!-- ACTIVITIES LABELS -->
-    <string name="home_label">Bioplux</string>
+    <string name="home_label">Biosignals plux</string>
     <string name="global_settings_label">Ajustes generales</string>
     <string name="recording_settings_label">Ajustes de grabación</string>
     <string name="configurations_label">Configuraciones</string>
@@ -19,7 +19,7 @@
     <string name="nr_recording_settings">Ajustes</string>
     
     <string name="gm_help_title">Consejos</string>
-    <string name="gm_help_message">- Para eliminar configuraciones o grabaciones, arrastralos fuera de la pantalla hacia derecha o izquierda \n\n - Mantén pulsada una configuración para editarla</string>
+    <string name="gm_help_message">- Para eliminar configuraciones o grabaciones, arrastralos fuera de la pantalla hacia derecha o izquierda \n\n- Mantén pulsada una configuración para editarla</string>
 	
 	<!-- LAYOUTS -->
     <!-- HOME ACTIVITY -->

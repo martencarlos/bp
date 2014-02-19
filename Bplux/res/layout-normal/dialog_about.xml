@@ -2,25 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="20dp"
-    android:orientation="vertical" >
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Bioplux App"
-        android:textSize="16sp"
-        android:layout_marginBottom="5dp"
-        android:textStyle="bold"
-        android:layout_gravity="center"
-        android:gravity="center" />
+    android:background="@color/lightGreen"
+    android:paddingTop="20dp"
+    android:orientation="vertical" >   
     
     <ImageView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginBottom="5dp"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/biosignalsplux_logo" />
     
     <TextView
         android:id="@+id/info_text"
@@ -35,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dip"
         android:layout_marginTop="8dp"
-        android:textColor="#cccccc"
+        android:textColor="@android:color/white"
         android:textSize="12sp"
         android:textStyle="italic" />
 

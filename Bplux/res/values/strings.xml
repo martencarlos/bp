@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Bplux</string>
+    <string name="app_name">Biosignals plux</string>
     <string name="divider_image_content">divider</string>
     
     <!-- ACTIVITIES LABELS -->
-    <string name="home_label">Bioplux</string>
+    <string name="home_label">Biosignals plux</string>
     <string name="global_settings_label">Global settings</string>
     <string name="recording_settings_label">Recording Settings</string>
     <string name="configurations_label">Configurations</string>
@@ -20,7 +20,7 @@
      <string name="nr_recording_settings">Settings</string>
      
      <string name="gm_help_title">App tips</string>
-     <string name="gm_help_message"> - Swipe a recording or configuration to delete it  \n\n - Long press a configuration to edit </string>
+     <string name="gm_help_message"> - Swipe a recording or configuration to delete it\n\n- Long press a configuration to edit </string>
      
     
     <!-- LAYOUTS -->

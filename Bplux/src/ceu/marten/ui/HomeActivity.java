@@ -24,7 +24,7 @@ public class HomeActivity extends Activity implements android.widget.PopupMenu.O
 	        	globalSettingsIntent.putExtra(Constants.KEY_SETTINGS_TYPE, 1);
 	        	startActivity(globalSettingsIntent);
 	            return true;
-	            
+	       
 	        case R.id.gm_help:
 	        	HelpDialog help = new HelpDialog(this);
 	        	help.setTitle(getString(R.string.gm_help_title));
@@ -50,6 +50,7 @@ public class HomeActivity extends Activity implements android.widget.PopupMenu.O
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.ly_home);
 	}
+
 
 	/************************ BUTTON EVENTS *******************/
 	

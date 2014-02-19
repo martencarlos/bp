@@ -14,7 +14,7 @@
             android:id="@+id/lyHeader"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@xml/home_header_gradient"
+            android:background="@xml/header_color"
             android:paddingBottom="5dip"
             android:paddingTop="5dip" >
 

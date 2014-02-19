@@ -132,7 +132,7 @@ public class BiopluxService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		sharedPref = getSharedPreferences("ceu.marten.bplux_preferences", Context.MODE_MULTI_PROCESS);
+		sharedPref = getSharedPreferences(getPackageName()+"_preferences", Context.MODE_MULTI_PROCESS);
 		drawInBackground = sharedPref.getBoolean(SettingsActivity.KEY_DRAW_IN_BACKGROUND, true);
 		powerManager = (PowerManager)this.getSystemService(Context.POWER_SERVICE);
 		wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
