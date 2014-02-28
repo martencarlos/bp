@@ -108,6 +108,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	private boolean recordingOverride = false;
 	private boolean savingDialogMessageChanged = false;
 	private boolean closeRecordingActivity = false;
+	private boolean drawState = true; //true -> Enable | false -> Disable
 	private boolean goToEnd = true;
 	
 	// ERROR VARIABLES
@@ -313,9 +314,11 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		Log.i(TAG, "onRestoreInstanceState");
-		chronometer.setBase(savedInstanceState.getLong(KEY_CHRONOMETER_BASE));
-		chronometer.start();
-		uiMainbutton.setText(getString(R.string.nr_button_stop));
+		if (isServiceRunning()) {
+			chronometer.setBase(savedInstanceState.getLong(KEY_CHRONOMETER_BASE));
+			chronometer.start();
+			uiMainbutton.setText(getString(R.string.nr_button_stop));
+		}
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
@@ -569,6 +572,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 		unbindFromService();
 		stopService(new Intent(NewRecordingActivity.this, BiopluxService.class));
 		uiMainbutton.setText(getString(R.string.nr_button_start));
+		drawState = true;
 	}
 	
 	/**
@@ -622,6 +626,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 							startChronometer();
 							uiMainbutton.setText(getString(R.string.nr_button_stop));
 							displayInfoToast(getString(R.string.nr_info_started));
+							drawState = false;
 						}
 				    }
 				});
@@ -807,6 +812,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	        case R.id.nr_settings:
 	        	Intent recordingSettingsIntent = new Intent(this, SettingsActivity.class);
 	        	recordingSettingsIntent.putExtra(Constants.KEY_SETTINGS_TYPE, 2);
+	        	recordingSettingsIntent.putExtra(Constants.KEY_SETTINGS_DRAW_STATE, drawState);
 	        	startActivity(recordingSettingsIntent);
 	            return true;
 	        default:

@@ -195,14 +195,19 @@
     
      <!-- SENSORS LIST -->
     <string-array name="sensors">
-        <item>"electrocardiograma"</item>
-        <item>"electromiograma"</item>
-        <item>"conductividad dérmica"</item>
-        <item>"Respiración"</item>
-        <item>"Temperatura"</item>
-        <item>"fuerza escalonada"</item>
-        <item>"acelerómetro de tres ejes"</item>
-        <item>"Presión arterial"</item>
+        <item>Electroencefalograma</item>
+        <item>Volumen de presión en sangre</item>
+        <item>Electromiograma</item>
+        <item>Actividad electrodermal de la piel</item>
+        <item>Acelerómetro triaxial 1</item>
+        <item>Acelerómetro triaxial 2</item>
+        <item>Acelerómetro triaxial 3</item>
+        <item>Respiración</item>
+        <item>Electrocardiograma</item>
+        <item>Presión</item>
+        <item>Temperatura</item>
+        <item>Fuerza [advanced]</item>
+        <item>Ángulo [advanced]</item>
     </string-array>
 
     <!-- IDs -->

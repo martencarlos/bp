@@ -198,14 +198,19 @@
     
      <!-- SENSORS LIST -->
     <string-array name="sensors">
-        <item>electrocardiogram</item>
-        <item >electromiogram</item>
-        <item >dermal conductivity</item>
-        <item >respiration</item>
-        <item >temperature</item>
-        <item >strength stepped</item>
-        <item >three-axis accelerometer</item>
-        <item >blood pressure</item>
+        <item>Electroencephalography</item>
+        <item>Blood Volume Pressure</item>
+        <item>Electromyography</item>
+        <item>Electrodermal Skin Activity</item>
+        <item>Triaxial accelerometer 1</item>
+        <item>Triaxial accelerometer 2</item>
+        <item>Triaxial accelerometer 3</item>
+        <item>Respiration</item>
+        <item>Electrocardiogram</item>
+        <item>Press sensor</item>
+        <item>Temperature</item>
+        <item>Force [advanced]</item>
+        <item>Angle [advanced]</item>
     </string-array>
 
     <!-- IDs -->

@@ -5,6 +5,7 @@ public class Constants {
 
 	// SETTINGS CONSTANTS
 	public static final String KEY_SETTINGS_TYPE = "typeOfSetting";
+	public static final String KEY_SETTINGS_DRAW_STATE = "stateOfDraw";
 	
 	// IO CONSTANTS
 	public static final String TEMP_FILE = "tmp.txt";

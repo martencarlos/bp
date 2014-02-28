@@ -27,6 +27,7 @@ public class SettingsActivity extends PreferenceActivity{
 			break;
 		case 2:
 			addPreferencesFromResource(R.xml.recording_preference);
+			getPreferenceScreen().findPreference(KEY_DRAW_IN_BACKGROUND).setEnabled(extras.getBoolean(Constants.KEY_SETTINGS_DRAW_STATE));
 			setTitle(getString(R.string.recording_settings_label));
 			break;
 		default:
