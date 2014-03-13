@@ -27,7 +27,7 @@ public class Graph implements Serializable {
 
 	private GraphViewSeries basicSerie;
 	private GraphViewSeriesStyle style;
-	private double xValue;
+	private long xValue;
 	private GraphView graphView;
 
 	@SuppressWarnings("deprecation")
@@ -55,8 +55,11 @@ public class Graph implements Serializable {
 			@Override
 			public String formatLabel(long value, boolean isValueX) {
 				if (isValueX) {
-					if (value < 0.000)
+					if (value < 0.000){
+						xValue = 0;
 						return "00:00:00";
+					}
+					xValue = value;
 					return String.format("%02d:%02d:%02d",(int) ((value / (1000*60*60)) % 24), (int) ((value / (1000*60)) % 60), (int) (value / 1000) % 60);
 				} else
 					return String.valueOf((int)(value)); // vertical labels value
@@ -134,11 +137,11 @@ public class Graph implements Serializable {
 		this.basicSerie = serie;
 	}
 
-	public double getxValue() {
+	public long getxValue() {
 		return xValue;
 	}
 
-	public void setxValue(double xValue) {
+	public void setxValue(long xValue) {
 		this.xValue = xValue;
 	}
 

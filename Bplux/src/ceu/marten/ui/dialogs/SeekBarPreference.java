@@ -21,7 +21,7 @@ import android.widget.LinearLayout;
 public class SeekBarPreference extends DialogPreference implements
 		SeekBar.OnSeekBarChangeListener {
 	private static final String androidns = "http://schemas.android.com/apk/res/android";
-	private static final String KEY_ZOOM_SUMMARY = "zoomSummary";
+	public static final String KEY_ZOOM_VALUE = "zoomSummary";
 	
 	private SeekBar mSeekBar;
 	private TextView mSplashText, mValueText;
@@ -42,10 +42,22 @@ public class SeekBarPreference extends DialogPreference implements
 		mContext = context;
 
 		sharePref = PreferenceManager.getDefaultSharedPreferences(mContext);
-		setSummary(sharePref.getString(KEY_ZOOM_SUMMARY, mContext.getString(R.string.sa_zoom_default_summary)));
+		int value = 500;
+		if(sharePref.contains(KEY_ZOOM_VALUE))
+			value = sharePref.getInt(KEY_ZOOM_VALUE, 500);
+		String summary = mContext
+				.getString(R.string.sa_zoom_summary_message)
+				+ " "
+				+ String.valueOf(value)
+				+ " "
+				+ mContext.getString(R.string.sa_zoom_unit_measure);
+		
+		setSummary(summary);
 		mDialogMessage = attrs.getAttributeValue(androidns, "dialogMessage");
 		mDefault = attrs.getAttributeIntValue(androidns, "defaultValue", 0);
 		mMax = attrs.getAttributeIntValue(androidns, "max", 100);
+		
+		
 
 	}
 
@@ -82,6 +94,9 @@ public class SeekBarPreference extends DialogPreference implements
 
 		mSeekBar.setMax(mMax);
 		mSeekBar.setProgress(mValue);
+		
+		
+		
 		return layout;
 	}
 
@@ -135,6 +150,8 @@ public class SeekBarPreference extends DialogPreference implements
 		return mValue;
 	}
 	
+	
+	
 	@Override
 	protected void onDialogClosed(boolean positiveResult) {
 		if(positiveResult && shouldPersist()){
@@ -146,7 +163,7 @@ public class SeekBarPreference extends DialogPreference implements
 					+ " "
 					+ mContext.getString(R.string.sa_zoom_unit_measure);
 			Editor edit = sharePref.edit();
-			edit.putString(KEY_ZOOM_SUMMARY, summary);
+			edit.putInt(KEY_ZOOM_VALUE, changedValue);
 			edit.commit();
 			setSummary(summary);
 		}

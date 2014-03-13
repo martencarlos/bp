@@ -12,15 +12,17 @@
     <string name="new_configurations_label">Nuevas Configuraciones</string>
     <string name="new_recordings_label">Nueva grabación</string>
     
-    <!-- GLOBAL MENU ITEMS -->
+    <!-- MENU ITEMS -->
     <string name="gm_settings">Ajustes</string>
     <string name="gm_help">Ayuda</string>
     <string name="gm_about">Información</string>
-    <string name="nr_recording_settings">Ajustes</string>
     
     <string name="gm_help_title">Consejos</string>
     <string name="gm_help_message">- Para eliminar configuraciones o grabaciones, arrastralos fuera de la pantalla hacia derecha o izquierda \n\n- Mantén pulsada una configuración para editarla</string>
 	
+    <string name="nr_recording_settings">Ajustes</string>
+    <string name="nr_restore_zoom_text">Restaurar zoom</string>
+    
 	<!-- LAYOUTS -->
     <!-- HOME ACTIVITY -->
     <string name="ha_title">"Bienvenido a Bioplux"</string>
@@ -206,8 +208,8 @@
         <item>Electrocardiograma</item>
         <item>Presión</item>
         <item>Temperatura</item>
-        <item>Fuerza [advanced]</item>
-        <item>Ángulo [advanced]</item>
+        <item>Fuerza</item>
+        <item>Ángulo</item>
     </string-array>
 
     <!-- IDs -->

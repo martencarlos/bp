@@ -76,7 +76,7 @@ public class BiopluxService extends Service {
 	private double  timeCounter = 0;
 	private double  xValue = 0;
 	private boolean drawInBackground = true;
-	private boolean killServiceError = true;
+	private boolean killServiceError = false;
 	private boolean clientActive = false;
 	Notification serviceNotification = null;
 	private SharedPreferences sharedPref;
@@ -104,7 +104,6 @@ public class BiopluxService extends Service {
 				// register client
 				client = msg.replyTo;
 				clientActive = true;
-				killServiceError = true;//TODO
 				// removes notification
 				stopForeground(true);
 				
@@ -178,7 +177,6 @@ public class BiopluxService extends Service {
 	 */
 	@Override
 	public boolean onUnbind(Intent intent) {
-		killServiceError = false;//TODO
 		Log.i(TAG, "onUNBind");
 		clientActive = false;
 		startForeground(R.string.service_id, serviceNotification);
@@ -233,7 +231,6 @@ public class BiopluxService extends Service {
 		} catch (BPException e) {
 			Log.e(TAG, "Exception getting frames", e);
 			sendErrorToActivity(e.code);
-			killServiceError = false;//TODO
 			stopSelf();
 		}
 	}

@@ -4,5 +4,8 @@
     <item android:id="@+id/nr_settings"
           android:title="@string/nr_recording_settings" >
     </item>
+    <item android:id="@+id/nr_restore_zoom"
+          android:title="@string/nr_restore_zoom_text" >
+    </item>
     
 </menu>

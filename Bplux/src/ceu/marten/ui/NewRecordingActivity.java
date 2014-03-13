@@ -527,6 +527,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 								closeRecordingActivity = false;
 								savingDialogMessageChanged = false;
 								goToEnd = true;
+								
 								// Reset activity content
 								View graphsView = findViewById(R.id.nr_graphs);
 								((ViewGroup) graphsView).removeAllViews();
@@ -815,6 +816,23 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	        	recordingSettingsIntent.putExtra(Constants.KEY_SETTINGS_DRAW_STATE, drawState);
 	        	startActivity(recordingSettingsIntent);
 	            return true;
+	        case R.id.nr_restore_zoom:
+	        	long startValue = 0;
+	        	for (int i = 0; i < graphs.length; i++){
+	        		if(graphs[i].getxValue() - Long.valueOf(getResources().getString(
+							R.string.graph_viewport_size)) < Long.valueOf(getResources().getString(
+							R.string.graph_viewport_size)))
+	        			startValue = graphs[i].getxValue();
+	        		else
+	        			startValue = graphs[i].getxValue() - Long.valueOf(getResources().getString(
+								R.string.graph_viewport_size));
+	        			
+	        		graphs[i].getGraphView().setViewPort(startValue, Long.valueOf(getResources().getString(
+							R.string.graph_viewport_size)));
+	        		graphs[i].getGraphView().redrawAll();
+	        	}
+	    			
+	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
@@ -822,7 +840,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		if(key.compareTo(SettingsActivity.KEY_PREF_ZOOM_VALUE)==0)
+		if(key.compareTo(SettingsActivity.KEY_PREF_ZOOM_VALUE) == 0)
 			currentZoomValue = sharedPref.getInt(SettingsActivity.KEY_PREF_ZOOM_VALUE, 500);
 	}
 

@@ -17,10 +17,12 @@
      <string name="gm_settings">Settings</string>
      <string name="gm_help">Help</string>
      <string name="gm_about">About</string>
-     <string name="nr_recording_settings">Settings</string>
      
      <string name="gm_help_title">App tips</string>
      <string name="gm_help_message"> - Swipe a recording or configuration to delete it\n\n- Long press a configuration to edit </string>
+     
+     <string name="nr_recording_settings">Settings</string>
+     <string name="nr_restore_zoom_text">Restore zoom</string>
      
     
     <!-- LAYOUTS -->
@@ -209,8 +211,8 @@
         <item>Electrocardiogram</item>
         <item>Press sensor</item>
         <item>Temperature</item>
-        <item>Force [advanced]</item>
-        <item>Angle [advanced]</item>
+        <item>Force</item>
+        <item>Angle</item>
     </string-array>
 
     <!-- IDs -->
