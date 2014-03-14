@@ -1,7 +1,7 @@
 
 Version 1.0<br>
 Copyright 2014<br>
-<b>www.biosignalsplux.com</b><br><br>
+<b>www.biofeedback.com</b><br><br>
 
 <b>developed by Carlos Marten</b><br>
 martencarlos@gmail.com

@@ -18,12 +18,13 @@
             android:paddingBottom="5dip"
             android:paddingTop="5dip" >
 
-            <ImageView
+            <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:contentDescription="@string/divider_image_content"
-                android:src="@drawable/pluxlogo" />
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="Biofeedback"
+                android:textSize="20sp" />
 
             <ImageButton
                 android:layout_width="wrap_content"

@@ -1,10 +1,10 @@
 <resources>
 
-    <string name="app_name">"Biosignals plux"</string>
+    <string name="app_name">Biofeedback</string>
     <string name="divider_image_content">"divisor"</string>
     
     <!-- ACTIVITIES LABELS -->
-    <string name="home_label">Biosignals plux</string>
+    <string name="home_label">Biofeedback</string>
     <string name="global_settings_label">Ajustes generales</string>
     <string name="recording_settings_label">Ajustes de grabación</string>
     <string name="configurations_label">Configuraciones</string>
@@ -25,8 +25,8 @@
     
 	<!-- LAYOUTS -->
     <!-- HOME ACTIVITY -->
-    <string name="ha_title">"Bienvenido a Bioplux"</string>
-    <string name="ha_description">"Plux es un sistema innovador para el deporte, la medicina y la investigación que a través de sensores de bioseñales obtiene información de los músculos, que obtendrán mejores resultados en el trabajo físico."</string>
+    <string name="ha_title">"Bienvenido"</string>
+    <string name="ha_description">"Biofeedback es un sistema innovador para el deporte, la medicina y la investigación que a través de sensores de bioseñales obtiene información de los músculos, que obtendrán mejores resultados en el trabajo físico."</string>
     <string name="ha_button1">"Iniciar grabación"</string>
     <string name="ha_button2">"Examinar Grabaciones"</string>
     

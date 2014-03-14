@@ -6,12 +6,16 @@
     android:paddingTop="20dp"
     android:orientation="vertical" >   
     
-    <ImageView
+    <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginBottom="5dp"
-        android:src="@drawable/biosignalsplux_logo" />
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="Biofeedback"
+        android:textColor="@color/grey"
+        android:textSize="30sp" />
     
     <TextView
         android:id="@+id/info_text"
