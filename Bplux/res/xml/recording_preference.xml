@@ -4,20 +4,20 @@
     <PreferenceCategory
         android:key="pref_key_graph"
         android:title="@string/sa_nr_category_title" >
-
         <CheckBoxPreference
-            android:key = "draw_in_background"
-            android:defaultValue = "true"
-            android:title = "@string/sa_draw_in_background_title"
-            android:summary = "@string/sa_draw_in_background_summary" />
+            android:defaultValue="true"
+            android:key="draw_in_background"
+            android:summary="@string/sa_draw_in_background_summary"
+            android:title="@string/sa_draw_in_background_title" />
         
-        <ceu.marten.ui.dialogs.SeekBarPreference
-            android:key = "zoom"
-            android:title = "@string/sa_zoom_title"
-            android:summary = "@string/sa_zoom_default_summary"
-            android:defaultValue = "500"
-            android:max="5000">
-        </ceu.marten.ui.dialogs.SeekBarPreference>
+        <ListPreference
+            android:title="@string/sa_zoom_title"
+            android:key="zoom"
+            android:summary="%s"
+            android:defaultValue="150"
+            android:dialogTitle="Level of zoom"
+            android:entries="@array/zoom_entries"
+            android:entryValues="@array/zoom_entry_values"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

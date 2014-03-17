@@ -278,7 +278,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 		
 		inflater = this.getLayoutInflater();
 		sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		currentZoomValue = sharedPref.getInt(SettingsActivity.KEY_PREF_ZOOM_VALUE, 500);
+		currentZoomValue = Integer.valueOf(sharedPref.getString(SettingsActivity.KEY_PREF_ZOOM_VALUE, "150"));
 		graphs = new Graph[recordingConfiguration.getDisplayChannelsNumber()];
 		
 
@@ -841,7 +841,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 		if(key.compareTo(SettingsActivity.KEY_PREF_ZOOM_VALUE) == 0)
-			currentZoomValue = sharedPref.getInt(SettingsActivity.KEY_PREF_ZOOM_VALUE, 500);
+			currentZoomValue = Integer.valueOf(sharedPref.getString(SettingsActivity.KEY_PREF_ZOOM_VALUE, "150"));
 	}
 
 	/**
@@ -858,8 +858,15 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	 * @param view
 	 */
 	public void zoomOut(View view){
+		double zoomOutValue = 66.6;
+		if(currentZoomValue == 200)
+			zoomOutValue = 50;
+		else if(currentZoomValue == 300)
+			zoomOutValue = 33.3;
+		else if(currentZoomValue == 400)
+			zoomOutValue = 25;
 		for (int i = 0; i < graphs.length; i++)
-			graphs[i].getGraphView().zoomOut(currentZoomValue); 
+			graphs[i].getGraphView().zoomOut(zoomOutValue); 
 	}
 	
 	

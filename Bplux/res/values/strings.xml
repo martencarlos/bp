@@ -214,6 +214,22 @@
         <item>Force</item>
         <item>Angle</item>
     </string-array>
+    
+    <!-- ZOOM ENTRIES -->
+    <string-array name="zoom_entries">
+        <item>low</item>
+        <item>medium</item>
+        <item>high</item>
+        <item>very high</item>
+    </string-array>
+    
+    <!-- ZOOM ENTRY VALUES -->
+    <string-array name="zoom_entry_values">
+        <item>150</item>
+        <item>200</item>
+        <item>300</item>
+        <item>400</item>
+    </string-array>
 
     <!-- IDs -->
  	<string name="service_id">this service unique id</string> 
