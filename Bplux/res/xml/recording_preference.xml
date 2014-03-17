@@ -15,7 +15,7 @@
             android:key="zoom"
             android:summary="%s"
             android:defaultValue="150"
-            android:dialogTitle="Level of zoom"
+            android:dialogTitle="@string/sa_zoom_dialog_title"
             android:entries="@array/zoom_entries"
             android:entryValues="@array/zoom_entry_values"/>
     </PreferenceCategory>

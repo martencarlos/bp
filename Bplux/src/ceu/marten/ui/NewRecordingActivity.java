@@ -77,26 +77,26 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	public static final String KEY_CHRONOMETER_BASE = "chronometerBase";
 	
 	// 10 seconds
-	private static final int maxDataCount = 10000; 
+	private  final int maxDataCount = 10000; 
 
 	// Android's widgets
-	private static TextView uiRecordingName, uiConfigurationName, uiNumberOfBits,
+	private  TextView uiRecordingName, uiConfigurationName, uiNumberOfBits,
 			uiReceptionFrequency, uiSamplingFrequency, uiActiveChannels,
 			uiMacAddress;
-	private static Button uiMainbutton;
-	private static Chronometer chronometer;
+	private Button uiMainbutton;
+	private Chronometer chronometer;
 
 	// DIALOGS
-	private static AlertDialog connectionErrorDialog;
-	private static ProgressDialog savingDialog;
+	private  AlertDialog connectionErrorDialog;
+	private  ProgressDialog savingDialog;
 	
 	// AUX VARIABLES
 	private Context classContext = this;
 	private Bundle extras;
 	private LayoutInflater inflater;
 	
-	private static DeviceConfiguration recordingConfiguration;
-	private static DeviceRecording recording;
+	private DeviceConfiguration recordingConfiguration;
+	private DeviceRecording recording;
 	
 	private Graph[] graphs;
 	private int[] displayChannelPosition;

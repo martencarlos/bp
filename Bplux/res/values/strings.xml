@@ -43,6 +43,7 @@
     <string name="sa_draw_in_background_title">Draw in background</string>
     <string name="sa_draw_in_background_summary">When checked, the graph(s) will be updated in the background. This feature may drain your battery faster</string>
     <string name="sa_zoom_title">Zoom per click</string>
+    <string name="sa_zoom_dialog_title">Zoom level</string>
     <string name="sa_zoom_default_summary">The default amount is 500 miliseconds</string>
     <string name="sa_zoom_unit_measure">miliseconds</string>
     <string name="sa_zoom_summary_message">The current zoom in/out value is</string>

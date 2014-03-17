@@ -41,6 +41,7 @@
     <string name="sa_draw_in_background_title">Pintar en segundo plano</string>
     <string name="sa_draw_in_background_summary">Cuándo está activo, los gráficos serán actualizados en segundo plano. Consume más batería</string>
     <string name="sa_zoom_title">Zoom por click</string>
+    <string name="sa_zoom_dialog_title">Nivel de zoom</string>
     <string name="sa_zoom_default_summary">El zoom por defecto es de 500 milisegundos</string>
     <string name="sa_zoom_unit_measure">milisegundos</string>
     <string name="sa_zoom_summary_message">El zoom actual está fijado en</string>
