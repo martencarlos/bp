@@ -749,7 +749,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	private boolean isServiceRunning() {
 		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-			if (BiopluxService.class.getName().equals(service.service.getClassName())) {
+			if (BiopluxService.class.getName().equals(service.service.getClassName()) && service.restarting == 0) {
 				return true;
 			}
 		}
