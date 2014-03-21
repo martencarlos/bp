@@ -50,7 +50,7 @@ public class NewConfigurationActivity extends Activity {
 	private static final int SAMPLING_FREQ_MAX = 100;
 	private static final int SAMPLING_FREQ_MIN = 1;
 	private static final int DEFAULT_SAMPLING_FREQ = 50;
-	private static final int DEFAULT_NUMBER_OF_BITS = 8;
+	private static final int DEFAULT_NUMBER_OF_BITS = 12;
 
 	// ANDROID' WIDGETS AND ITS LAYOUT INFLATER
 	private SeekBar receptionfreqSeekbar, samplingfreqSeekbar;

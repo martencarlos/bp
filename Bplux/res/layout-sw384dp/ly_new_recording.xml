@@ -10,23 +10,7 @@
         android:paddingBottom="2dip"
         android:paddingTop="5dip" >
 
-        <LinearLayout
-            android:id="@+id/nr_headerChronometer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="15dip"
-            android:layout_marginTop="5dip"
-            android:orientation="horizontal" >
-
-            <Chronometer
-                android:id="@+id/nr_chronometer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/chronometer"
-                android:drawablePadding="5dip"
-                android:textColor="@android:color/white" />
-        </LinearLayout>
+        
 
         <TextView
             android:id="@+id/nr_txt_recordingName"

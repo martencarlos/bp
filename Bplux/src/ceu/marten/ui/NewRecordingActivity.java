@@ -301,7 +301,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 		uiRecordingName = (TextView) findViewById(R.id.nr_txt_recordingName);
 		uiRecordingName.setText(recording.getName());
 		uiMainbutton = (Button) findViewById(R.id.nr_bttn_StartPause);
-		chronometer = (Chronometer) findViewById(R.id.nr_chronometer);
+		chronometer = new Chronometer(classContext);
 		
 		initActivityContentLayout();
 		

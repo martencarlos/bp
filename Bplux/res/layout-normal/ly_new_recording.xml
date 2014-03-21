@@ -10,23 +10,7 @@
         android:paddingBottom="5dp"
         android:paddingTop="5dp" >
 
-        <LinearLayout
-            android:id="@+id/nr_headerChronometer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="15dip"
-            android:layout_marginTop="5dip"
-            android:orientation="horizontal" >
-
-            <Chronometer
-                android:id="@+id/nr_chronometer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/chronometer"
-                android:drawablePadding="5dip"
-                android:textColor="@android:color/white" />
-        </LinearLayout>
+        
 
         <TextView
             android:id="@+id/nr_txt_recordingName"
@@ -98,9 +82,9 @@
 
             <Button
                 android:id="@+id/nr_bttn_StartPause"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:background="@xml/button_selector"
                 android:onClick="onMainButtonClicked"
                 android:text="@string/nr_button_start"
@@ -108,8 +92,9 @@
                 android:textSize="16sp" />
 
             <ImageButton
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
                 android:layout_marginLeft="5dp"
                 android:background="@xml/button_zoom_out"
                 android:contentDescription="@string/divider_image_content"
@@ -117,8 +102,9 @@
                 android:src="@drawable/zoom_out" />
 
             <ImageButton
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
                 android:layout_marginLeft="1dp"
                 android:background="@xml/button_zoom_in"
                 android:contentDescription="@string/divider_image_content"

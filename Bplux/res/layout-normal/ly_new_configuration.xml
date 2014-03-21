@@ -226,7 +226,6 @@
                         android:id="@+id/radioBttn8"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"
                         android:onClick="onRadioButtonClicked"
                         android:text="@string/nc_bits_eight"
                         android:textColor="@color/grey"
@@ -238,6 +237,7 @@
                         android:layout_height="wrap_content"
                         android:onClick="onRadioButtonClicked"
                         android:text="@string/nc_bits_twelve"
+                        android:checked="true"
                         android:textColor="@color/grey"
                         android:textSize="13sp" />
                 </RadioGroup>
