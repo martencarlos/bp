@@ -25,8 +25,11 @@
     
 	<!-- LAYOUTS -->
     <!-- HOME ACTIVITY -->
-    <string name="ha_title">"Bienvenido"</string>
-    <string name="ha_description">"Biofeedback es un sistema innovador para el deporte, la medicina y la investigación que a través de sensores de bioseñales obtiene información de los músculos, que obtendrán mejores resultados en el trabajo físico."</string>
+    <string name="ha_title">"Bienvenido,"</string>
+    <string name="ha_description">Esta aplicación ofrece la capacidad de realizar y enviar grabaciones de señales fisiológicas mediante el uso de un dispositivo BioPlux.\nAntes de realizar la grabación asegúrese de dos cosas:\n\n\t
+1)	Tener el dispositivo BioPlux encendido y con la batería suficiente para realizar la grabación. \n\n\t
+2)	Tener el terminal móvil con la batería superior al 50% y tener el Bluetooth encendido.
+</string>
     <string name="ha_button1">"Iniciar grabación"</string>
     <string name="ha_button2">"Examinar Grabaciones"</string>
     

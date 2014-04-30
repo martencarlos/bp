@@ -1,2 +1,1 @@
-All rights reserved. Not liable for any damage incurred from use of this software including but not limited to: 
-Monetary loss, temporary paralysis, halitosis, spontaneous combustion, road rash or premature hair loss.
+This application is published under the GPL v.2 license. Feel free to modify it, copy it and use it freely to fill your needs.

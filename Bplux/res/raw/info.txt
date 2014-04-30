@@ -1,7 +1,8 @@
 
-Version 1.0<br>
-Copyright 2014<br>
-<b>www.biofeedback.com</b><br><br>
+Version 1.0 (BETA)<br>
+Copyright 2014<br><br>
 
-<b>developed by Carlos Marten</b><br>
-martencarlos@gmail.com
+<b>Developed by Carlos Marten</b><br>
+martencarlos@gmail.com<br>
+<b>Project Director Abraham Otero</b><br>
+abraham.otero@gmail.com
