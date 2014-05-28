@@ -54,7 +54,6 @@ public class DataManager {
 	private int numberOfChannelsActivated;
 	private int frameCounter = 0;
 	
-	private String channelFormat = "%-4s ";
 	private String recordingName;
 	private String duration;
 	
@@ -90,18 +89,18 @@ public class DataManager {
 	 * @param frame
 	 * @return boolean
 	 */
+	private final StringBuilder sb = new StringBuilder(400);
 	public boolean writeFrameToTmpFile(Frame frame) {
 		frameCounter ++;
-
+		sb.delete(0, sb.length());
 		try {
-			// WRITE THE FIRST COLUMN (THE FRAME COUNTER)
-			bufferedWriter.write(String.format(channelFormat, frameCounter));
+			sb.append(frameCounter).append("\t");
 			// WRITE THE DATA OF ACTIVE CHANNELS ONLY
 			for(int i=0; i< numberOfChannelsActivated;i++){
-				bufferedWriter.write(String.format(channelFormat, frame.an_in[i]));
+				sb.append(frame.an_in[i]).append("\t");
 			}
 			// WRITE A NEW LINE
-			bufferedWriter.write("\n");
+			bufferedWriter.write(sb.append("\n").toString());
 			
 		} catch (IOException e) {
 			try {bufferedWriter.close();} catch (IOException e1) {}

@@ -1,6 +1,5 @@
 package ceu.marten.services;
 
-
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,13 +30,14 @@ import ceu.marten.ui.NewRecordingActivity;
 import ceu.marten.ui.SettingsActivity;
 
 /**
- * Creates a connection with a bioplux device and receives frames sent from device
+ * Creates a connection with a bioplux device and receives frames sent from
+ * device
+ * 
  * @author Carlos Marten
- *
+ * 
  */
 public class BiopluxService extends Service {
 
-	// Standard debug constant
 	private static final String TAG = BiopluxService.class.getName();
 
 	// messages 'what' fields for the communication with the client
@@ -46,55 +46,54 @@ public class BiopluxService extends Service {
 	public static final int MSG_RECORDING_DURATION = 3;
 	public static final int MSG_SAVED = 4;
 	public static final int MSG_CONNECTION_ERROR = 5;
-	
+
 	public static final String KEY_X_VALUE = "xValue";
 	public static final String KEY_FRAME_DATA = "frame";
-	
+
 	// Codes for the activity to display the correct error message
 	public static final int CODE_ERROR_WRITING_TEXT_FILE = 6;
 	public static final int CODE_ERROR_SAVING_RECORDING = 7;
-	
+
 	// Get 80 frames every 50 miliseconds
-	public static final int NUMBER_OF_FRAMES = 80; 
-	public static final long TIMER_TIME = 50L;
-	
+	private int numberOfFrames;
+	public static final int TIMER_TIME =50;// cambiar
+
 	// Used to synchronize timer and main thread
 	private static final Object writingLock = new Object();
 	private boolean isWriting;
 	// Used to keep activity running while device screen is turned off
 	private PowerManager powerManager;
 	private WakeLock wakeLock = null;
-		
+
 	private DeviceConfiguration configuration;
 	private Device connection;
 	private Device.Frame[] frames;
-	
+
 	private Timer timer = null;
 	private DataManager dataManager;
 	private double samplingFrames;
 	private double samplingCounter = 0;
-	private double  timeCounter = 0;
-	private double  xValue = 0;
+	private double timeCounter = 0;
+	private double xValue = 0;
 	private boolean drawInBackground = true;
 	private boolean killServiceError = false;
 	private boolean clientActive = false;
 	Notification serviceNotification = null;
 	private SharedPreferences sharedPref;
-	
 
 	/**
 	 * Target we publish for clients to send messages to IncomingHandler
 	 */
 	private final Messenger mMessenger = new Messenger(new IncomingHandler());
-	
+
 	/**
 	 * Messenger with interface for sending messages from the service
 	 */
 	private Messenger client = null;
-	
+
 	/**
-     * Handler of incoming messages from clients.
-     */
+	 * Handler of incoming messages from clients.
+	 */
 	@SuppressLint("HandlerLeak")
 	class IncomingHandler extends Handler {
 		@Override
@@ -106,10 +105,10 @@ public class BiopluxService extends Service {
 				clientActive = true;
 				// removes notification
 				stopForeground(true);
-				
+
 				if (timer == null) {
 					timer = new Timer();
-					timer.schedule(new TimerTask() {
+					timer.scheduleAtFixedRate(new TimerTask() {
 						public void run() {
 							processFrames();
 						}
@@ -117,31 +116,28 @@ public class BiopluxService extends Service {
 				}
 				break;
 			case MSG_RECORDING_DURATION:
-				dataManager.setDuration(msg.getData().getString(NewRecordingActivity.KEY_DURATION)); 
+				dataManager.setDuration(msg.getData().getString(NewRecordingActivity.KEY_DURATION));
 				break;
 			default:
 				super.handleMessage(msg);
 			}
 		}
 	}
-	
 
 	/**
 	 * Initializes the wake lock and the frames array
 	 */
 	@Override
 	public void onCreate() {
+		Log.e(TAG, "Entrando en onCreate");
 		super.onCreate();
-		sharedPref = getSharedPreferences(getPackageName()+"_preferences", Context.MODE_MULTI_PROCESS);
+		sharedPref = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 		drawInBackground = sharedPref.getBoolean(SettingsActivity.KEY_DRAW_IN_BACKGROUND, true);
-		powerManager = (PowerManager)this.getSystemService(Context.POWER_SERVICE);
-		wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
+		powerManager = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+		wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"MyWakeLock");
 		if ((wakeLock != null) && (wakeLock.isHeld() == false)) {
 			wakeLock.acquire();
 		}
-		frames = new Device.Frame[NUMBER_OF_FRAMES];
-		for (int i = 0; i < frames.length; i++)
-			frames[i] = new Frame();
 	}
 
 	/**
@@ -150,39 +146,50 @@ public class BiopluxService extends Service {
 	 */
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		String recordingName = intent.getStringExtra(NewRecordingActivity.KEY_RECORDING_NAME).toString(); 
+		Log.e(TAG, "Entrando en onStartCommand");
+		String recordingName = intent.getStringExtra
+
+		(NewRecordingActivity.KEY_RECORDING_NAME).toString();
 		configuration = (DeviceConfiguration) intent.getSerializableExtra(NewRecordingActivity.KEY_CONFIGURATION);
-		samplingFrames = (double)configuration.getReceptionFrequency() / configuration.getSamplingFrequency();
+		samplingFrames = (double) configuration.getReceptionFrequency() / configuration.getSamplingFrequency();
 		
-		if(connectToBiopluxDevice()){
+		numberOfFrames = (int)(TIMER_TIME*configuration.getReceptionFrequency()/1000);// We round upthe number of frames
+
+		Log.e(TAG, "numberOfFrames "+numberOfFrames +" receptionFrequency() "+configuration.getReceptionFrequency());
+		Log.e(TAG, "samplingFrames "+		samplingFrames);
+		frames = new Device.Frame[numberOfFrames];
+		for (int i = 0; i < frames.length; i++){
+			frames[i] = new Frame();
+		}
+
+		if (connectToBiopluxDevice()) {
 			dataManager = new DataManager(this, recordingName, configuration);
 			createNotification();
 		}
 		return START_NOT_STICKY; // do not re-create service if system kills it
 	}
 
-
 	/**
-	 * Returns the communication channel to the service or
-	 * null if clients cannot bind to the service
+	 * Returns the communication channel to the service or null if clients
+	 * cannot bind to the service
 	 */
 	@Override
-	public IBinder onBind(Intent intent) {
-		Log.i(TAG, "onBind");
+	public IBinder onBind(Intent intent) {	
+		Log.e(TAG, "onBind");
 		return mMessenger.getBinder();
 	}
-	
+
 	/**
-	 * Changes the service to be run in the foreground and shows the notification
+	 * Changes the service to be run in the foreground and shows the
+	 * notification
 	 */
 	@Override
 	public boolean onUnbind(Intent intent) {
-		Log.i(TAG, "onUNBind");
+		Log.e(TAG, "onUNBind");
 		clientActive = false;
 		startForeground(R.string.service_id, serviceNotification);
 		return true;
 	}
-
 
 	/**
 	 * Gets and process the frames from the bioplux device. Saves all the frames
@@ -192,29 +199,28 @@ public class BiopluxService extends Service {
 		synchronized (writingLock) {
 			isWriting = true;
 		}
-	
-		getFrames(NUMBER_OF_FRAMES);
-		
-		loop:
-		for (Frame frame : frames) {
-			if(!dataManager.writeFrameToTmpFile(frame)){
+
+		getFrames(numberOfFrames);
+
+		loop: for (Frame frame : frames) {
+			if (!dataManager.writeFrameToTmpFile(frame)) {
 				sendErrorToActivity(CODE_ERROR_WRITING_TEXT_FILE);
 				killServiceError = true;
 				stopSelf();
 				break loop;
 			}
-			
-			if(samplingCounter++ >= samplingFrames){
+
+			if (samplingCounter++ >= samplingFrames) {
 				// calculates x value of graphs
 				timeCounter++;
-				xValue = timeCounter / configuration.getSamplingFrequency()*1000;
+				xValue = timeCounter / configuration.getSamplingFrequency() * 1000;
 				// gets default share preferences with multi-process flag
-				
-				if(clientActive || !clientActive && drawInBackground)
+
+				if (clientActive || !clientActive && drawInBackground)
 					sendFrameToActivity(frame.an_in);
 				// retains the decimals
 				samplingCounter -= samplingFrames;
-			}	
+			}
 		}
 		synchronized (writingLock) {
 			isWriting = false;
@@ -223,6 +229,7 @@ public class BiopluxService extends Service {
 
 	/**
 	 * Get frames from the bioplux device
+	 * 
 	 * @param numberOfFrames
 	 */
 	private void getFrames(int numberOfFrames) {
@@ -235,17 +242,20 @@ public class BiopluxService extends Service {
 		}
 	}
 
-
 	/**
-	 * Connects to a bioplux device and begins to acquire frames
-	 * Returns true connection has established. False if an exception was caught
+	 * Connects to a bioplux device and begins to acquire frames Returns true
+	 * connection has established. False if an exception was caught
+	 * 
 	 * @return boolean
 	 */
 	private boolean connectToBiopluxDevice() {
 		// BIOPLUX INITIALIZATION
 		try {
 			connection = Device.Create(configuration.getMacAddress());
-			connection.BeginAcq(configuration.getReceptionFrequency(), configuration.getActiveChannelsAsInteger(), configuration.getNumberOfBits());
+			connection.BeginAcq(configuration.getReceptionFrequency(),
+
+			configuration.getActiveChannelsAsInteger(),
+					configuration.getNumberOfBits());
 		} catch (BPException e) {
 			try {
 				connection.Close();
@@ -266,7 +276,8 @@ public class BiopluxService extends Service {
 	}
 
 	/**
-	 * Creates the notification 
+	 * Creates the notification
+	 * 
 	 * @param parentIntent
 	 */
 	private void createNotification() {
@@ -279,7 +290,7 @@ public class BiopluxService extends Service {
 
 		// CREATE THE INTENT CALLED WHEN NOTIFICATION IS PRESSED
 		Intent newRecordingIntent = new Intent(this, NewRecordingActivity.class);
-		
+
 		// PENDING INTENT
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
 				newRecordingIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -291,14 +302,16 @@ public class BiopluxService extends Service {
 
 	/**
 	 * Sends frame to activity via message
-	 * @param frame acquired from the bioplux device
+	 * 
+	 * @param frame
+	 *            acquired from the bioplux device
 	 */
 	private void sendFrameToActivity(short[] frame) {
 		Bundle b = new Bundle();
 		b.putDouble(KEY_X_VALUE, xValue);
-        b.putShortArray(KEY_FRAME_DATA, frame);
-        Message message = Message.obtain(null, MSG_DATA);
-        message.setData(b);
+		b.putShortArray(KEY_FRAME_DATA, frame);
+		Message message = Message.obtain(null, MSG_DATA);
+		message.setData(b);
 		try {
 			client.send(message);
 		} catch (RemoteException e) {
@@ -306,13 +319,12 @@ public class BiopluxService extends Service {
 			Log.i(TAG, "client is dead");
 		}
 	}
-	
-	
+
 	/**
 	 * Notifies the client that the recording frames were stored properly
 	 */
 	private void sendSavedNotification() {
-        Message message = Message.obtain(null, MSG_SAVED);
+		Message message = Message.obtain(null, MSG_SAVED);
 		try {
 			client.send(message);
 		} catch (RemoteException e) {
@@ -330,12 +342,12 @@ public class BiopluxService extends Service {
 	 */
 	private void sendErrorToActivity(int errorCode) {
 		try {
-			client.send(Message.obtain(null, MSG_CONNECTION_ERROR, errorCode, 0));
+			client.send(Message
+					.obtain(null, MSG_CONNECTION_ERROR, errorCode, 0));
 		} catch (RemoteException e) {
 			Log.e(TAG, "Exception sending error message to activity. Service is stopping", e);
 		}
 	}
-
 
 	@SuppressLint("NewApi")
 	@Override
@@ -348,7 +360,7 @@ public class BiopluxService extends Service {
 	/**
 	 * Stops the service properly whilst being destroyed
 	 */
-	private void stopService(){
+	private void stopService() {
 		if (timer != null)
 			timer.cancel();
 
@@ -359,7 +371,7 @@ public class BiopluxService extends Service {
 				Log.e(TAG, "Exception thread is sleeping", e2);
 			}
 		}
-		if(!dataManager.closeWriters())
+		if (!dataManager.closeWriters())
 			sendErrorToActivity(CODE_ERROR_SAVING_RECORDING);
 		try {
 			connection.EndAcq();
@@ -369,25 +381,24 @@ public class BiopluxService extends Service {
 			sendErrorToActivity(e.code);
 		}
 	}
-	
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if(!killServiceError){
+		if (!killServiceError) {
 			stopService();
-			new Thread(){
-			    @Override
-			    public void run() {
-			    	boolean errorSavingRecording = false;
-			    	if(!dataManager.saveAndCompressFile(client)){
-			    		errorSavingRecording = true;
-			    		sendErrorToActivity(CODE_ERROR_SAVING_RECORDING);
-			    	}
-			    	if(!errorSavingRecording)
+			new Thread() {
+				@Override
+				public void run() {
+					boolean errorSavingRecording = false;
+					if (!dataManager.saveAndCompressFile(client)) {
+						errorSavingRecording = true;
+						sendErrorToActivity(CODE_ERROR_SAVING_RECORDING);
+					}
+					if (!errorSavingRecording)
 						sendSavedNotification();
-			    	wakeLock.release();
-			    }
+					wakeLock.release();
+				}
 			}.start();
 		}
 		Log.i(TAG, "service destroyed");
