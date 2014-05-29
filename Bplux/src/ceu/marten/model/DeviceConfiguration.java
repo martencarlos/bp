@@ -44,7 +44,7 @@ public class DeviceConfiguration implements Serializable {
 	private String createDate = null;
 
 	@DatabaseField(canBeNull = true)
-	private int receptionFrequency = 0;
+	private int visualizationFrequency = 0;
 
 	@DatabaseField(canBeNull = true)
 	private int samplingFrequency = 0;
@@ -92,12 +92,12 @@ public class DeviceConfiguration implements Serializable {
 		return createDate;
 	}
 
-	public void setReceptionFrequency(int frequency) {
-		this.receptionFrequency = frequency;
+	public void setVisualizationFrequency(int frequency) {
+		this.visualizationFrequency = frequency;
 	}
 
-	public int getReceptionFrequency() {
-		return receptionFrequency;
+	public int getVisualizationFrequency() {
+		return visualizationFrequency;
 	}
 
 	public void setSamplingFrequency(int samplingFrequency) {
@@ -149,8 +149,8 @@ public class DeviceConfiguration implements Serializable {
 			String[] displayChannelsSplitted = displayChannelsConcatenated.split(SPLIT_PATTERN);
 			ArrayList<Integer> displayChannels = new ArrayList<Integer>();
 			int channelNumber = 1;
-			for (String s : displayChannelsSplitted) {
-				if (s.compareTo("null") != 0)
+			for (String stringDisplayChannel : displayChannelsSplitted) {
+				if (stringDisplayChannel.compareTo("null") != 0)
 					displayChannels.add(channelNumber);
 				channelNumber++;
 			}

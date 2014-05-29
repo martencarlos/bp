@@ -376,7 +376,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 			// fill them
 			uiConfigurationName.setText(recordingConfiguration.getName());
 			uiReceptionFrequency.setText(String.valueOf(recordingConfiguration
-					.getReceptionFrequency()) + " Hz");
+					.getVisualizationFrequency()) + " Hz");
 			uiSamplingFrequency.setText(String.valueOf(recordingConfiguration
 					.getSamplingFrequency()) + " Hz");
 			uiNumberOfBits.setText(String.valueOf(recordingConfiguration

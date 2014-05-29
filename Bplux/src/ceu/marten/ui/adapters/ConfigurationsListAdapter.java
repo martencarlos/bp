@@ -45,7 +45,7 @@ public class ConfigurationsListAdapter extends ArrayAdapter<DeviceConfiguration>
 		DeviceConfiguration configuration = getItem(position);
 
 		name.setText(configuration.getName());
-		receptionFreq.setText(String.valueOf(configuration.getReceptionFrequency()) + " Hz");
+		receptionFreq.setText(String.valueOf(configuration.getVisualizationFrequency()) + " Hz");
 		samplingFreq.setText(String.valueOf(configuration.getSamplingFrequency()) + " Hz");
 		mac.setText(configuration.getMacAddress());
 		bits.setText(String.valueOf(configuration.getNumberOfBits()) + " bits");

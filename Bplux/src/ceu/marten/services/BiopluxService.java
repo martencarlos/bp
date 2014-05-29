@@ -59,8 +59,8 @@ public class BiopluxService extends Service {
 	public static final int TIMER_TIME =50;// cambiar
 
 	// Used to synchronize timer and main thread
-	private static final Object writingLock = new Object();
-	private boolean isWriting;
+	private static final Object weAreWritingDataToFileLock = new Object();
+	private boolean areWeWritingDataToFile;
 	// Used to keep activity running while device screen is turned off
 	private PowerManager powerManager;
 	private WakeLock wakeLock = null;
@@ -81,14 +81,10 @@ public class BiopluxService extends Service {
 	Notification serviceNotification = null;
 	private SharedPreferences sharedPref;
 
-	/**
-	 * Target we publish for clients to send messages to IncomingHandler
-	 */
+	//Target we publish for clients to send messages to IncomingHandler
 	private final Messenger mMessenger = new Messenger(new IncomingHandler());
 
-	/**
-	 * Messenger with interface for sending messages from the service
-	 */
+	//Messenger with interface for sending messages from the service
 	private Messenger client = null;
 
 	/**
@@ -129,7 +125,6 @@ public class BiopluxService extends Service {
 	 */
 	@Override
 	public void onCreate() {
-		Log.e(TAG, "Entrando en onCreate");
 		super.onCreate();
 		sharedPref = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 		drawInBackground = sharedPref.getBoolean(SettingsActivity.KEY_DRAW_IN_BACKGROUND, true);
@@ -141,22 +136,41 @@ public class BiopluxService extends Service {
 	}
 
 	/**
+	 * Returns the communication channel to the service or null if clients
+	 * cannot bind to the service
+	 */
+	@Override
+	public IBinder onBind(Intent intent) {	
+		Log.i(TAG, "onBind");
+		return mMessenger.getBinder();
+	}
+
+	/**
+	 * Changes the service to be run in the foreground and shows the
+	 * notification
+	 */
+	@Override
+	public boolean onUnbind(Intent intent) {
+		Log.i(TAG, "onUNBind");
+		clientActive = false;
+		startForeground(R.string.service_id, serviceNotification);
+		return true;
+	}
+
+	/**
 	 * Gets information from the activity extracted from the intent and connects
 	 * to bioplux device. Returns a do not re-create flag if killed by system
 	 */
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.e(TAG, "Entrando en onStartCommand");
-		String recordingName = intent.getStringExtra
-
-		(NewRecordingActivity.KEY_RECORDING_NAME).toString();
+		String recordingName = intent.getStringExtra (NewRecordingActivity.KEY_RECORDING_NAME).toString();
 		configuration = (DeviceConfiguration) intent.getSerializableExtra(NewRecordingActivity.KEY_CONFIGURATION);
-		samplingFrames = (double) configuration.getReceptionFrequency() / configuration.getSamplingFrequency();
+		samplingFrames = (double) configuration.getVisualizationFrequency() / configuration.getSamplingFrequency();
 		
-		numberOfFrames = (int)(TIMER_TIME*configuration.getReceptionFrequency()/1000);// We round upthe number of frames
+		numberOfFrames = (int)(TIMER_TIME*configuration.getVisualizationFrequency()/1000);// We round upthe number of frames
 
-		Log.e(TAG, "numberOfFrames "+numberOfFrames +" receptionFrequency() "+configuration.getReceptionFrequency());
-		Log.e(TAG, "samplingFrames "+		samplingFrames);
+		Log.i(TAG, "numberOfFrames "+numberOfFrames +" receptionFrequency() "+configuration.getVisualizationFrequency());
+		Log.i(TAG, "samplingFrames "+		samplingFrames);
 		frames = new Device.Frame[numberOfFrames];
 		for (int i = 0; i < frames.length; i++){
 			frames[i] = new Frame();
@@ -170,38 +184,15 @@ public class BiopluxService extends Service {
 	}
 
 	/**
-	 * Returns the communication channel to the service or null if clients
-	 * cannot bind to the service
-	 */
-	@Override
-	public IBinder onBind(Intent intent) {	
-		Log.e(TAG, "onBind");
-		return mMessenger.getBinder();
-	}
-
-	/**
-	 * Changes the service to be run in the foreground and shows the
-	 * notification
-	 */
-	@Override
-	public boolean onUnbind(Intent intent) {
-		Log.e(TAG, "onUNBind");
-		clientActive = false;
-		startForeground(R.string.service_id, serviceNotification);
-		return true;
-	}
-
-	/**
 	 * Gets and process the frames from the bioplux device. Saves all the frames
 	 * receives to a text file and send the requested frames to the activity
 	 */
 	private void processFrames() {
-		synchronized (writingLock) {
-			isWriting = true;
+		synchronized (weAreWritingDataToFileLock) {
+			areWeWritingDataToFile = true;
 		}
 
 		getFrames(numberOfFrames);
-
 		loop: for (Frame frame : frames) {
 			if (!dataManager.writeFrameToTmpFile(frame)) {
 				sendErrorToActivity(CODE_ERROR_WRITING_TEXT_FILE);
@@ -222,15 +213,13 @@ public class BiopluxService extends Service {
 				samplingCounter -= samplingFrames;
 			}
 		}
-		synchronized (writingLock) {
-			isWriting = false;
+		synchronized (weAreWritingDataToFileLock) {
+			areWeWritingDataToFile = false;
 		}
 	}
 
 	/**
 	 * Get frames from the bioplux device
-	 * 
-	 * @param numberOfFrames
 	 */
 	private void getFrames(int numberOfFrames) {
 		try {
@@ -245,17 +234,14 @@ public class BiopluxService extends Service {
 	/**
 	 * Connects to a bioplux device and begins to acquire frames Returns true
 	 * connection has established. False if an exception was caught
-	 * 
-	 * @return boolean
 	 */
 	private boolean connectToBiopluxDevice() {
 		// BIOPLUX INITIALIZATION
 		try {
 			connection = Device.Create(configuration.getMacAddress());
-			connection.BeginAcq(configuration.getReceptionFrequency(),
+			connection.BeginAcq(configuration.getVisualizationFrequency(),
 
-			configuration.getActiveChannelsAsInteger(),
-					configuration.getNumberOfBits());
+			configuration.getActiveChannelsAsInteger(),configuration.getNumberOfBits());
 		} catch (BPException e) {
 			try {
 				connection.Close();
@@ -277,8 +263,6 @@ public class BiopluxService extends Service {
 
 	/**
 	 * Creates the notification
-	 * 
-	 * @param parentIntent
 	 */
 	private void createNotification() {
 
@@ -337,8 +321,6 @@ public class BiopluxService extends Service {
 	/**
 	 * Sends the an error code to the client with the corresponding error that
 	 * it has encountered
-	 * 
-	 * @param errorCode
 	 */
 	private void sendErrorToActivity(int errorCode) {
 		try {
@@ -364,7 +346,7 @@ public class BiopluxService extends Service {
 		if (timer != null)
 			timer.cancel();
 
-		while (isWriting) {
+		while (areWeWritingDataToFile) {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e2) {

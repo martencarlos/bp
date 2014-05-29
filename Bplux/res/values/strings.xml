@@ -28,7 +28,7 @@
     <!-- LAYOUTS -->
     <!-- HOME ACTIVITY -->
     <string name="ha_title">Welcome,</string>
-    <string name="ha_description">This application provides the ability to make and send recordings of physiological signals through the use of a BioPlux device.\nBefore recording make sure of two things:\n\n\t1) Have the BioPlux device on, and with enough battery to make a recording. \n\n\t2) Have the mobile computer with a higher than 50% battery and have Bluetooth turned on.</string>
+    <string name="ha_description">Before starting a recording check that the Plux device is on and it has enough battery to perform the recording.</string>
     <string name="ha_button1">Start Recording</string>
     <string name="ha_button2">Browse Recordings</string>
     

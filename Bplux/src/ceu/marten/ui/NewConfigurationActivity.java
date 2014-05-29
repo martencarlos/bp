@@ -87,7 +87,7 @@ public class NewConfigurationActivity extends Activity {
 
 		// CREATES AND SETS DEFAULT VALUES FOR THE NEW CONFIGURATION
 		newConfiguration = new DeviceConfiguration(this);
-		newConfiguration.setReceptionFrequency(DEFAULT_RECEPTION_FREQ);
+		newConfiguration.setVisualizationFrequency(DEFAULT_RECEPTION_FREQ);
 		newConfiguration.setSamplingFrequency(DEFAULT_SAMPLING_FREQ);
 		newConfiguration.setNumberOfBits(DEFAULT_NUMBER_OF_BITS);
 		
@@ -109,7 +109,7 @@ public class NewConfigurationActivity extends Activity {
 							int progress, boolean changedByUser) {
 						if (changedByUser) {
 							receptionFreqEditor.setText(String.valueOf(progress + RECEPTION_FREQ_MIN));
-							newConfiguration.setReceptionFrequency(progress + RECEPTION_FREQ_MIN);
+							newConfiguration.setVisualizationFrequency(progress + RECEPTION_FREQ_MIN);
 						}
 					}
 					// needed for the listener
@@ -139,18 +139,18 @@ public class NewConfigurationActivity extends Activity {
 						// accepted frequency
 						if (newFrequency >= RECEPTION_FREQ_MIN && newFrequency <= RECEPTION_FREQ_MAX) {
 							receptionfreqSeekbar.setProgress((newFrequency - RECEPTION_FREQ_MIN));
-							newConfiguration.setReceptionFrequency(newFrequency);
+							newConfiguration.setVisualizationFrequency(newFrequency);
 						// frequency introduced is too big
 						} else if (newFrequency > RECEPTION_FREQ_MAX) {
 							receptionfreqSeekbar.setProgress(RECEPTION_FREQ_MAX);
 							receptionFreqEditor.setText(String.valueOf(RECEPTION_FREQ_MAX));
-							newConfiguration.setReceptionFrequency(RECEPTION_FREQ_MAX);
+							newConfiguration.setVisualizationFrequency(RECEPTION_FREQ_MAX);
 							displayErrorToast(getString(R.string.nc_error_max_frequency) + " "+ RECEPTION_FREQ_MAX + "Hz");
 						// frequency introduced is too small
 						} else {
 							receptionfreqSeekbar.setProgress(0);
 							receptionFreqEditor.setText(String.valueOf(RECEPTION_FREQ_MIN));
-							newConfiguration.setReceptionFrequency(RECEPTION_FREQ_MIN);
+							newConfiguration.setVisualizationFrequency(RECEPTION_FREQ_MIN);
 							displayErrorToast(getString(R.string.nc_error_min_frequency) + " "+ RECEPTION_FREQ_MIN + " Hz");
 						}
 					}
@@ -231,8 +231,8 @@ public class NewConfigurationActivity extends Activity {
 			//FILL WIDGETS FIELDS WITH CONFIGURATION TO EDIT DETAILS
 			configurationName.setText(oldConfiguration.getName());
 			macAddress.setText(oldConfiguration.getMacAddress());
-			receptionfreqSeekbar.setProgress(oldConfiguration.getReceptionFrequency()- RECEPTION_FREQ_MIN);
-			receptionFreqEditor.setText(String.valueOf(oldConfiguration.getReceptionFrequency()));
+			receptionfreqSeekbar.setProgress(oldConfiguration.getVisualizationFrequency()- RECEPTION_FREQ_MIN);
+			receptionFreqEditor.setText(String.valueOf(oldConfiguration.getVisualizationFrequency()));
 			samplingfreqSeekbar.setProgress(oldConfiguration.getSamplingFrequency());
 			samplingFreqEditor.setText(String.valueOf(oldConfiguration.getSamplingFrequency()));
 			activeChannelsTV.setVisibility(View.VISIBLE);
@@ -561,7 +561,7 @@ public class NewConfigurationActivity extends Activity {
 		
 		newConfiguration.setName(configurationName.getText().toString());
 		newConfiguration.setMacAddress(macAddress.getText().toString());
-		newConfiguration.setReceptionFrequency(Integer.parseInt(receptionFreqEditor.getText().toString()));
+		newConfiguration.setVisualizationFrequency(Integer.parseInt(receptionFreqEditor.getText().toString()));
 		newConfiguration.setSamplingFrequency(Integer.parseInt(samplingFreqEditor.getText().toString()));
 
 		if(!isUpdatingConfiguration){
