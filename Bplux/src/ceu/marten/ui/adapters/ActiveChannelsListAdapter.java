@@ -15,16 +15,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import ceu.marten.bplux.R;
 
-public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
-		OnClickListener, OnItemSelectedListener {
+public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements OnClickListener, OnItemSelectedListener {
 
 	private final Context context;
 	private List<String> strings;
 	private String[] activeSensors = null;
 	private boolean[] checkedStatus;
 
-	public ActiveChannelsListAdapter(Context context, List<String> channelNumbers,
-			String[] activeChannels) {
+	public ActiveChannelsListAdapter(Context context, List<String> channelNumbers, String[] activeChannels) {
 		super(context, 0, 0, channelNumbers);
 		this.context = context;
 		this.strings = channelNumbers;
@@ -43,40 +41,34 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-
 		ViewGroup rowView = (ViewGroup) convertView;
 		if (rowView == null) {
-			rowView = (ViewGroup) LayoutInflater.from(context).inflate(
-					R.layout.li_active_channels, parent, false);
-
+			rowView = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.li_active_channels, parent, false);
 		}
 		
 		Spinner spinner = (Spinner) rowView.findViewById(R.id.li_ac_sensors);
-		CheckBox cb = (CheckBox) rowView.findViewById(R.id.li_ac_checkbox);
-		cb.setTag(R.id.TAG_POSITION, position);
-		cb.setTag(R.id.TAG_SPINNER, spinner);
-		cb.setOnClickListener(this);
+		CheckBox checkBox = (CheckBox) rowView.findViewById(R.id.li_ac_checkbox);
+		checkBox.setTag(R.id.TAG_POSITION, position);
+		checkBox.setTag(R.id.TAG_SPINNER, spinner);
+		checkBox.setOnClickListener(this);
 		
 		if (checkedStatus[position]) {
-			cb.setChecked(true);
+			checkBox.setChecked(true);
 		} else {
-			cb.setChecked(false);
+			checkBox.setChecked(false);
 		}
 
 		spinner.setTag(position);
 		spinner.setOnItemSelectedListener(this);
 
-		if (activeSensors[position] != null
-				&& activeSensors[position].compareTo("null") != 0) {
+		if (activeSensors[position] != null && activeSensors[position].compareTo("null") != 0) {
 			for (int counter = 0; counter < spinner.getCount(); counter++) {
 				if (spinner.getItemAtPosition(counter).toString().compareTo(activeSensors[position]) == 0)
-					spinner.setSelection(counter);
-				
+					spinner.setSelection(counter);				
 			}
-
 		}
-		TextView channelNumber = (TextView) rowView
-				.findViewById(R.id.li_ac_channelNumber);
+		
+		TextView channelNumber = (TextView) rowView.findViewById(R.id.li_ac_channelNumber);
 		String currentItem = strings.get(position);
 		channelNumber.setText(currentItem);
 
@@ -104,9 +96,7 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements
 	}
 
 	@Override
-	public void onItemSelected(AdapterView<?> spinner, View currentText,
-			int pos, long id) {
-
+	public void onItemSelected(AdapterView<?> spinner, View currentText, int pos, long id) {
 		int position = (Integer) spinner.getTag();
 		// TextView t = (TextView) currentText;
 		// t.setTextSize(Float.parseFloat(context.getResources().getString(R.string.active_channel_dialog_spinner_text)));

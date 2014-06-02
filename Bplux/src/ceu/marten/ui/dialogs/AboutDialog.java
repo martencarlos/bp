@@ -14,7 +14,6 @@ import android.text.util.Linkify;
 import android.graphics.Color;
 import android.widget.TextView;
 
-
 public class AboutDialog extends Dialog {
 	private static Context mContext = null;
 
@@ -34,24 +33,23 @@ public class AboutDialog extends Dialog {
 		legalText.setLinkTextColor(Color.BLUE);
 
 		Linkify.addLinks(legalText, Linkify.ALL);
-
 	}
 
 	public static String readRawTextFile(int id) {
 		InputStream inputStream = mContext.getResources().openRawResource(id);
 
-		InputStreamReader in = new InputStreamReader(inputStream);
-		BufferedReader buf = new BufferedReader(in);
+		InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+		BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 		String line;
 
 		StringBuilder text = new StringBuilder();
 		try {
-			while ((line = buf.readLine()) != null)
+			while ((line = bufferedReader.readLine()) != null) {
 				text.append(line);
+			}
 		} catch (IOException e) {
 			return null;
 		}
-
 		return text.toString();
 	}
 

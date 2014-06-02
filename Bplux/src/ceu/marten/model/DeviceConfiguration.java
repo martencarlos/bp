@@ -142,16 +142,18 @@ public class DeviceConfiguration implements Serializable {
 	 */
 
 	public ArrayList<Integer> getDisplayChannels() {
-		if (this.displayChannels == null)
+		if (this.displayChannels == null){
 			return null;
+		}
 		else {
 			String displayChannelsConcatenated = new String(this.displayChannels);
 			String[] displayChannelsSplitted = displayChannelsConcatenated.split(SPLIT_PATTERN);
 			ArrayList<Integer> displayChannels = new ArrayList<Integer>();
 			int channelNumber = 1;
 			for (String stringDisplayChannel : displayChannelsSplitted) {
-				if (stringDisplayChannel.compareTo("null") != 0)
+				if (stringDisplayChannel.compareTo("null") != 0){
 					displayChannels.add(channelNumber);
+				}
 				channelNumber++;
 			}
 			return displayChannels;
@@ -168,22 +170,20 @@ public class DeviceConfiguration implements Serializable {
 	 */
 
 	public String getDisplayChannelsWithSensors() {
-		if (this.displayChannels == null)
+		if (this.displayChannels == null){
 			return null;
+		}
 		else {
 			String displayChannelsConcatenated = new String(this.displayChannels);
 			String[] displayChannelsSplitted = displayChannelsConcatenated.split(SPLIT_PATTERN);
 			StringBuilder displayChannelsSB = new StringBuilder();
 			int channelNumber = 1;
 			for (String s : displayChannelsSplitted) {
-				if (s.compareTo("null") != 0)
+				if (s.compareTo("null") != 0){
 					displayChannelsSB.append(context
-							.getString(R.string.nc_dialog_channel)
-							+ " "
-							+ channelNumber
-							+ " "
-							+ context.getString(R.string.nc_dialog_with_sensor)
-							+ " " + s + "\n");
+							.getString(R.string.nc_dialog_channel) + " " + channelNumber + " "
+							+ context.getString(R.string.nc_dialog_with_sensor) + " " + s + "\n");
+				}
 				channelNumber++;
 			}
 			return displayChannelsSB.toString();
@@ -200,8 +200,9 @@ public class DeviceConfiguration implements Serializable {
 		String entire = new String(this.displayChannels);
 		String[] channelsToDisplay = entire.split(SPLIT_PATTERN);
 		for (String s : channelsToDisplay) {
-			if (s.compareTo("null")!=0)
+			if (s.compareTo("null")!=0){
 				numberOfChannelsToDisplay++;
+			}
 		}
 		return numberOfChannelsToDisplay;
 	}
@@ -232,8 +233,9 @@ public class DeviceConfiguration implements Serializable {
 		if (this.activeChannels != null) {
 			String activeChannelsConcatenated = new String(this.activeChannels);
 			return activeChannelsConcatenated.split(SPLIT_PATTERN);
-		} else
+		} else{
 			return null;
+		}
 	}
 
 	/**
@@ -249,12 +251,14 @@ public class DeviceConfiguration implements Serializable {
 			String activeChannelsConcatenated = new String(this.activeChannels);
 			activeChannelsStr = activeChannelsConcatenated.split(SPLIT_PATTERN);
 			for (int i = 0; i < activeChannelsStr.length; i++) {
-				if (activeChannelsStr[i].compareToIgnoreCase("null") != 0)
+				if (activeChannelsStr[i].compareToIgnoreCase("null") != 0){
 					activeChannels.add(i + 1);
+				}
 			}
 			return activeChannels;
-		} else
+		} else{
 			return null;
+		}
 	}
 	
 
@@ -270,12 +274,14 @@ public class DeviceConfiguration implements Serializable {
 			String activeChannelsConcatenated = new String(this.activeChannels);
 			activeChannelsStr = activeChannelsConcatenated.split(SPLIT_PATTERN);
 			for (int i = 0; i < activeChannelsStr.length; i++) {
-				if (activeChannelsStr[i].compareToIgnoreCase("null") != 0)
+				if (activeChannelsStr[i].compareToIgnoreCase("null") != 0){
 					activeChannelsInteger += Math.pow(2, i);
+				}
 			}
 			return activeChannelsInteger;
-		} else
+		} else{
 			return 0;
+		}
 	}
 
 	/**
@@ -290,11 +296,13 @@ public class DeviceConfiguration implements Serializable {
 			String[] activeChannelsStr = activeChannelsConcatenated
 					.split(SPLIT_PATTERN);
 			for (int i = 0; i < activeChannelsStr.length; i++) {
-				if (activeChannelsStr[i].compareToIgnoreCase("null") != 0)
+				if (activeChannelsStr[i].compareToIgnoreCase("null") != 0){
 					activeChannelsNumber++;
+				}
 			}
 			return activeChannelsNumber;
-		} else
+		} else{
 			return 0;
+		}
 	}
 }

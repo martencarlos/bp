@@ -37,10 +37,8 @@ public class ConfigurationsListAdapter extends ArrayAdapter<DeviceConfiguration>
 		TextView mac = (TextView) rowView.findViewById(R.id.dli_mac);
 		TextView bits = (TextView) rowView.findViewById(R.id.dli_nbits);
 		TextView date = (TextView) rowView.findViewById(R.id.dli_date);
-		TextView activeChannels = (TextView) rowView
-				.findViewById(R.id.dli_active_channels);
-		TextView channelsToDisplay = (TextView) rowView
-				.findViewById(R.id.dli_channels_to_display);
+		TextView activeChannels = (TextView) rowView.findViewById(R.id.dli_active_channels);
+		TextView channelsToDisplay = (TextView) rowView.findViewById(R.id.dli_channels_to_display);
 
 		DeviceConfiguration configuration = getItem(position);
 
@@ -50,11 +48,9 @@ public class ConfigurationsListAdapter extends ArrayAdapter<DeviceConfiguration>
 		mac.setText(configuration.getMacAddress());
 		bits.setText(String.valueOf(configuration.getNumberOfBits()) + " bits");
 		date.setText(configuration.getCreateDate());
-		activeChannels.setText(context.getString(R.string.cl_active)
-				+ " " + configuration.getActiveChannels().toString());
+		activeChannels.setText(context.getString(R.string.cl_active) + " " + configuration.getActiveChannels().toString());
 		channelsToDisplay.setText(context.getString(R.string.cl_display)
-				+ " "
-				+ configuration.getDisplayChannels().toString());
+				+ " " + configuration.getDisplayChannels().toString());
 		
 		return rowView;
 	}

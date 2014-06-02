@@ -193,12 +193,12 @@ public class BiopluxService extends Service {
 		}
 
 		getFrames(numberOfFrames);
-		loop: for (Frame frame : frames) {
+		for (Frame frame : frames) {
 			if (!dataManager.writeFrameToTmpFile(frame)) {
 				sendErrorToActivity(CODE_ERROR_WRITING_TEXT_FILE);
 				killServiceError = true;
 				stopSelf();
-				break loop;
+				break;
 			}
 
 			if (samplingCounter++ >= samplingFrames) {
@@ -290,6 +290,7 @@ public class BiopluxService extends Service {
 	 * @param frame
 	 *            acquired from the bioplux device
 	 */
+	//comentario ¿intentar optimizar el envío de datos?
 	private void sendFrameToActivity(short[] frame) {
 		Bundle b = new Bundle();
 		b.putDouble(KEY_X_VALUE, xValue);

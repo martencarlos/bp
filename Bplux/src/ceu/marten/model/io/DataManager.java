@@ -102,8 +102,8 @@ public class DataManager {
 			// WRITE A NEW LINE
 			bufferedWriter.write(sb.append("\n").toString());
 			
-		} catch (IOException e) {
-			try {bufferedWriter.close();} catch (IOException e1) {}
+		} catch (Exception e) {
+			try {bufferedWriter.close();} catch (Exception e1) {}
 			Log.e(TAG, "Exception while writing frame row", e);
 			return false;
 		}
