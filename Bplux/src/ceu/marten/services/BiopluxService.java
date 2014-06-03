@@ -46,6 +46,7 @@ public class BiopluxService extends Service {
 	public static final int MSG_RECORDING_DURATION = 3;
 	public static final int MSG_SAVED = 4;
 	public static final int MSG_CONNECTION_ERROR = 5;
+	public static final int MSG_DEBUG_ERROR =6;
 
 	public static final String KEY_X_VALUE = "xValue";
 	public static final String KEY_FRAME_DATA = "frame";
@@ -187,6 +188,8 @@ public class BiopluxService extends Service {
 	 * Gets and process the frames from the bioplux device. Saves all the frames
 	 * receives to a text file and send the requested frames to the activity
 	 */
+	private int frameSeq =-1;
+	int i =-1;
 	private void processFrames() {
 		synchronized (weAreWritingDataToFileLock) {
 			areWeWritingDataToFile = true;
@@ -194,6 +197,23 @@ public class BiopluxService extends Service {
 
 		getFrames(numberOfFrames);
 		for (Frame frame : frames) {
+			i++;
+			frameSeq = frameSeq+1 < 128 ? frameSeq+1:0;
+
+			if (frameSeq!= frame.seq || i==0){
+
+				Log.e(TAG, "frameSeq "+		frameSeq+ " frame.seq "+frame.seq);
+				//sendErrorToActivity( BiopluxService.MSG_CONNECTION_ERROR2);
+				
+				Message message = Message.obtain(null, MSG_DEBUG_ERROR);
+				try {
+					client.send(message);
+				} catch (RemoteException e) {
+					Log.e(TAG, "client is dead. Service is being stpped", e);
+				}
+				
+				//Log.e(TAG, "frameSeq "+		frameSeq+ " frame.seq "+frame.seq);
+			}
 			if (!dataManager.writeFrameToTmpFile(frame)) {
 				sendErrorToActivity(CODE_ERROR_WRITING_TEXT_FILE);
 				killServiceError = true;
@@ -325,8 +345,7 @@ public class BiopluxService extends Service {
 	 */
 	private void sendErrorToActivity(int errorCode) {
 		try {
-			client.send(Message
-					.obtain(null, MSG_CONNECTION_ERROR, errorCode, 0));
+			client.send(Message.obtain(null, MSG_CONNECTION_ERROR, errorCode, 0));
 		} catch (RemoteException e) {
 			Log.e(TAG, "Exception sending error message to activity. Service is stopping", e);
 		}

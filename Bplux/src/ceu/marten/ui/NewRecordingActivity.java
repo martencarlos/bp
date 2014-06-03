@@ -148,20 +148,36 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	 * 
 	 */
 	
-	 @SuppressLint("HandlerLeak")
+	@SuppressLint("HandlerLeak")
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case BiopluxService.MSG_DATA:
-				appendDataToGraphs(msg.getData().getDouble(BiopluxService.KEY_X_VALUE),msg.getData().getShortArray(BiopluxService.KEY_FRAME_DATA));
+			case BiopluxService.MSG_DATA: {
+				appendDataToGraphs(msg.getData().getDouble(BiopluxService.KEY_X_VALUE),
+								   msg.getData().getShortArray(BiopluxService.KEY_FRAME_DATA));
 				break;
-			case BiopluxService.MSG_CONNECTION_ERROR:
+			}
+			case BiopluxService.MSG_CONNECTION_ERROR: {
 				serviceError = true;
 				savingDialog.dismiss();
 				displayConnectionErrorDialog(msg.arg1);
 				break;
-			case DataManager.MSG_PERCENTAGE:
+			}
+			case BiopluxService.MSG_DEBUG_ERROR: {
+				final AlertDialog.Builder alert = new AlertDialog.Builder(NewRecordingActivity.this);
+				alert.setMessage("La cargamos: " + "frameSeq ");
+				alert.setPositiveButton("Ok", new
+
+				DialogInterface.OnClickListener() {
+
+					public void onClick(DialogInterface dialog, int which) {
+					}
+				});
+				alert.show();
+				break;
+			}
+			case DataManager.MSG_PERCENTAGE: {
 				if (!savingDialogMessageChanged && msg.arg2 == DataManager.STATE_COMPRESSING_FILE) {
 					savingDialog.setMessage(getString(R.string.nr_saving_dialog_compressing_message));
 					savingDialogMessageChanged = true;
@@ -169,18 +185,21 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 				savingDialog.setProgress(msg.arg1);
 
 				break;
-			case BiopluxService.MSG_SAVED:
+			}
+			case BiopluxService.MSG_SAVED: {
 				savingDialog.dismiss();
 				saveRecordingOnInternalDB();
 				if (closeRecordingActivity) {
 					closeRecordingActivity = false;
 					finish();
-					overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+					overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 				}
 				displayInfoToast(getString(R.string.nr_info_rec_saved));
 				break;
-			default:
+			}
+			default: {
 				super.handleMessage(msg);
+			}
 			}
 		}
 	}
