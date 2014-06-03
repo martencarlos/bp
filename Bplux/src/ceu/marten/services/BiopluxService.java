@@ -214,7 +214,7 @@ public class BiopluxService extends Service {
 				
 				//Log.e(TAG, "frameSeq "+		frameSeq+ " frame.seq "+frame.seq);
 			}
-			if (!dataManager.writeFrameToTmpFile(frame)) {
+			if (!dataManager.writeFrameToTmpFile(frame, frame.seq)) {
 				sendErrorToActivity(CODE_ERROR_WRITING_TEXT_FILE);
 				killServiceError = true;
 				stopSelf();

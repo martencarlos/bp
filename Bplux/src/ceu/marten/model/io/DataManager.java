@@ -33,7 +33,6 @@ import android.util.Log;
 /**
  * Saves and compresses recording data into android' external file system
  * @author Carlos Marten
- *
  */
 public class DataManager {
 	
@@ -63,10 +62,6 @@ public class DataManager {
 	/**
 	 * Constructor. Initializes the number of channels activated, the outStream
 	 * write and the Buffered writer
-	 * 
-	 * @param serviceContext
-	 * @param _recordingName
-	 * @param _configuration
 	 */
 	public DataManager(Context serviceContext, String _recordingName, DeviceConfiguration _configuration) {
 		this.context = serviceContext;
@@ -85,16 +80,13 @@ public class DataManager {
 	/**
 	 * Writes a frame (row) on text file that will go after the header. Returns
 	 * true if wrote successfully and false otherwise.
-	 * 
-	 * @param frame
-	 * @return boolean
 	 */
 	private final StringBuilder sb = new StringBuilder(400);
-	public boolean writeFrameToTmpFile(Frame frame) {
+	public boolean writeFrameToTmpFile(Frame frame, int frameSeq) {
 		frameCounter ++;
 		sb.delete(0, sb.length());
 		try {
-			sb.append(frameCounter).append("\t");
+			sb.append(frameSeq).append("\t").append(frameCounter).append("\t");
 			// WRITE THE DATA OF ACTIVE CHANNELS ONLY
 			for(int i=0; i< numberOfChannelsActivated;i++){
 				sb.append(frame.an_in[i]).append("\t");
@@ -115,8 +107,6 @@ public class DataManager {
 	 * 
 	 * Returns true if the text file was written successfully or false if an
 	 * exception was caught
-	 * 
-	 * @return boolean
 	 */
 	private boolean appendHeader() {
 		
@@ -138,8 +128,9 @@ public class DataManager {
 			out.write(String.format("%-10s %-14s%n%n", "# " + context.getString(R.string.bs_header_active_channels), configuration.getActiveChannels().toString()));
 			out.write("#num ");
 			
-			for(int i: configuration.getActiveChannels())
+			for(int i: configuration.getActiveChannels()){
 				out.write("ch " + i + " ");
+			}
 			
 			out.write("\n");
 			out.flush();
@@ -147,7 +138,7 @@ public class DataManager {
 	
 			// APPEND DATA
 			FileOutputStream outBytes = new FileOutputStream(context.getFilesDir()
-					+ "/" + recordingName + Constants.TEXT_FILE_EXTENTION, true);
+											+ "/" + recordingName + Constants.TEXT_FILE_EXTENTION, true);
 			dest = new BufferedOutputStream(outBytes);
 			fi = new FileInputStream(tmpFilePath);
 			 
@@ -191,7 +182,6 @@ public class DataManager {
 
 	/**
 	 * Returns true if compressed successfully and false otherwise.
-	 * @return boolean
 	 */
 	private boolean compressFile(){
 		
@@ -254,8 +244,6 @@ public class DataManager {
 	/**
 	 * Used to send updates of the percentage of adding the header or compressing the file
 	 * to the client, to keep him informed while waiting
-	 * @param percentage
-	 * @param state
 	 */
 	private void sendPercentageToActivity(int percentage, int state) {
 		try {
@@ -268,8 +256,6 @@ public class DataManager {
 	/**
 	 * Returns true if writers were closed properly. False if an exception was
 	 * caught closing them
-	 * 
-	 * @return boolean
 	 */
 	public boolean closeWriters(){
 		try {
@@ -288,8 +274,6 @@ public class DataManager {
 	/**
 	 * Saves and compress a recording. Returns true if the writing and the
 	 * compression were successful or false if either one of them failed
-	 * 
-	 * @return boolean
 	 */
 	public boolean saveAndCompressFile(Messenger client) {
 		this.client = client;
@@ -304,7 +288,6 @@ public class DataManager {
 
 	/**
 	 * Returns the internal storage available in bytes
-	 * @return long
 	 */
 	@SuppressWarnings("deprecation")
 	public long internalStorageAvailable() {
@@ -315,7 +298,6 @@ public class DataManager {
 
 	/**
 	 * Returns the external storage available in bytes
-	 * @return long
 	 */
 	@SuppressWarnings("deprecation")
 	public long externalStorageAvailable() {
@@ -329,8 +311,6 @@ public class DataManager {
 	 * save the recording.
 	 * 
 	 * Returns true if there is enough storage or false otherwise
-	 * 
-	 * @return boolean
 	 */
 	private boolean enoughStorageAvailable() {
 		Long tmpFileSize = (new File(context.getFilesDir() + "/" + Constants.TEMP_FILE)).length();
@@ -359,7 +339,6 @@ public class DataManager {
 
 	/**
 	 * Sets the duration of the recording
-	 * @param _duration
 	 */
 	public void setDuration(String _duration) {
 		this.duration = _duration;
