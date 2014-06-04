@@ -63,8 +63,9 @@ public class ActiveChannelsListAdapter extends ArrayAdapter<String> implements O
 
 		if (activeSensors[position] != null && activeSensors[position].compareTo("null") != 0) {
 			for (int counter = 0; counter < spinner.getCount(); counter++) {
-				if (spinner.getItemAtPosition(counter).toString().compareTo(activeSensors[position]) == 0)
+				if (spinner.getItemAtPosition(counter).toString().compareTo(activeSensors[position]) == 0){
 					spinner.setSelection(counter);				
+				}
 			}
 		}
 		

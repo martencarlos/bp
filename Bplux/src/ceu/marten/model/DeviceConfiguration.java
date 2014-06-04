@@ -165,8 +165,7 @@ public class DeviceConfiguration implements Serializable {
 	/**
 	 * Get the channels to display
 	 * 
-	 * @return channels to display as an ArrayList of Integers or 'null' if
-	 *         there are none
+	 * @return channels to display as an ArrayList of Integers or 'null' if there are none
 	 */
 
 	public String getDisplayChannelsWithSensors() {
@@ -210,8 +209,6 @@ public class DeviceConfiguration implements Serializable {
 	/**
 	 * Sets the active channels for the configuration Transforms String[] to
 	 * Byte[] to save on internal DB
-	 * 
-	 * @param activeChannelsStr
 	 */
 	public void setActiveChannels(String[] activeChannelsStr) {
 		StringBuilder activeChannelsSB = new StringBuilder();

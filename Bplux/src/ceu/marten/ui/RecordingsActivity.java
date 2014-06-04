@@ -219,7 +219,6 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 
 	/**
 	 * Shows a custom error dialog with its parameter message
-	 * @param errorMessage
 	 */
 	private void showErrorDialog(String errorMessage) {
 		
@@ -289,7 +288,6 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	
 	/**
 	 * Returns true if recording file is bigger than 20 MB. False otherwise
-	 * @return boolean
 	 */
 	private boolean fileSizeBiggerThan20Mb(File recordingZipFile) {
 		if((recordingZipFile.length() / 1024d) / 1024d > 20.0d)// (>20MB)?
@@ -343,8 +341,6 @@ public class RecordingsActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	 * clicked. If check box change its state to checked, puts the global
 	 * recording confirmation preference to true. If its state changed to
 	 * unChecked, puts the preference to false
-	 * 
-	 * @param checkBoxView
 	 */
 	public void onDialogCheckBoxClicked(View checkBoxView) {
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);

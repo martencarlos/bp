@@ -5,7 +5,7 @@
         android:key="pref_key_graph"
         android:title="@string/sa_nr_category_title" >
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="draw_in_background"
             android:summary="@string/sa_draw_in_background_summary"
             android:title="@string/sa_draw_in_background_title" />

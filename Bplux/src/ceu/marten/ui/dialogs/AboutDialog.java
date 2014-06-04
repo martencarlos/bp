@@ -6,15 +6,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import ceu.marten.bplux.R;
+import ceu.marten.services.BiopluxService;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.graphics.Color;
 import android.widget.TextView;
 
 public class AboutDialog extends Dialog {
+	private static final String TAG = AboutDialog.class.getName();
 	private static Context mContext = null;
 
 	public AboutDialog(Context context) {
@@ -48,6 +51,7 @@ public class AboutDialog extends Dialog {
 				text.append(line);
 			}
 		} catch (IOException e) {
+			Log.e(TAG, "Exception", e);
 			return null;
 		}
 		return text.toString();
