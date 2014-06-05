@@ -243,6 +243,10 @@ public class NewConfigurationActivity extends Activity {
 				((RadioButton)findViewById(R.id.radioBttn12)).setChecked(true);
 				((RadioButton)findViewById(R.id.radioBttn8)).setChecked(false);
 			}
+			else{//necesario porque si no hay configuración vieja siempre está activado 12 bits
+				((RadioButton)findViewById(R.id.radioBttn12)).setChecked(false);
+				((RadioButton)findViewById(R.id.radioBttn8)).setChecked(true);
+			}
 			
 			// MODIFY VARIABLES FOR VALIDATION PURPOSES
 			activeChannels = oldConfiguration.getActiveSensors();
@@ -412,8 +416,6 @@ public class NewConfigurationActivity extends Activity {
 
 	/**
 	 * Returns true if <b>no</b> channels are activated and false if there is at least one activated
-	 * @param channelsActivated
-	 * @return boolean
 	 */
 	private boolean noChannelsActivated(String[] channelsActivated) {
 		int counter = 0;
@@ -421,10 +423,12 @@ public class NewConfigurationActivity extends Activity {
 			if (channelsActivated[i] != null)
 				counter++;
 		}
-		if (counter == 0)
+		if (counter == 0){
 			return true;
-		else
+		}
+		else{
 			return false;
+		}
 	}
 
 	/**
@@ -444,7 +448,6 @@ public class NewConfigurationActivity extends Activity {
 
 	/**
 	 * Creates and displays a custom error toast with custom message that it receives
-	 * @param messageToDisplay
 	 */
 	private void displayErrorToast(String messageToDisplay) {
 		Toast errorToast = new Toast(getApplicationContext());
@@ -459,8 +462,6 @@ public class NewConfigurationActivity extends Activity {
 	/**
 	 * Creates and displays a custom information toast with custom message that
 	 * it receives
-	 * 
-	 * @param messageToDisplay
 	 */
 	private void displayInfoToast(String messageToDisplay) {
 		Toast infoToast = new Toast(getApplicationContext());
@@ -475,7 +476,6 @@ public class NewConfigurationActivity extends Activity {
 	/**
 	 * Validates all the configuration fields. 
 	 * Returns false if an error is encountered and true otherwise
-	 * @return boolean
 	 */
 	private boolean validateFields() {
 		boolean validated = true;
@@ -502,8 +502,9 @@ public class NewConfigurationActivity extends Activity {
 													|| !macAddress.getText().toString().matches(macSyntax)
 													&& macAddress.getText().toString().compareTo("test") != 0) {
 			macAddress.setError(getString(R.string.nc_error_message_mac));
-			if (validated)
+			if (validated){
 				macAddress.requestFocus();
+			}
 			validated = false;
 		}
 		
@@ -513,8 +514,9 @@ public class NewConfigurationActivity extends Activity {
 				|| Integer.parseInt(receptionFreqEditor.getText().toString()) < RECEPTION_FREQ_MIN
 				|| Integer.parseInt(receptionFreqEditor.getText().toString()) > RECEPTION_FREQ_MAX) {
 			receptionFreqEditor.setError("invalid frequency");
-			if (validated)
+			if (validated){
 				receptionFreqEditor.requestFocus();
+			}
 			validated = false;
 		}
 		
@@ -524,8 +526,9 @@ public class NewConfigurationActivity extends Activity {
 				|| Integer.parseInt(samplingFreqEditor.getText().toString()) < SAMPLING_FREQ_MIN
 				|| Integer.parseInt(samplingFreqEditor.getText().toString()) > SAMPLING_FREQ_MAX) {
 			samplingFreqEditor.setError("invalid frequency");
-			if (validated)
+			if (validated){
 				samplingFreqEditor.requestFocus();
+			}
 			validated = false;
 		}
 			
@@ -554,8 +557,6 @@ public class NewConfigurationActivity extends Activity {
 	/**
 	 * Validates, submits and finishes the activity returning focus to its
 	 * parent activity {@link ConfigurationsActivity}
-	 * 
-	 * @param submitButtonView
 	 */
 	public void onClickedSubmit(View submitButtonView) {
 		
@@ -590,9 +591,7 @@ public class NewConfigurationActivity extends Activity {
 	 * Cancels the creation/modification of new {@link DeviceConfiguration}.
 	 * Displays an info toast to inform the client that its configuration has
 	 * been canceled
-	 * 
-	 * @param cancelButtonView
-	 */
+	 * /
 	public void onClickedCancel(View cancelButtonView) {
 		finish();
 		overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
@@ -608,12 +607,14 @@ public class NewConfigurationActivity extends Activity {
 
 		switch (radioButtonView.getId()) {
 		case R.id.radioBttn8:
-			if (checked)
+			if (checked){
 				newConfiguration.setNumberOfBits(8);
+			}
 			break;
 		case R.id.radioBttn12:
-			if (checked)
+			if (checked){
 				newConfiguration.setNumberOfBits(12);
+			}
 			break;
 		}
 	}
@@ -621,8 +622,6 @@ public class NewConfigurationActivity extends Activity {
 	/**
 	 * Shows active channels dialog calling
 	 * {@link NewConfigurationActivity#showActiveChannelsDialog()}
-	 * 
-	 * @param activeChannelsButton
 	 */
 	public void onClickedActiveChannelsButton(View activeChannelsButton) {
 		showActiveChannelsDialog();
@@ -631,14 +630,14 @@ public class NewConfigurationActivity extends Activity {
 	/**
 	 * Shows display channels picker dialog or displays an error toast if active
 	 * channels have not yet been introduced
-	 * 
-	 * @param displayChannelsButton
 	 */
 	public void onClickedDisplayChannelsButton(View displayChannelsButton) {
 		// CHECKS IF CHANNELS TO ACTIVATE ARE ALREADY FILLED
-		if(newConfiguration.getActiveSensors() != null && newConfiguration.getActiveChannelsNumber() != 0)
+		if(newConfiguration.getActiveSensors() != null && newConfiguration.getActiveChannelsNumber() != 0){
 			showDisplayChannels();
-		else
+		}
+		else{
 			displayErrorToast(getString(R.string.nc_error_button_channels_to_display));
+		}
 	}
 }

@@ -256,12 +256,15 @@ public class BiopluxService extends Service {
 	 * connection has established. False if an exception was caught
 	 */
 	private boolean connectToBiopluxDevice() {
+
+		Log.e(TAG, "connectToBiopluxDevice");
 		// BIOPLUX INITIALIZATION
 		try {
 			connection = Device.Create(configuration.getMacAddress());
-			connection.BeginAcq(configuration.getVisualizationFrequency(),
+			connection.BeginAcq(configuration.getVisualizationFrequency(), 
+					configuration.getActiveChannelsAsInteger(),configuration.getNumberOfBits());
 
-			configuration.getActiveChannelsAsInteger(),configuration.getNumberOfBits());
+			Log.e(TAG, "configuration.getNumberOfBits() "+configuration.getNumberOfBits());
 		} catch (BPException e) {
 			try {
 				connection.Close();
@@ -281,9 +284,6 @@ public class BiopluxService extends Service {
 		return true;
 	}
 
-	/**
-	 * Creates the notification
-	 */
 	private void createNotification() {
 
 		// SET THE BASICS

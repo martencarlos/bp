@@ -132,10 +132,12 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 
     		switch (maskedAction) {
     			case MotionEvent.ACTION_DOWN:
-    				if(goToEnd)
+    				if(goToEnd){
     					goToEnd = false;
-    				else
+    				}
+    				else{
     					goToEnd = true;
+    				}
     			break;
     		}
         	return true;
@@ -147,15 +149,16 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	 * error messages and a saved message if service stops correctly
 	 * 
 	 */
-	
+
 	@SuppressLint("HandlerLeak")
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case BiopluxService.MSG_DATA: {
-				appendDataToGraphs(msg.getData().getDouble(BiopluxService.KEY_X_VALUE),
-								   msg.getData().getShortArray(BiopluxService.KEY_FRAME_DATA));
+				appendDataToGraphs(
+						msg.getData().getDouble(BiopluxService.KEY_X_VALUE),
+						msg.getData().getShortArray(BiopluxService.KEY_FRAME_DATA));
 				break;
 			}
 			case BiopluxService.MSG_CONNECTION_ERROR: {
@@ -224,6 +227,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 				displayConnectionErrorDialog(10); // 10 -> fatal error
 			}
 		}
+		
 		/**
 		 *  This is called when the connection with the service has been
 		 *  unexpectedly disconnected -- that is, its process crashed.
@@ -238,8 +242,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	/**
 	 * Appends x and y values received from service to all active graphs. The
 	 * graph always moves to the last value added
-	 * 
-	 * @param data
 	 */
 	 void appendDataToGraphs(double xValue, short[] data) {
 		if(!serviceError){
@@ -601,8 +603,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	 * mac is other than 'test' and recording is not running. Returns always
 	 * false for the main thread to be stopped and thus be available for the
 	 * progress dialog  spinning circle when we test the connection
-	 * 
-	 * @return boolean
 	 */
 	private boolean startRecording() {
 		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -664,8 +664,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	/**
 	 * Displays an error dialog with corresponding message based on the
 	 * errorCode it receives. If code is unknown it displays FATAL ERROR message
-	 * 
-	 * @param errorCode
 	 */
 	private void displayConnectionErrorDialog(int errorCode) {
 		// Initializes custom title
@@ -707,8 +705,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	/**
 	 * Displays a custom view information toast with the message it receives as
 	 * parameter
-	 * 
-	 * @param messageToDisplay
 	 */
 	private void displayInfoToast(String messageToDisplay) {
 		Toast infoToast = new Toast(classContext);
@@ -762,8 +758,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	 * Gets all the processes that are running on the OS and checks whether the
 	 * bioplux service is running. Returns true if it is running and false
 	 * otherwise
-	 * 
-	 * @return boolean
 	 */
 	private boolean isServiceRunning() {
 		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -798,8 +792,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	 * Main button of activity. Starts, overwrites and stops recording depending
 	 * of whether the recording was never started, was started or was started
 	 * and stopped
-	 * 
-	 * @param view
 	 */
 	public void onMainButtonClicked(View view) {
 		// Starts recording
@@ -865,7 +857,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 
 	/**
 	 * Widens the graphs' view port
-	 * @param view
 	 */
 	public void zoomIn(View view){
 		for (int i = 0; i < graphs.length; i++)
@@ -874,7 +865,6 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	
 	/**
 	 * Shortens the graphs' view port
-	 * @param view
 	 */
 	public void zoomOut(View view){
 		double zoomOutValue = 66.6;
