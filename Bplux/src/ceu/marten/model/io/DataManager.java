@@ -69,6 +69,7 @@ public class DataManager {
 		this.numberOfChannelsActivated = configuration.getActiveChannelsNumber();
 		try {
 			outStreamWriter = new OutputStreamWriter(context.openFileOutput(Constants.TEMP_FILE, Context.MODE_PRIVATE));
+			
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "file to write frames on, not found", e);
 		}
