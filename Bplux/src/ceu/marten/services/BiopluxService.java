@@ -1,6 +1,7 @@
 package ceu.marten.services;
 
 
+import plux.android.bioplux.Device.Frame;
 import plux.android.processing.IEventHandler;
 import plux.android.processing.IRawDataHandler;
 import plux.android.processing.ProcessingDevice;
@@ -74,12 +75,16 @@ public class BiopluxService extends Service implements IRawDataHandler {
 	private boolean clientActive = false;
 	Notification serviceNotification = null;
 	private SharedPreferences sharedPref;
+	
+	private final String SENSOR_NAME = "Bioplux";
 
 	//Target we publish for clients to send messages to IncomingHandler
 	private final Messenger mMessenger = new Messenger(new IncomingHandler());
 
 	//Messenger with interface for sending messages from the service
 	private Messenger client = null;
+
+	private boolean recivingData= false;
 
 	/**
 	 * Handler of incoming messages from clients.
@@ -106,24 +111,56 @@ public class BiopluxService extends Service implements IRawDataHandler {
 
 	}
 	
-
 	@Override
 	public void onRowData(String sensor, int[] values) {
-		Log.e(TAG, sensor +" 1 "+ values.length+" " + values[0]);
-		
+		// Log.e(TAG, sensor +" 1 "+ values.length+" " + values.length);
+		// Log.e(TAG, "mascara "+connection.getMask());
+		// Log.e(TAG, "mascara "+connection.getBits());
+		// Log.e(TAG, "mascara "+connection.getFrequency());
+		if (recivingData) {
+			synchronized (weAreWritingDataToFileLock) {
+				areWeWritingDataToFile = true;
+			}
+
+			if (!dataManager.writeArrayToTmpFile(values)) {
+				sendErrorToActivity(CODE_ERROR_WRITING_TEXT_FILE);
+				killServiceError = true;
+				stopSelf();
+				synchronized (weAreWritingDataToFileLock) {
+					areWeWritingDataToFile = false;
+				}
+				return;
+			}
+			// ************************
+			if (samplingCounter++ >= samplingFrames) {
+				// calculates x value of graphs
+				timeCounter++;
+				xValue = timeCounter / configuration.getSamplingFrequency()
+						* 1000;
+				// gets default share preferences with multi-process flag
+
+				if (clientActive || !clientActive && drawInBackground)
+					sendArrayToActivity(values);
+				// retains the decimals
+				samplingCounter -= samplingFrames;
+			}
+			// ************************
+
+			synchronized (weAreWritingDataToFileLock) {
+				areWeWritingDataToFile = false;
+			}
+		}
 	}
 
 	@Override
 	public void onRowData(String sensor, int[] values, int counter) {
 		// TODO Auto-generated method stub
-		Log.e(TAG, sensor +" 2 "+ values.length+" " + values[0]);
 		
 	}
 
 	@Override
 	public void onRowData(String sensor, int[][] values) {
 		// TODO Auto-generated method stub
-		Log.e(TAG, sensor +" 3 "+ values.length+" " + values[0]);
 		
 	}
 	/**
@@ -136,15 +173,12 @@ public class BiopluxService extends Service implements IRawDataHandler {
 		// BIOPLUX INITIALIZATION
 		try { 
 			connection = new ProcessingDevice(configuration.getMacAddress());
-			connection.createSensor("EMG",  new int[] { 1,2 });
-			connection.createSensor("2",  new int[] { 1 });
-
-			connection.subscribeRawData("EMG", configuration.getVisualizationFrequency(), this);
-			connection.subscribeRawData("2", configuration.getVisualizationFrequency(), this);
-			
-			Log.e(TAG, "configuration.getNumberOfBits() "+configuration.getNumberOfBits());
+			connection.createSensor(SENSOR_NAME, configuration.getActiveChannelsAsIntArray());
+			connection.subscribeRawData(SENSOR_NAME, configuration.getVisualizationFrequency(),
+					configuration.getNumberOfBits(), this);
 		} catch (Exception e) {
 			try {
+				connection.EndAcq();
 				connection.Close();
 			} catch (Exception e1) {
 				Log.e(TAG, "bioplux close connection exception", e1);
@@ -218,6 +252,7 @@ public class BiopluxService extends Service implements IRawDataHandler {
 				// create a buffer with 1 frame
 				connection.setNFrames(10);
 				connection.BeginAcq();
+				recivingData= true;
 				Log.i(TAG, "empezado");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -226,59 +261,6 @@ public class BiopluxService extends Service implements IRawDataHandler {
 			createNotification();
 		}
 		return START_NOT_STICKY; // do not re-create service if system kills it
-	}
-
-	/**
-	 * Gets and process the frames from the bioplux device. Saves all the frames
-	 * receives to a text file and send the requested frames to the activity
-	 */
-	private int frameSeq =-1;
-	int i =-1;
-	private void processFrames() {
-		synchronized (weAreWritingDataToFileLock) {
-			areWeWritingDataToFile = true;
-		}
-
-		//getFrames(numberOfFrames);
-		for (int i=0; i <10; i++) {
-			i++;
-			frameSeq = frameSeq+1 < 128 ? frameSeq+1:0;
-
-		/*	if (!dataManager.writeFrameToTmpFile(frame, frame.seq)) {
-				sendErrorToActivity(CODE_ERROR_WRITING_TEXT_FILE);
-				killServiceError = true;
-				stopSelf();
-				break;
-			}
-
-			if (samplingCounter++ >= samplingFrames) {
-				// calculates x value of graphs
-				timeCounter++;
-				xValue = timeCounter / configuration.getSamplingFrequency() * 1000;
-				// gets default share preferences with multi-process flag
-
-				if (clientActive || !clientActive && drawInBackground)
-					sendFrameToActivity(frame.an_in);
-				// retains the decimals
-				samplingCounter -= samplingFrames;
-			}*/
-		}
-		synchronized (weAreWritingDataToFileLock) {
-			areWeWritingDataToFile = false;
-		}
-	}
-
-	/**
-	 * Get frames from the bioplux device
-	 */
-	private void getFrames(int numberOfFrames) {
-	/*	try {
-			//connection.GetFrames(numberOfFrames, frames);
-		} catch (BPException e) {
-			Log.e(TAG, "Exception getting frames", e);
-			sendErrorToActivity(e.code);
-			stopSelf();
-		}*/
 	}
 
 
@@ -303,16 +285,16 @@ public class BiopluxService extends Service implements IRawDataHandler {
 	}
 
 	/**
-	 * Sends frame to activity via message
+	 * Sends data to the activity via message
 	 * 
-	 * @param frame
+	 * @param values
 	 *            acquired from the bioplux device
 	 */
 	//comentario ¿intentar optimizar el envío de datos?
-	private void sendFrameToActivity(short[] frame) {
+	private void sendArrayToActivity(int[] values) {
 		Bundle b = new Bundle();
 		b.putDouble(KEY_X_VALUE, xValue);
-		b.putShortArray(KEY_FRAME_DATA, frame);
+		b.putIntArray(KEY_FRAME_DATA, values);
 		Message message = Message.obtain(null, MSG_DATA);
 		message.setData(b);
 		try {
@@ -369,11 +351,11 @@ public class BiopluxService extends Service implements IRawDataHandler {
 				Log.e(TAG, "Exception thread is sleeping", e2);
 			}
 		}
+		recivingData=false;
 		if (!dataManager.closeWriters())
 			sendErrorToActivity(CODE_ERROR_SAVING_RECORDING);
 		try {
 			connection.EndAcq();
-			connection.Close();
 			Log.e(TAG, "Cerrando conexiones");
 		} catch (Exception e) {
 			Log.e(TAG, "Exception ending ACQ", e);

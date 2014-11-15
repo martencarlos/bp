@@ -205,7 +205,7 @@ public class OldBiopluxService extends Service {
 				stopSelf();
 				break;
 			}
-
+//************************ 
 			if (samplingCounter++ >= samplingFrames) {
 				// calculates x value of graphs
 				timeCounter++;
@@ -217,6 +217,7 @@ public class OldBiopluxService extends Service {
 				// retains the decimals
 				samplingCounter -= samplingFrames;
 			}
+//************************ 
 		}
 		synchronized (weAreWritingDataToFileLock) {
 			areWeWritingDataToFile = false;

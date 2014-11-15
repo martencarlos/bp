@@ -158,7 +158,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 			case BiopluxService.MSG_DATA: {
 				appendDataToGraphs(
 						msg.getData().getDouble(BiopluxService.KEY_X_VALUE),
-						msg.getData().getShortArray(BiopluxService.KEY_FRAME_DATA));
+						msg.getData().getIntArray(BiopluxService.KEY_FRAME_DATA));
 				break;
 			}
 			case BiopluxService.MSG_CONNECTION_ERROR: {
@@ -230,7 +230,7 @@ public class NewRecordingActivity extends OrmLiteBaseActivity<DatabaseHelper> im
 	 * Appends x and y values received from service to all active graphs. The
 	 * graph always moves to the last value added
 	 */
-	 void appendDataToGraphs(double xValue, short[] data) {
+	 void appendDataToGraphs(double xValue, int[] data) {
 		if(!serviceError){
 			for (int i = 0; i < graphs.length; i++) {
 				graphs[i].getSerie().appendData(

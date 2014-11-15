@@ -258,6 +258,44 @@ public class DeviceConfiguration implements Serializable {
 		}
 	}
 	
+	/**
+	 * Gets the active channels of the configuration
+	 * 
+	 * @return the active channels or null if there are none
+	 */
+	public int[] getActiveChannelsAsIntArray() {		
+		if (this.activeChannels != null) {
+			int activeChannelsCount = getActiveChannelsCount();
+			int[] activeChannels = new int[activeChannelsCount];
+			int activeChannelNumber = 0;			
+			String activeChannelsConcatenated = new String(this.activeChannels);
+			String[] activeChannelsStr = activeChannelsConcatenated.split(SPLIT_PATTERN);
+			for (int i = 0; i < activeChannelsStr.length; i++) {
+				if (activeChannelsStr[i].compareToIgnoreCase("null") != 0){
+					activeChannels[activeChannelNumber]= i +1;
+					activeChannelNumber++;
+				}
+			}			
+			return activeChannels;
+		} else{
+			return null;
+		}
+	}
+
+	private int getActiveChannelsCount() {
+		int activeChannelsCount = 0;
+		String[] activeChannelsStr;
+		// returns active channels concatenated by '.' and with 'null' fill
+		String activeChannelsConcatenated = new String(this.activeChannels);
+		activeChannelsStr = activeChannelsConcatenated.split(SPLIT_PATTERN);
+		for (int i = 0; i < activeChannelsStr.length; i++) {
+			if (activeChannelsStr[i].compareToIgnoreCase("null") != 0){
+				activeChannelsCount++;
+			}
+		}
+		return activeChannelsCount;
+	}
+	
 
 	/**
 	 * Gets the active channels as an integer [0-255] for bioplux API

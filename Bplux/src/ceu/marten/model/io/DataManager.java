@@ -100,6 +100,24 @@ public class DataManager {
 		return true;
 	}
 	
+	public boolean writeArrayToTmpFile(int [] values) {
+		sb.delete(0, sb.length());
+		try {
+			// WRITE THE DATA OF ACTIVE CHANNELS ONLY
+			for(int i=0; i< numberOfChannelsActivated;i++){
+				sb.append(values[i]).append("\t");
+			}
+			// WRITE A NEW LINE
+			bufferedWriter.write(sb.append("\n").toString());
+			
+		} catch (Exception e) {
+			try {bufferedWriter.close();} catch (Exception e1) {}
+			Log.e(TAG, "Exception while writing frame row", e);
+			return false;
+		}
+		return true;
+	}
+	
 	/**
 	 * Creates and appends the header on the recording session file
 	 * 
