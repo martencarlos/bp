@@ -1,8 +1,6 @@
 package ceu.marten.services;
 
 
-import plux.android.bioplux.Device.Frame;
-import plux.android.processing.IEventHandler;
 import plux.android.processing.IRawDataHandler;
 import plux.android.processing.ProcessingDevice;
 import android.annotation.SuppressLint;
@@ -18,7 +16,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.PowerManager;
-import android.os.Handler.Callback;
 import android.os.PowerManager.WakeLock;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
@@ -113,15 +110,12 @@ public class BiopluxService extends Service implements IRawDataHandler {
 	
 	@Override
 	public void onRowData(String sensor, int[] values) {
-		// Log.e(TAG, sensor +" 1 "+ values.length+" " + values.length);
-		// Log.e(TAG, "mascara "+connection.getMask());
-		// Log.e(TAG, "mascara "+connection.getBits());
-		// Log.e(TAG, "mascara "+connection.getFrequency());
 		if (recivingData) {
 			synchronized (weAreWritingDataToFileLock) {
 				areWeWritingDataToFile = true;
 			}
 
+		fixUnsignedIntIfIs8Bits(values);
 			if (!dataManager.writeArrayToTmpFile(values)) {
 				sendErrorToActivity(CODE_ERROR_WRITING_TEXT_FILE);
 				killServiceError = true;
@@ -131,7 +125,7 @@ public class BiopluxService extends Service implements IRawDataHandler {
 				}
 				return;
 			}
-			// ************************
+			
 			if (samplingCounter++ >= samplingFrames) {
 				// calculates x value of graphs
 				timeCounter++;
@@ -144,10 +138,17 @@ public class BiopluxService extends Service implements IRawDataHandler {
 				// retains the decimals
 				samplingCounter -= samplingFrames;
 			}
-			// ************************
-
+			
 			synchronized (weAreWritingDataToFileLock) {
 				areWeWritingDataToFile = false;
+			}
+		}
+	}
+
+	private void fixUnsignedIntIfIs8Bits(int[] values) {
+		if(configuration.getNumberOfBits()==8){
+			for (int i = 0; i < values.length; i++) {
+				values[i]= values[i] & 0x000000ff;
 			}
 		}
 	}
